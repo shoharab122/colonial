@@ -1,4 +1,4 @@
-// server.js - PostgreSQL version (fixed items display)
+// server.js - PostgreSQL version (fixed items display + production session store)
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session); // <-- ADDED for PostgreSQL session store
 const passport = require('passport');
 // const GoogleStrategy = require('passport-google-oauth20').Strategy; // DISABLED
 const multer = require('multer');
@@ -20,12 +21,17 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'colonial_super_secret_key_change_me';
 
-// Session setup
+// ------------------- PRODUCTION SESSION STORE (PostgreSQL) -------------------
 app.use(session({
+  store: new pgSession({
+    pool: pool,                // reuse the database connection pool
+    tableName: 'session',      // name of the session table
+    createTableIfMissing: true // creates the table automatically if it doesn't exist
+  }),
   secret: process.env.SESSION_SECRET || 'colonial_session_secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }
+  cookie: { secure: false }    // set to `true` if you enable HTTPS on Render
 }));
 
 app.use(cors());
