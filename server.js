@@ -1,4 +1,4 @@
-// server.js - PostgreSQL version (fixed items display + production session store)
+// server.js - PostgreSQL version with Cloudinary image hosting
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -7,12 +7,19 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session); // <-- ADDED for PostgreSQL session store
+const pgSession = require('connect-pg-simple')(session);
 const passport = require('passport');
-// const GoogleStrategy = require('passport-google-oauth20').Strategy; // DISABLED
 const multer = require('multer');
 const fs = require('fs');
 const pool = require('./db');
+const cloudinary = require('cloudinary').v2;
+
+// ------------------- Cloudinary Configuration -------------------
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // Debug: confirm which database config is used
 console.log('🔌 DB connection using:', process.env.DATABASE_URL ? 'DATABASE_URL (cloud)' : 'local config');
@@ -24,14 +31,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'colonial_super_secret_key_change_m
 // ------------------- PRODUCTION SESSION STORE (PostgreSQL) -------------------
 app.use(session({
   store: new pgSession({
-    pool: pool,                // reuse the database connection pool
-    tableName: 'session',      // name of the session table
-    createTableIfMissing: true // creates the table automatically if it doesn't exist
+    pool: pool,
+    tableName: 'session',
+    createTableIfMissing: true
   }),
   secret: process.env.SESSION_SECRET || 'colonial_session_secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }    // set to `true` if you enable HTTPS on Render
+  cookie: { secure: false }
 }));
 
 app.use(cors());
@@ -66,17 +73,9 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-// ------------------- IMAGE UPLOAD (admin only) -------------------
-const uploadDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// ------------------- IMAGE UPLOAD (Cloudinary) -------------------
+// Use memory storage so we can pass buffer to Cloudinary
+const storage = multer.memoryStorage();
 const fileFilter = (req, file, cb) => {
   const allowed = /jpeg|jpg|png|gif|webp/;
   const ext = allowed.test(path.extname(file.originalname).toLowerCase());
@@ -86,9 +85,26 @@ const fileFilter = (req, file, cb) => {
 };
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter });
 
-app.post('/api/upload', authenticateToken, requireAdmin, upload.single('image'), (req, res) => {
+app.post('/api/upload', authenticateToken, requireAdmin, upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  res.json({ imageUrl: `/uploads/${req.file.filename}` });
+
+  try {
+    // Convert buffer to base64 data URI
+    const b64 = Buffer.from(req.file.buffer).toString('base64');
+    const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: 'colonial_products',
+      use_filename: true,
+      unique_filename: true
+    });
+
+    res.json({ imageUrl: result.secure_url });
+  } catch (err) {
+    console.error('Cloudinary upload error:', err);
+    res.status(500).json({ error: 'Image upload failed' });
+  }
 });
 
 // ------------------- HELPER: images array to JSON -------------------
