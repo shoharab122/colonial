@@ -251,9 +251,7 @@
 <!-- ==================== OPTIMIZED MOBILE FOOTER WITH SOCIAL MEDIA ==================== -->
 <footer class="bg-black text-white/80 mt-16 py-8 px-4 md:px-6 lg:px-12 border-t border-gray-800">
     <div class="max-w-7xl mx-auto">
-        <!-- Responsive grid: stacks on mobile, 4 columns on medium screens and up -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
-            <!-- Contact / Brand Column -->
             <div>
                 <h3 class="font-serif text-xl mb-3 text-white">COLONIAL</h3>
                 <p class="text-sm">Timeless elegance for the modern wardrobe.</p>
@@ -264,8 +262,6 @@
                     <p>📍 Chittagong, Bangladesh</p>
                 </div>
             </div>
-
-            <!-- Quick Links Column -->
             <div>
                 <h4 class="font-semibold text-white mb-3">Quick Links</h4>
                 <ul class="space-y-2 text-sm">
@@ -274,8 +270,6 @@
                     <li><a href="#" id="footer-wishlist-link" class="inline-block py-1 hover:underline">Wishlist</a></li>
                 </ul>
             </div>
-
-            <!-- Legal Column -->
             <div>
                 <h4 class="font-semibold text-white mb-3">Legal</h4>
                 <ul class="space-y-2 text-sm">
@@ -283,8 +277,6 @@
                     <li><a href="#" id="footer-privacy-link" class="inline-block py-1 hover:underline">Privacy Policy</a></li>
                 </ul>
             </div>
-
-            <!-- Social Media Column -->
             <div>
                 <h4 class="font-semibold text-white mb-3">Follow Us</h4>
                 <div class="flex justify-center md:justify-start space-x-6">
@@ -297,75 +289,26 @@
                 </div>
             </div>
         </div>
-
-        <!-- Copyright -->
         <div class="border-t border-gray-800 mt-8 pt-6 text-center text-xs text-white/50">
             &copy; 2026 COLONIAL. All rights reserved.
         </div>
     </div>
 </footer>
 
-<!-- Terms & Conditions Modal -->
-<div id="terms-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Terms & Conditions</h3>
-            <button onclick="closeTermsModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>1. General</strong><br>By accessing or using the COLONIAL website, you agree to be bound by these Terms & Conditions.</p>
-            <p><strong>2. Products & Pricing</strong><br>All product descriptions, prices, and availability are subject to change without notice. We reserve the right to limit quantities.</p>
-            <p><strong>3. Orders & Payment</strong><br>Orders are confirmed only after payment verification. For bKash/Nagad orders, payment status must be verified by our admin before shipment.</p>
-            <p><strong>4. Shipping & Delivery</strong><br>We ship within Bangladesh. Delivery times are estimates. Risk of loss passes to you upon delivery.</p>
-            <p><strong>5. Returns & Refunds</strong><br>Items must be returned unused within 7 days of delivery. Refunds will be processed after inspection.</p>
-            <p><strong>6. Intellectual Property</strong><br>All content (logos, images, text) is property of COLONIAL and may not be used without permission.</p>
-            <p><strong>7. Contact</strong><br>For any questions, email us at Colonialbussinessltd@gmail.com or call +8801643425517.</p>
-            <p><strong>8. Governing Law</strong><br>These terms are governed by the laws of Bangladesh.</p>
-        </div>
-        <button onclick="closeTermsModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
-    </div>
-</div>
-
-<!-- Privacy Policy Modal -->
-<div id="privacy-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Privacy Policy</h3>
-            <button onclick="closePrivacyModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>Information We Collect</strong><br>We collect name, email, shipping address, phone number, and order details to process your purchases.</p>
-            <p><strong>How We Use Your Information</strong><br>Your data is used solely for order fulfillment, customer support, and improving our service. We do not sell your personal information.</p>
-            <p><strong>Payment Security</strong><br>All online payments are processed through secure gateways. We do not store full payment credentials.</p>
-            <p><strong>Cookies</strong><br>We use cookies to remember cart items and preferences. You may disable cookies in your browser.</p>
-            <p><strong>Third-Party Sharing</strong><br>We share data only with delivery partners and payment processors as necessary.</p>
-            <p><strong>Your Rights</strong><br>You may request access, correction, or deletion of your data by emailing Colonialbussinessltd@gmail.com.</p>
-            <p><strong>Updates</strong><br>This policy may be updated. Changes will be posted on this page.</p>
-        </div>
-        <button onclick="closePrivacyModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
-    </div>
-</div>
-
 <script>
-    // Footer modal functions
     function openTermsModal() { document.getElementById('terms-modal').style.display = 'flex'; }
     function closeTermsModal() { document.getElementById('terms-modal').style.display = 'none'; }
     function openPrivacyModal() { document.getElementById('privacy-modal').style.display = 'flex'; }
     function closePrivacyModal() { document.getElementById('privacy-modal').style.display = 'none'; }
 
-    // Attach event listeners after DOM ready
     document.addEventListener('DOMContentLoaded', function() {
-        const termsLink = document.getElementById('footer-terms-link');
-        const privacyLink = document.getElementById('footer-privacy-link');
-        const footerWishlist = document.getElementById('footer-wishlist-link');
-        if (termsLink) termsLink.addEventListener('click', (e) => { e.preventDefault(); openTermsModal(); });
-        if (privacyLink) privacyLink.addEventListener('click', (e) => { e.preventDefault(); openPrivacyModal(); });
-        if (footerWishlist) footerWishlist.addEventListener('click', (e) => { e.preventDefault(); openWishlistModal(); });
+        document.getElementById('footer-terms-link')?.addEventListener('click', (e) => { e.preventDefault(); openTermsModal(); });
+        document.getElementById('footer-privacy-link')?.addEventListener('click', (e) => { e.preventDefault(); openPrivacyModal(); });
+        document.getElementById('footer-wishlist-link')?.addEventListener('click', (e) => { e.preventDefault(); openWishlistModal(); });
     });
 
     lucide.createIcons();
 
-    // ------------------- State -------------------
     let currentPage = 1, totalPages = 1;
     let currentFilters = { q: '', category: 'all', sort: 'newest' };
     let cart = JSON.parse(localStorage.getItem('amoura_cart')) || [];
@@ -389,28 +332,20 @@
     }
 
     function getPaymentStatusBadge(status) {
-        const statusMap = {
-            'paid': 'payment-paid',
-            'pending': 'payment-pending',
-            'awaiting_verification': 'payment-awaiting',
-            'failed': 'payment-failed'
-        };
-        const className = statusMap[status] || 'payment-pending';
-        const displayText = status ? status.replace('_', ' ') : 'pending';
-        return `<span class="payment-badge ${className}">${escapeHtml(displayText)}</span>`;
+        const map = { 'paid': 'payment-paid', 'pending': 'payment-pending', 'awaiting_verification': 'payment-awaiting', 'failed': 'payment-failed' };
+        return `<span class="payment-badge ${map[status] || 'payment-pending'}">${escapeHtml(status ? status.replace('_', ' ') : 'pending')}</span>`;
     }
 
-    // ------------------- Wishlist -------------------
     async function loadWishlistCount() {
         if (!authToken) return;
         try {
             const res = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${authToken}` } });
-            const items = await res.json();
-            wishlist = items.map(p => p.id);
+            wishlist = (await res.json()).map(p => p.id);
             document.getElementById('wishlist-count').innerText = wishlist.length;
             document.getElementById('wishlist-count').style.opacity = wishlist.length ? '1' : '0';
         } catch(err) { console.error(err); }
     }
+
     async function toggleWishlist(productId) {
         if (!authToken) { openAuthModal(); return; }
         const inWishlist = wishlist.includes(productId);
@@ -425,18 +360,15 @@
                 document.getElementById('wishlist-count').style.opacity = wishlist.length ? '1' : '0';
                 showToast(inWishlist ? 'Removed from wishlist' : 'Added to wishlist');
                 renderWishlistModal();
-                const modalHeart = document.getElementById('modal-wishlist-btn')?.querySelector('i');
-                if (modalHeart) {
-                    if (inWishlist) modalHeart.classList.remove('fill-red-500');
-                    else modalHeart.classList.add('fill-red-500');
-                }
+                const heartIcon = document.getElementById('modal-wishlist-btn')?.querySelector('i');
+                if (heartIcon) inWishlist ? heartIcon.classList.remove('fill-red-500') : heartIcon.classList.add('fill-red-500');
             }
         } catch(err) { console.error(err); }
     }
+
     async function renderWishlistModal() {
         if (!authToken) return;
-        const res = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${authToken}` } });
-        const products = await res.json();
+        const products = await (await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${authToken}` } })).json();
         const container = document.getElementById('wishlist-items');
         if (!products.length) { container.innerHTML = '<div class="col-span-full text-center text-gray-500">Your wishlist is empty.</div>'; return; }
         container.innerHTML = products.map(p => `
@@ -449,62 +381,40 @@
             </div>
         `).join('');
     }
+
     function openWishlistModal() { if (!authToken) { openAuthModal(); return; } renderWishlistModal(); document.getElementById('wishlist-modal').style.display = 'flex'; }
     function closeWishlistModal() { document.getElementById('wishlist-modal').style.display = 'none'; }
 
-    // ------------------- Reviews -------------------
     async function loadReviews(productId) {
-        const res = await fetch(`/api/products/${productId}/reviews`);
-        const reviews = await res.json();
+        const reviews = await (await fetch(`/api/products/${productId}/reviews`)).json();
         const container = document.getElementById('reviews-container');
-        if (!reviews.length) { container.innerHTML = '<div class="text-gray-500 text-sm">No reviews yet. Be the first!</div>'; }
-        else {
-            container.innerHTML = reviews.map(r => `
-                <div class="border-b pb-2">
-                    <div class="flex items-center gap-1">
-                        <div class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-                        <span class="text-xs text-gray-500">${escapeHtml(r.reviewer_name)}</span>
-                    </div>
-                    <p class="text-sm">${escapeHtml(r.comment)}</p>
-                </div>
-            `).join('');
-        }
+        if (!reviews.length) container.innerHTML = '<div class="text-gray-500 text-sm">No reviews yet. Be the first!</div>';
+        else container.innerHTML = reviews.map(r => `<div class="border-b pb-2"><div class="flex items-center gap-1"><div class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div><span class="text-xs text-gray-500">${escapeHtml(r.reviewer_name)}</span></div><p class="text-sm">${escapeHtml(r.comment)}</p></div>`).join('');
         const avg = reviews.reduce((s,r)=>s+r.rating,0)/reviews.length || 0;
-        const starsHtml = '<span class="star-rating">' + '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg)) + '</span>';
-        document.getElementById('modal-rating').innerHTML = starsHtml;
+        document.getElementById('modal-rating').innerHTML = '<span class="star-rating">' + '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg)) + '</span>';
         document.getElementById('modal-review-count').innerText = `(${reviews.length} reviews)`;
     }
+
     async function submitReview(productId, rating, comment) {
         if (!authToken) { alert('Please login to review.'); openAuthModal(); return; }
-        const res = await fetch(`/api/products/${productId}/reviews`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
-            body: JSON.stringify({ rating, comment })
-        });
+        const res = await fetch(`/api/products/${productId}/reviews`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` }, body: JSON.stringify({ rating, comment }) });
         if (res.ok) { showToast('Review submitted!'); loadReviews(productId); }
-        else { const err = await res.json(); alert(err.error); }
+        else alert((await res.json()).error);
     }
 
-    // ------------------- Customer SSE -------------------
     function initCustomerSSE() {
         if (customerEventSource) customerEventSource.close();
         if (!authToken) return;
-        const url = `/api/customer/order-events?token=${authToken}`;
-        customerEventSource = new EventSource(url);
+        customerEventSource = new EventSource(`/api/customer/order-events?token=${authToken}`);
         customerEventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            if (data.type === 'order_status_update') {
-                showToast(`Order #${data.orderId} status changed to ${data.newStatus}`);
-                if (document.getElementById('orders-modal').style.display === 'flex') loadCustomerOrders();
-            } else if (data.type === 'payment_status_update') {
-                showToast(`Payment for order #${data.orderId} is now ${data.paymentStatus}`);
-                if (document.getElementById('orders-modal').style.display === 'flex') loadCustomerOrders();
-            }
+            if (data.type === 'order_status_update') showToast(`Order #${data.orderId} status changed to ${data.newStatus}`);
+            else if (data.type === 'payment_status_update') showToast(`Payment for order #${data.orderId} is now ${data.paymentStatus}`);
+            if (document.getElementById('orders-modal').style.display === 'flex') loadCustomerOrders();
         };
         customerEventSource.onerror = () => setTimeout(initCustomerSSE, 5000);
     }
 
-    // ------------------- Authentication -------------------
     async function loadCurrentUser() {
         if (!authToken) return;
         try {
@@ -513,10 +423,11 @@
             else { localStorage.removeItem('amoura_token'); authToken = null; currentUser = null; updateAuthUI(); }
         } catch(err){ console.error(err); }
     }
+
     function updateAuthUI() {
         const ui = document.getElementById('user-info');
         if (currentUser) ui.innerHTML = `<div class="font-medium">${escapeHtml(currentUser.name || currentUser.email)}</div><div class="text-xs text-gray-500">${currentUser.role}</div>`;
-        else ui.innerHTML = `<div class="text-gray-500">Not logged in</div>`;
+        else ui.innerHTML = '<div class="text-gray-500">Not logged in</div>';
         const emailField = document.getElementById('customer-email');
         if (emailField && currentUser && !emailField.value) emailField.value = currentUser.email;
     }
@@ -550,13 +461,10 @@
         } catch(err) { alert(err.message); }
     });
 
-    // ------------------- Customer Orders (with payment status) -------------------
     async function loadCustomerOrders() {
         if (!authToken) return;
         try {
-            const res = await fetch('/api/customer/orders', { headers: { 'Authorization': `Bearer ${authToken}` } });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const orders = await res.json();
+            const orders = await (await fetch('/api/customer/orders', { headers: { 'Authorization': `Bearer ${authToken}` } })).json();
             const container = document.getElementById('orders-list-container');
             if (!orders.length) container.innerHTML = '<div class="text-center text-gray-500 py-8">You have no orders yet.</div>';
             else {
@@ -569,26 +477,12 @@
                                 <img src="${i.image_url || 'https://placehold.co/40x50/e2e2e2/black?text=No+Img'}" class="w-10 h-12 object-cover rounded">
                                 <div class="flex-1">
                                     <div>${escapeHtml(i.name)} ${i.size ? `(${i.size})` : ''} ${i.color ? `- ${i.color}` : ''}</div>
-                                    <div class="flex justify-between text-sm">
-                                        <span>Qty: ${i.quantity}</span>
-                                        <span>BDT ${i.price}</span>
-                                    </div>
+                                    <div class="flex justify-between text-sm"><span>Qty: ${i.quantity}</span><span>BDT ${i.price}</span></div>
                                 </div>
                             </div>
                         `).join('');
                     } catch(e) { itemsHtml = 'Unable to load items'; }
-                    const paymentBadge = getPaymentStatusBadge(o.payment_status);
-                    return `<div class="border rounded-lg p-4">
-                        <div class="flex justify-between flex-wrap gap-2">
-                            <div><strong>Order #${escapeHtml(o.order_number || o.id)}</strong><br>${new Date(o.created_at).toLocaleDateString()}</div>
-                            <div class="text-right">
-                                <span class="font-semibold">BDT ${parseFloat(o.final_amount || o.total_amount || 0).toFixed(2)}</span><br>
-                                <span class="text-sm capitalize">${escapeHtml(o.order_status || 'pending')}</span><br>
-                                <span class="text-xs">Payment: ${paymentBadge}</span>
-                            </div>
-                        </div>
-                        <div class="mt-2">${itemsHtml}</div>
-                    </div>`;
+                    return `<div class="border rounded-lg p-4"><div class="flex justify-between flex-wrap gap-2"><div><strong>Order #${escapeHtml(o.order_number || o.id)}</strong><br>${new Date(o.created_at).toLocaleDateString()}</div><div class="text-right"><span class="font-semibold">BDT ${parseFloat(o.final_amount || o.total_amount || 0).toFixed(2)}</span><br><span class="text-sm capitalize">${escapeHtml(o.order_status || 'pending')}</span><br><span class="text-xs">Payment: ${getPaymentStatusBadge(o.payment_status)}</span></div></div><div class="mt-2">${itemsHtml}</div></div>`;
                 }).join('');
             }
             document.getElementById('orders-modal').style.display = 'flex';
@@ -596,16 +490,15 @@
     }
     function closeOrdersModal() { document.getElementById('orders-modal').style.display = 'none'; }
 
-    // ------------------- Cart -------------------
     function saveCart() { localStorage.setItem('amoura_cart', JSON.stringify(cart)); updateCartUI(); }
     function updateCartUI() {
-        const container = document.getElementById('cart-items-list');
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
         const total = subtotal - couponDiscount;
-        document.getElementById('cart-total-price').innerText = `BDT ${Math.max(0,total).toFixed(2)}`;
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cart-total-price').innerText = `BDT ${Math.max(0, total).toFixed(2)}`;
+        const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
         document.getElementById('cart-count').innerText = totalItems;
         document.getElementById('cart-count').style.opacity = totalItems ? '1' : '0';
+        const container = document.getElementById('cart-items-list');
         if (!cart.length) container.innerHTML = '<p class="text-center text-gray-500 py-12">Your cart is empty</p>';
         else {
             container.innerHTML = cart.map((item, idx) => `
@@ -627,32 +520,36 @@
         }
         lucide.createIcons();
     }
-    function changeQty(idx, delta) { let q = cart[idx].quantity + delta; if (q <= 0) cart.splice(idx,1); else cart[idx].quantity = q; saveCart(); }
-    function removeFromCart(idx) { cart.splice(idx,1); saveCart(); }
-    function addToCart(product, qty=1) {
-        const productImage = product.image_url || (product.images && product.images[0]) || '';
-        const finalSize = selectedSize || 'M';
-        const finalColor = selectedColor.name || 'Default';
-        const existing = cart.find(i => i.id === product.id && i.size === finalSize && i.color === finalColor);
+    function changeQty(idx, delta) { let q = cart[idx].quantity + delta; if (q <= 0) cart.splice(idx, 1); else cart[idx].quantity = q; saveCart(); }
+    function removeFromCart(idx) { cart.splice(idx, 1); saveCart(); }
+    function addToCart(product, qty = 1) {
+        const size = selectedSize || 'M';
+        const color = selectedColor.name || 'Default';
+        const existing = cart.find(i => i.id === product.id && i.size === size && i.color === color);
         if (existing) existing.quantity += qty;
-        else cart.push({ ...product, quantity: qty, size: finalSize, color: finalColor, image_url: productImage });
+        else cart.push({ ...product, quantity: qty, size, color, image_url: product.image_url || (product.images?.[0] || '') });
         saveCart();
         toggleCart();
     }
-    function toggleCart() { let drawer = document.getElementById('cart-drawer'), overlay = document.getElementById('cart-overlay'); drawer.classList.toggle('translate-x-full'); overlay.classList.toggle('opacity-0'); overlay.classList.toggle('invisible'); document.body.style.overflow = drawer.classList.contains('translate-x-full') ? '' : 'hidden'; }
+    function toggleCart() { document.getElementById('cart-drawer').classList.toggle('translate-x-full'); document.getElementById('cart-overlay').classList.toggle('opacity-0'); document.getElementById('cart-overlay').classList.toggle('invisible'); document.body.style.overflow = document.getElementById('cart-drawer').classList.contains('translate-x-full') ? '' : 'hidden'; }
     function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('-translate-x-full'); }
 
-    // ------------------- Carousel -------------------
-    function getSlideWidth() { let first = document.querySelector('#product-carousel .flex-shrink-0'); if (!first) return 352; let style = getComputedStyle(first); return first.offsetWidth + parseFloat(style.marginLeft) + parseFloat(style.marginRight); }
-    function updateCarouselPosition() { let container = document.getElementById('product-carousel'); if (!container) return; container.style.transform = `translateX(-${currentSlide * getSlideWidth()}px)`; }
-    async function loadCarouselProducts() { try { let res = await fetch('/api/products?limit=6'); let data = await res.json(); carouselProducts = data.slice(0,6); renderCarousel(); startAutoSlide(); window.addEventListener('resize', updateCarouselPosition); } catch(e){ console.error(e); } }
-    function renderCarousel() { let container = document.getElementById('product-carousel'); if(!container) return; if(!carouselProducts.length) { container.innerHTML = '<div class="w-full text-center py-12 text-gray-500">No products</div>'; return; } container.innerHTML = carouselProducts.map(p => `<div class="flex-shrink-0 w-64 md:w-80 mx-3 md:mx-4 bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105 duration-300"><img src="${p.image_url || 'https://placehold.co/400x500/e2e2e2/black?text=COLONIAL'}" class="w-full h-48 md:h-64 object-cover"><div class="p-3 md:p-4 text-center"><h3 class="font-serif text-lg md:text-xl mb-1">${escapeHtml(p.name)}</h3><p class="text-gray-600 text-sm">BDT ${p.final_price || p.price}</p><button onclick="addToCart({id:${p.id}, name:'${p.name.replace(/'/g, "\\'")}', price:${p.final_price || p.price}, image_url:'${p.image_url}'}, 1)" class="mt-3 bg-black text-white px-3 py-1 text-xs rounded-full hover:bg-gray-800 transition">Quick Shop</button></div></div>`).join(''); lucide.createIcons(); updateCarouselPosition(); }
-    function startAutoSlide() { if(slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => { if(carouselProducts.length) { currentSlide = (currentSlide+1) % carouselProducts.length; updateCarouselPosition(); } }, 5000); }
-    function nextSlide() { if(!carouselProducts.length) return; currentSlide = (currentSlide+1)%carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
-    function prevSlide() { if(!carouselProducts.length) return; currentSlide = (currentSlide-1+carouselProducts.length)%carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
-    function resetAutoSlide() { if(slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => { currentSlide = (currentSlide+1)%carouselProducts.length; updateCarouselPosition(); }, 5000); }
+    function getSlideWidth() { const first = document.querySelector('#product-carousel .flex-shrink-0'); if (!first) return 352; const style = getComputedStyle(first); return first.offsetWidth + parseFloat(style.marginLeft) + parseFloat(style.marginRight); }
+    function updateCarouselPosition() { const container = document.getElementById('product-carousel'); if (container) container.style.transform = `translateX(-${currentSlide * getSlideWidth()}px)`; }
+    async function loadCarouselProducts() { try { const res = await fetch('/api/products?limit=6'); carouselProducts = (await res.json()).slice(0, 6); renderCarousel(); startAutoSlide(); window.addEventListener('resize', updateCarouselPosition); } catch(e) { console.error(e); } }
+    function renderCarousel() {
+        const container = document.getElementById('product-carousel');
+        if (!container) return;
+        if (!carouselProducts.length) { container.innerHTML = '<div class="w-full text-center py-12 text-gray-500">No products</div>'; return; }
+        container.innerHTML = carouselProducts.map(p => `<div class="flex-shrink-0 w-64 md:w-80 mx-3 md:mx-4 bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105 duration-300"><img src="${p.image_url || 'https://placehold.co/400x500/e2e2e2/black?text=COLONIAL'}" class="w-full h-48 md:h-64 object-cover"><div class="p-3 md:p-4 text-center"><h3 class="font-serif text-lg md:text-xl mb-1">${escapeHtml(p.name)}</h3><p class="text-gray-600 text-sm">BDT ${p.final_price || p.price}</p><button onclick="addToCart({id:${p.id}, name:'${p.name.replace(/'/g, "\\'")}', price:${p.final_price || p.price}, image_url:'${p.image_url}'}, 1)" class="mt-3 bg-black text-white px-3 py-1 text-xs rounded-full hover:bg-gray-800 transition">Quick Shop</button></div></div>`).join('');
+        lucide.createIcons();
+        updateCarouselPosition();
+    }
+    function startAutoSlide() { if (slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => { if (carouselProducts.length) { currentSlide = (currentSlide + 1) % carouselProducts.length; updateCarouselPosition(); } }, 5000); }
+    function nextSlide() { if (!carouselProducts.length) return; currentSlide = (currentSlide + 1) % carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
+    function prevSlide() { if (!carouselProducts.length) return; currentSlide = (currentSlide - 1 + carouselProducts.length) % carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
+    function resetAutoSlide() { if (slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => { currentSlide = (currentSlide + 1) % carouselProducts.length; updateCarouselPosition(); }, 5000); }
 
-    // ------------------- Product Grid -------------------
     async function loadProducts(resetPage = true) {
         if (resetPage) currentPage = 1;
         const params = new URLSearchParams({ q: currentFilters.q, category: currentFilters.category, sort: currentFilters.sort, page: currentPage, limit: 8 });
@@ -671,18 +568,17 @@
         });
         document.getElementById('load-more').classList.toggle('hidden', currentPage >= totalPages);
     }
-    async function loadCategories() { const res = await fetch('/api/products'); const prods = await res.json(); const cats = ['all', ...new Set(prods.map(p => p.category))]; document.getElementById('category-filter').innerHTML = cats.map(cat => `<option value="${cat}">${cat === 'all' ? 'All Categories' : cat}</option>`).join(''); }
+    async function loadCategories() { const prods = await (await fetch('/api/products')).json(); const cats = ['all', ...new Set(prods.map(p => p.category))]; document.getElementById('category-filter').innerHTML = cats.map(cat => `<option value="${cat}">${cat === 'all' ? 'All Categories' : cat}</option>`).join(''); }
     function filterByCategory(cat) { document.getElementById('category-filter').value = cat; currentFilters.category = cat; loadProducts(true); }
     window.filterByCategory = filterByCategory;
 
-    // ------------------- Product Modal -------------------
     let currentProductImages = [];
     async function openProductModal(product) {
         currentProduct = product;
         document.getElementById('modal-name').innerText = product.name;
         document.getElementById('modal-price').innerHTML = `BDT ${product.final_price || product.price}`;
         document.getElementById('modal-desc').innerText = product.description || 'Premium quality garment.';
-        currentProductImages = (product.images && product.images.length) ? [...product.images] : (product.image_url ? [product.image_url] : []);
+        currentProductImages = (product.images?.length) ? [...product.images] : (product.image_url ? [product.image_url] : []);
         document.getElementById('modal-main-img').src = currentProductImages[0] || 'https://placehold.co/600x800/e2e2e2/black?text=COLONIAL';
         const thumbsContainer = document.getElementById('modal-thumbnails');
         thumbsContainer.innerHTML = currentProductImages.slice(1).map(img => `<img src="${img}" class="thumbnail-img w-16 h-20 object-cover rounded cursor-pointer border-2 border-transparent" onclick="changeMainImage('${img}', this)">`).join('');
@@ -691,33 +587,28 @@
         selectedSize = 'M';
         const colors = product.colors || [];
         const swatchDiv = document.getElementById('color-swatches');
-        if (colors.length === 0) {
+        if (!colors.length) {
             swatchDiv.innerHTML = '<p class="text-gray-400 text-sm">No colour options</p>';
             selectedColor = { hex: '', name: 'Default' };
             document.getElementById('selected-color-name').innerText = '';
         } else {
             swatchDiv.innerHTML = colors.map(c => `<div class="color-swatch" style="background-color: ${c};" data-color-hex="${c}" data-color-name="${c === '#000000' ? 'Black' : c === '#ffffff' ? 'White' : c}"></div>`).join('');
-            const firstSwatch = document.querySelector('.color-swatch');
-            if (firstSwatch) {
-                firstSwatch.classList.add('selected');
-                selectedColor = { hex: firstSwatch.dataset.colorHex, name: firstSwatch.dataset.colorName };
+            const first = document.querySelector('.color-swatch');
+            if (first) {
+                first.classList.add('selected');
+                selectedColor = { hex: first.dataset.colorHex, name: first.dataset.colorName };
                 document.getElementById('selected-color-name').innerText = `Selected: ${selectedColor.name}`;
             }
-            document.querySelectorAll('.color-swatch').forEach(sw => {
-                sw.addEventListener('click', () => {
-                    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
-                    sw.classList.add('selected');
-                    selectedColor = { hex: sw.dataset.colorHex, name: sw.dataset.colorName };
-                    document.getElementById('selected-color-name').innerText = `Selected: ${selectedColor.name}`;
-                });
-            });
+            document.querySelectorAll('.color-swatch').forEach(sw => sw.addEventListener('click', () => {
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+                sw.classList.add('selected');
+                selectedColor = { hex: sw.dataset.colorHex, name: sw.dataset.colorName };
+                document.getElementById('selected-color-name').innerText = `Selected: ${selectedColor.name}`;
+            }));
         }
-        const isInWishlist = wishlist.includes(product.id);
+        const inWishlist = wishlist.includes(product.id);
         const heartIcon = document.getElementById('modal-wishlist-btn')?.querySelector('i');
-        if (heartIcon) {
-            if (isInWishlist) heartIcon.classList.add('fill-red-500');
-            else heartIcon.classList.remove('fill-red-500');
-        }
+        if (heartIcon) inWishlist ? heartIcon.classList.add('fill-red-500') : heartIcon.classList.remove('fill-red-500');
         await loadReviews(product.id);
         document.getElementById('product-modal').style.display = 'flex';
     }
@@ -737,52 +628,32 @@
     function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
     function addCurrentToCart() { if (currentProduct) addToCart(currentProduct, 1); closeProductModal(); }
 
-    // Review stars handling
     const reviewStars = document.querySelectorAll('#review-stars .star');
     reviewStars.forEach(star => {
-        star.addEventListener('mouseenter', function() { highlightStars(parseInt(this.dataset.rating)); });
-        star.addEventListener('mouseleave', function() { highlightStars(currentRating); });
-        star.addEventListener('click', function() { currentRating = parseInt(this.dataset.rating); highlightStars(currentRating); });
+        star.addEventListener('mouseenter', () => highlightStars(parseInt(star.dataset.rating)));
+        star.addEventListener('mouseleave', () => highlightStars(currentRating));
+        star.addEventListener('click', () => { currentRating = parseInt(star.dataset.rating); highlightStars(currentRating); });
     });
-    function highlightStars(rating) {
-        reviewStars.forEach((star, idx) => {
-            if (idx < rating) star.classList.add('active');
-            else star.classList.remove('active');
-        });
-    }
+    function highlightStars(rating) { reviewStars.forEach((star, idx) => idx < rating ? star.classList.add('active') : star.classList.remove('active')); }
     document.getElementById('submit-review-btn')?.addEventListener('click', async () => {
         if (!currentProduct) return;
         const comment = document.getElementById('review-comment').value.trim();
-        if (currentRating === 0) { alert('Please select a rating'); return; }
+        if (!currentRating) { alert('Please select a rating'); return; }
         await submitReview(currentProduct.id, currentRating, comment);
         document.getElementById('review-comment').value = '';
         currentRating = 0;
         highlightStars(0);
     });
-    document.getElementById('modal-wishlist-btn')?.addEventListener('click', () => {
-        if (currentProduct) toggleWishlist(currentProduct.id);
-    });
+    document.getElementById('modal-wishlist-btn')?.addEventListener('click', () => { if (currentProduct) toggleWishlist(currentProduct.id); });
 
-    // ------------------- Payment method toggle -------------------
     const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
     const manualDiv = document.getElementById('manual-payment-details');
-    if (paymentRadios.length && manualDiv) {
-        paymentRadios.forEach(radio => {
-            radio.addEventListener('change', () => {
-                if (document.querySelector('input[name="payment_method"]:checked')?.value === 'bkash') {
-                    manualDiv.classList.remove('hidden');
-                } else {
-                    manualDiv.classList.add('hidden');
-                }
-            });
-        });
-    }
+    if (paymentRadios.length && manualDiv) paymentRadios.forEach(radio => radio.addEventListener('change', () => document.querySelector('input[name="payment_method"]:checked')?.value === 'bkash' ? manualDiv.classList.remove('hidden') : manualDiv.classList.add('hidden')));
 
-    // ------------------- Coupon & Checkout -------------------
     document.getElementById('apply-coupon-btn')?.addEventListener('click', async () => {
         const code = document.getElementById('coupon-code').value.trim();
         if (!code) return;
-        const subtotal = cart.reduce((s,i) => s + (i.price * i.quantity), 0);
+        const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
         try {
             const res = await fetch('/api/validate-coupon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, cartTotal: subtotal }) });
             const data = await res.json();
@@ -795,11 +666,7 @@
     function openCheckout() { if (!cart.length) { alert('Your cart is empty.'); return; } document.getElementById('checkout-modal').style.display = 'flex'; }
     function closeCheckout() { document.getElementById('checkout-modal').style.display = 'none'; }
     async function placeOrder() {
-        // Double-check cart is not empty
-        if (!cart.length) {
-            alert('Your cart is empty. Add some products first.');
-            return;
-        }
+        if (!cart.length) { alert('Your cart is empty. Add some products first.'); return; }
 
         const name = document.getElementById('customer-name').value.trim();
         const email = document.getElementById('customer-email').value.trim();
@@ -811,42 +678,25 @@
         let transaction_id = null;
         if (payment_method === 'bkash') {
             transaction_id = document.getElementById('transaction-id')?.value.trim();
-            if (!transaction_id) {
-                alert('Please enter the transaction ID after sending payment to +8801871330654.');
-                return;
-            }
+            if (!transaction_id) { alert('Please enter the transaction ID after sending payment to +8801871330654.'); return; }
         }
 
-        // Build items from cart – each cart item already has size and color
         const items = cart.map(i => ({
-            id: i.id,
-            name: i.name,
-            price: i.price,
-            quantity: i.quantity,
-            size: i.size || 'M',
-            color: i.color || 'Default',
-            image_url: i.image_url || ''
+            id: i.id, name: i.name, price: i.price, quantity: i.quantity,
+            size: i.size || 'M', color: i.color || 'Default', image_url: i.image_url || ''
         }));
 
-        // Log items to console for debugging
         console.log('📦 Order items:', items);
+        console.log('📦 Order data:', { customer_name: name, customer_email: email, customer_phone: phone, shipping_address: address });
 
-        const subtotal = cart.reduce((s,i) => s + (i.price * i.quantity), 0);
+        const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
         const finalAmount = Math.max(0, subtotal - couponDiscount);
 
         const orderData = {
-            customer_name: name,
-            customer_email: email,
-            customer_phone: phone,
-            shipping_address: address,
-            total_amount: subtotal,
-            discount_applied: couponDiscount,
-            final_amount: finalAmount,
-            items: items,
-            coupon_code: appliedCoupon,
-            notes: '',
-            payment_method: payment_method,
-            transaction_id: transaction_id
+            customer_name: name, customer_email: email, customer_phone: phone, shipping_address: address,
+            total_amount: subtotal, discount_applied: couponDiscount, final_amount: finalAmount,
+            items, coupon_code: appliedCoupon, notes: '',
+            payment_method, transaction_id
         };
 
         try {
@@ -855,18 +705,9 @@
             const res = await fetch('/api/orders', { method: 'POST', headers, body: JSON.stringify(orderData) });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Order failed');
-
-            let successMsg = 'Order placed successfully! ';
-            if (payment_method === 'bkash') {
-                successMsg += 'Your payment is pending verification. You will be notified once confirmed.';
-            } else {
-                successMsg += 'You will pay upon delivery.';
-            }
-            alert(successMsg);
-
+            alert(`Order placed successfully! ${payment_method === 'bkash' ? 'Your payment is pending verification.' : 'You will pay upon delivery.'}`);
             cart = []; couponDiscount = 0; appliedCoupon = null; saveCart();
             closeCheckout(); toggleCart();
-            // Reset form fields
             document.getElementById('customer-name').value = '';
             document.getElementById('customer-email').value = '';
             document.getElementById('customer-phone').value = '';
@@ -877,18 +718,15 @@
             const codRadio = document.querySelector('input[name="payment_method"][value="cash_on_delivery"]');
             if (codRadio) codRadio.checked = true;
             if (manualDiv) manualDiv.classList.add('hidden');
-        } catch(err) {
-            alert(err.message);
-        }
+        } catch(err) { alert(err.message); }
     }
 
-    // ------------------- Event Listeners -------------------
     document.getElementById('search-input')?.addEventListener('input', (e) => { currentFilters.q = e.target.value; loadProducts(true); });
     document.getElementById('category-filter')?.addEventListener('change', (e) => { currentFilters.category = e.target.value; loadProducts(true); });
     document.getElementById('sort-select')?.addEventListener('change', (e) => { currentFilters.sort = e.target.value; loadProducts(true); });
     document.getElementById('load-more')?.addEventListener('click', () => { currentPage++; loadProducts(false); });
     document.addEventListener('click', (e) => {
-        if (e.target.classList && e.target.classList.contains('size-btn')) {
+        if (e.target.classList?.contains('size-btn')) {
             document.querySelectorAll('#size-options .size-btn').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
             selectedSize = e.target.getAttribute('data-size');
@@ -897,7 +735,6 @@
     document.getElementById('prev-btn')?.addEventListener('click', () => prevSlide());
     document.getElementById('next-btn')?.addEventListener('click', () => nextSlide());
 
-    // ------------------- Initialization -------------------
     loadCategories();
     loadProducts();
     loadCarouselProducts();
