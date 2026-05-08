@@ -768,24 +768,63 @@
     function prevSlide() { if (!carouselProducts.length) return; currentSlide = (currentSlide - 1 + carouselProducts.length) % carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
     function resetAutoSlide() { if (slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => { currentSlide = (currentSlide + 1) % carouselProducts.length; updateCarouselPosition(); }, 5000); }
 
+    // ------------------- FIXED loadProducts: uses /api/products for default view -------------------
     async function loadProducts(resetPage = true) {
         if (resetPage) currentPage = 1;
-        const params = new URLSearchParams({ q: currentFilters.q, category: currentFilters.category, sort: currentFilters.sort, page: currentPage, limit: 8 });
-        const res = await fetch(`/api/products/search?${params}`);
-        const data = await res.json();
-        const products = data.products;
-        totalPages = Math.ceil(data.total / data.limit);
         const container = document.getElementById('products-container');
-        if (resetPage) container.innerHTML = '';
-        products.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'product-card group bg-white rounded-xl overflow-hidden shadow-sm cursor-pointer';
-            card.innerHTML = `<div class="relative aspect-[3/4] overflow-hidden bg-gray-100"><img src="${p.image_url || 'https://placehold.co/600x800/e2e2e2/black?text=COLONIAL'}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">${p.badge ? `<span class="absolute top-2 left-2 bg-white text-black text-xs px-2 py-1 rounded-full z-10">${escapeHtml(p.badge)}</span>` : ''}<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-end p-3"><button class="w-full bg-white text-black py-2 text-xs uppercase tracking-wider font-medium rounded" onclick="event.stopPropagation(); addToCart({id:${p.id}, name:'${p.name.replace(/'/g, "\\'")}', price:${p.final_price || p.price}, image_url:'${p.image_url}'}, 1)">Quick Add</button></div></div><div class="p-4"><h3 class="font-medium text-gray-900">${escapeHtml(p.name)}</h3><div class="flex items-center gap-2 mt-1"><span class="font-semibold">BDT ${p.final_price || p.price}</span>${p.discount_amount > 0 ? `<span class="text-sm text-gray-400 line-through">BDT ${p.price}</span>` : ''}${p.discount_percent > 0 ? `<span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">-${p.discount_percent}%</span>` : ''}</div>${p.colors && p.colors.length ? `<div class="flex gap-1 mt-2">${p.colors.slice(0,3).map(c => `<div class="w-3 h-3 rounded-full border border-gray-300" style="background-color:${c}"></div>`).join('')}</div>` : ''}</div>`;
-            card.onclick = () => openProductModal(p);
-            container.appendChild(card);
-        });
-        document.getElementById('load-more').classList.toggle('hidden', currentPage >= totalPages);
+        if (resetPage) container.innerHTML = '<div class="col-span-full text-center py-12">Loading products...</div>';
+
+        try {
+            let products = [];
+            let total = 0;
+            let totalPagesCalc = 1;
+
+            // If no search query and category is 'all', use the simple /api/products endpoint (which definitely works)
+            if (currentFilters.category === 'all' && !currentFilters.q) {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                products = data;
+                total = products.length;
+                totalPagesCalc = Math.ceil(total / 8);
+            } else {
+                // Otherwise use the search endpoint
+                const params = new URLSearchParams({
+                    q: currentFilters.q,
+                    category: currentFilters.category,
+                    sort: currentFilters.sort,
+                    page: currentPage,
+                    limit: 8
+                });
+                const res = await fetch(`/api/products/search?${params}`);
+                const data = await res.json();
+                products = data.products;
+                total = data.total;
+                totalPagesCalc = data.totalPages || Math.ceil(total / 8);
+            }
+
+            container.innerHTML = '';
+            if (!products.length) {
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">No products found.</div>';
+                document.getElementById('load-more').classList.add('hidden');
+                return;
+            }
+
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card group bg-white rounded-xl overflow-hidden shadow-sm cursor-pointer';
+                card.innerHTML = `<div class="relative aspect-[3/4] overflow-hidden bg-gray-100"><img src="${p.image_url || 'https://placehold.co/600x800/e2e2e2/black?text=COLONIAL'}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">${p.badge ? `<span class="absolute top-2 left-2 bg-white text-black text-xs px-2 py-1 rounded-full z-10">${escapeHtml(p.badge)}</span>` : ''}<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-end p-3"><button class="w-full bg-white text-black py-2 text-xs uppercase tracking-wider font-medium rounded" onclick="event.stopPropagation(); addToCart({id:${p.id}, name:'${p.name.replace(/'/g, "\\'")}', price:${p.final_price || p.price}, image_url:'${p.image_url}'}, 1)">Quick Add</button></div></div><div class="p-4"><h3 class="font-medium text-gray-900">${escapeHtml(p.name)}</h3><div class="flex items-center gap-2 mt-1"><span class="font-semibold">BDT ${p.final_price || p.price}</span>${p.discount_amount > 0 ? `<span class="text-sm text-gray-400 line-through">BDT ${p.price}</span>` : ''}${p.discount_percent > 0 ? `<span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">-${p.discount_percent}%</span>` : ''}</div>${p.colors && p.colors.length ? `<div class="flex gap-1 mt-2">${p.colors.slice(0,3).map(c => `<div class="w-3 h-3 rounded-full border border-gray-300" style="background-color:${c}"></div>`).join('')}</div>` : ''}</div>`;
+                card.onclick = () => openProductModal(p);
+                container.appendChild(card);
+            });
+
+            totalPages = totalPagesCalc;
+            document.getElementById('load-more').classList.toggle('hidden', currentPage >= totalPages);
+        } catch (err) {
+            console.error('Load products error:', err);
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-red-500">Error loading products. Please refresh.</div>';
+        }
     }
+
     async function loadCategories() { const prods = await (await fetch('/api/products')).json(); const cats = ['all', ...new Set(prods.map(p => p.category))]; document.getElementById('category-filter').innerHTML = cats.map(cat => `<option value="${cat}">${cat === 'all' ? 'All Categories' : cat}</option>`).join(''); }
     function filterByCategory(cat) { document.getElementById('category-filter').value = cat; currentFilters.category = cat; loadProducts(true); }
     window.filterByCategory = filterByCategory;
