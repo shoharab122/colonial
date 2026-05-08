@@ -251,45 +251,30 @@
 <!-- ==================== OPTIMIZED MOBILE FOOTER WITH SOCIAL MEDIA ==================== -->
 <footer class="bg-black text-white/80 mt-16 py-8 px-4 md:px-6 lg:px-12 border-t border-gray-800">
     <div class="max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
-            <div>
-                <h3 class="font-serif text-xl mb-3 text-white">COLONIAL</h3>
-                <p class="text-sm">Timeless elegance for the modern wardrobe.</p>
-                <div class="mt-4 space-y-2 text-sm">
-                    <p class="break-all">📧 <a href="mailto:Colonialbussinessltd@gmail.com" class="hover:underline inline-block py-1">Colonialbussinessltd@gmail.com</a></p>
-                    <p>📞 <a href="tel:+8801871330654" class="hover:underline inline-block py-1">+880 1871-330654</a> <span class="text-xs">(bKash/Nagad)</span></p>
-                    <p>📞 <a href="tel:+8801643425517" class="hover:underline inline-block py-1">+880 1643-425517</a> <span class="text-xs">(Support)</span></p>
-                    <p>📍 Chittagong, Bangladesh</p>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-semibold text-white mb-3">Quick Links</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="#" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;" class="inline-block py-1 hover:underline">Home</a></li>
-                    <li><a href="#" onclick="filterByCategory('all'); window.scrollTo({top:600, behavior:'smooth'}); return false;" class="inline-block py-1 hover:underline">Shop</a></li>
-                    <li><a href="#" id="footer-wishlist-link" class="inline-block py-1 hover:underline">Wishlist</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold text-white mb-3">Legal</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="#" id="footer-terms-link" class="inline-block py-1 hover:underline">Terms & Conditions</a></li>
-                    <li><a href="#" id="footer-privacy-link" class="inline-block py-1 hover:underline">Privacy Policy</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold text-white mb-3">Follow Us</h4>
-                <div class="flex justify-center md:justify-start space-x-6">
-                    <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-white transition-colors duration-200" aria-label="Facebook">
-                        <i data-lucide="facebook" class="w-6 h-6"></i>
-                    </a>
-                    <a href="https://www.instagram.com/colonial_ltd?igsh=Zm8xa21hZjV6NHRu" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-white transition-colors duration-200" aria-label="Instagram">
-                        <i data-lucide="instagram" class="w-6 h-6"></i>
-                    </a>
-                </div>
-            </div>
+        <!-- Links row – wraps on mobile -->
+        <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-center">
+            <a href="#" class="hover:underline inline-block">Size Guide</a>
+            <a href="#" class="hover:underline inline-block">Fabric Care</a>
+            <a href="#" class="hover:underline inline-block">Delivery & Return</a>
+            <a href="#" class="hover:underline inline-block">Billing</a>
+            <a href="#" class="hover:underline inline-block">Terms</a>
+            <a href="#" class="hover:underline inline-block">Showrooms</a>
+            <a href="#" class="hover:underline inline-block">Contact</a>
+            <a href="#" class="hover:underline inline-block">About Us</a>
+            <a href="#" class="hover:underline inline-block">Lifestyle Card</a>
+            <a href="#" class="hover:underline inline-block">Offers</a>
         </div>
-        <div class="border-t border-gray-800 mt-8 pt-6 text-center text-xs text-white/50">
+        <!-- Social icons (optional – keep or remove) -->
+        <div class="flex justify-center gap-6 mt-6">
+            <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-white transition-colors">
+                <i data-lucide="facebook" class="w-5 h-5"></i>
+            </a>
+            <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-white transition-colors">
+                <i data-lucide="instagram" class="w-5 h-5"></i>
+            </a>
+        </div>
+        <!-- Copyright -->
+        <div class="text-center text-xs text-white/50 mt-6 pt-6 border-t border-gray-800">
             &copy; 2026 COLONIAL. All rights reserved.
         </div>
     </div>
