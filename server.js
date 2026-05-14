@@ -1,4 +1,4 @@
-// server.js - PostgreSQL version with Cloudinary image hosting
+// server.js - PostgreSQL version with Cloudinary image hosting + delivery fee support
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -166,7 +166,7 @@ function safeParseImages(product) {
   return [];
 }
 
-// ------------------- PRODUCTS (public) - FIXED DIVISION BY ZERO -------------------
+// ------------------- PRODUCTS (public) -------------------
 app.get('/api/products', async (req, res) => {
   try {
     const { rows } = await pool.query(`
@@ -330,7 +330,7 @@ app.post('/api/validate-coupon', async (req, res) => {
   }
 });
 
-// ------------------- ORDERS (with payment) -------------------
+// ------------------- ORDERS (with delivery fields) -------------------
 app.post('/api/orders', async (req, res) => {
   let userEmail = null;
   const authHeader = req.headers['authorization'];
@@ -346,7 +346,8 @@ app.post('/api/orders', async (req, res) => {
     customer_name, customer_email, customer_phone, shipping_address, 
     total_amount, discount_applied, final_amount, items, 
     coupon_code, notes, 
-    payment_method, transaction_id 
+    payment_method, transaction_id,
+    delivery_method, delivery_fee   // <-- ADDED
   } = req.body;
 
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -371,11 +372,13 @@ app.post('/api/orders', async (req, res) => {
       `INSERT INTO orders 
        (order_number, customer_name, customer_email, customer_phone, shipping_address, 
         total_amount, discount_applied, final_amount, items, notes, 
-        payment_method, transaction_id, payment_status) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
+        payment_method, transaction_id, payment_status,
+        delivery_method, delivery_fee) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id`,
       [order_number, customer_name, finalEmail, customer_phone || null, shipping_address || null, 
        total_amount, discount_applied || 0, final_amount, JSON.stringify(items), notes || null,
-       payment_method || 'cash_on_delivery', transaction_id || null, payment_status]
+       payment_method || 'cash_on_delivery', transaction_id || null, payment_status,
+       delivery_method || null, delivery_fee || 0]
     );
 
     if (coupon_code) {
@@ -398,7 +401,8 @@ app.post('/api/orders', async (req, res) => {
 
     broadcastNewOrder({
       id: result.rows[0].id, order_number, customer_name, customer_email: finalEmail, 
-      final_amount, payment_status, created_at: new Date().toISOString()
+      final_amount, payment_status, delivery_method, delivery_fee,
+      created_at: new Date().toISOString()
     });
 
     res.status(201).json({ id: result.rows[0].id, order_number, payment_status });
