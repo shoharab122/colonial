@@ -118,7 +118,15 @@
         <!-- Products Tab -->
         <div id="products-tab">
             <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-                <input type="text" id="product-search" placeholder="Search products..." class="border border-gray-300 rounded-lg px-4 py-2 w-64">
+                <div class="flex gap-2">
+                    <input type="text" id="product-search" placeholder="Search products..." class="border border-gray-300 rounded-lg px-4 py-2 w-64">
+                    <select id="category-filter" class="border border-gray-300 rounded-lg px-4 py-2">
+                        <option value="all">All Categories</option>
+                        <option value="Women">Women</option>
+                        <option value="Men">Men</option>
+                        <option value="Children">Children</option>
+                    </select>
+                </div>
                 <button id="add-product-btn" class="bg-black text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add Product</button>
             </div>
             <div id="products-list" class="space-y-3"></div>
@@ -479,17 +487,25 @@
         }
     }
 
+    // Load products from API and apply search + category filter
     async function loadProducts() {
         try {
             const res = await authFetch('/api/products');
             products = await res.json();
-            renderProducts();
-        } catch(err) { console.error(err); }
+            renderProducts(); // initial render
+        } catch(err) {
+            console.error('Load products error:', err);
+            document.getElementById('products-list').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-red-500">Failed to load products. Check console.</div>';
+        }
     }
 
     function renderProducts() {
         const searchTerm = document.getElementById('product-search').value.toLowerCase();
-        const filtered = products.filter(p => p.name.toLowerCase().includes(searchTerm));
+        const categoryFilter = document.getElementById('category-filter').value;
+        let filtered = products.filter(p => p.name.toLowerCase().includes(searchTerm));
+        if (categoryFilter !== 'all') {
+            filtered = filtered.filter(p => p.category === categoryFilter);
+        }
         const container = document.getElementById('products-list');
         if (filtered.length === 0) {
             container.innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-500">No products found</div>';
@@ -599,8 +615,10 @@
     });
 
     document.getElementById('product-search')?.addEventListener('input', () => renderProducts());
+    document.getElementById('category-filter')?.addEventListener('change', () => renderProducts());
     document.getElementById('add-product-btn')?.addEventListener('click', () => openProductModal());
 
+    // Orders, Reviews, Wishlists (same as before, but using the placeholder for images)
     async function loadOrders() {
         try {
             const res = await authFetch('/api/admin/orders');
