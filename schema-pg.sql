@@ -1,3 +1,4 @@
+
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
@@ -31,7 +32,7 @@ CREATE TABLE IF NOT EXISTS products (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Orders table
+-- Orders table (includes delivery_method and delivery_fee)
 CREATE TABLE IF NOT EXISTS orders (
   id SERIAL PRIMARY KEY,
   order_number VARCHAR(50) UNIQUE,
@@ -48,6 +49,8 @@ CREATE TABLE IF NOT EXISTS orders (
   order_status VARCHAR(50) DEFAULT 'pending',
   items JSONB,
   notes TEXT,
+  delivery_method VARCHAR(100),      -- Added
+  delivery_fee DECIMAL(10,2) DEFAULT 0, -- Added
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

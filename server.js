@@ -14,7 +14,13 @@ const fs = require('fs');
 const pool = require('./db');
 const cloudinary = require('cloudinary').v2;
 
-// ------------------- Cloudinary Configuration -------------------
+// ------------------- Cloudinary Configuration with validation -------------------
+if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+  console.error('❌ Cloudinary credentials missing! Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in .env');
+} else {
+  console.log('✅ Cloudinary configured');
+}
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -73,20 +79,33 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-// ------------------- IMAGE UPLOAD (Cloudinary) -------------------
+// ------------------- IMAGE UPLOAD (Cloudinary) – IMPROVED -------------------
 const storage = multer.memoryStorage();
 const fileFilter = (req, file, cb) => {
   const allowed = /jpeg|jpg|png|gif|webp/;
   const ext = allowed.test(path.extname(file.originalname).toLowerCase());
   const mime = allowed.test(file.mimetype);
   if (ext && mime) cb(null, true);
-  else cb(new Error('Only images allowed'));
+  else cb(new Error('Only images allowed (jpeg, jpg, png, gif, webp)'));
 };
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilter });
+const upload = multer({ 
+  storage, 
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter 
+});
 
 app.post('/api/upload', authenticateToken, requireAdmin, upload.single('image'), async (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  if (!process.env.CLOUDINARY_CLOUD_NAME) {
+    console.error('❌ Cloudinary credentials missing');
+    return res.status(500).json({ error: 'Cloudinary not configured. Please add Cloudinary credentials to .env' });
+  }
+
   try {
+    console.log(`📤 Uploading file: ${req.file.originalname} (${req.file.size} bytes)`);
     const b64 = Buffer.from(req.file.buffer).toString('base64');
     const dataURI = `data:${req.file.mimetype};base64,${b64}`;
     const result = await cloudinary.uploader.upload(dataURI, {
@@ -94,17 +113,38 @@ app.post('/api/upload', authenticateToken, requireAdmin, upload.single('image'),
       use_filename: true,
       unique_filename: true
     });
+    console.log(`✅ Uploaded to Cloudinary: ${result.secure_url}`);
     res.json({ imageUrl: result.secure_url });
   } catch (err) {
     console.error('Cloudinary upload error:', err);
-    res.status(500).json({ error: 'Image upload failed' });
+    res.status(500).json({ error: 'Image upload failed: ' + (err.message || 'Unknown error') });
   }
 });
 
-// ------------------- HELPER: images array to JSON -------------------
+// ------------------- HELPER: images array to JSON string for DB -------------------
 function imagesToJson(images) {
-  if (images && Array.isArray(images) && images.length) return JSON.stringify(images);
+  if (images && Array.isArray(images) && images.length) {
+    const json = JSON.stringify(images);
+    console.log('📦 Saving images array to DB:', json);
+    return json;
+  }
   return null;
+}
+
+// ------------------- HELPER: safe parse images from DB to array -------------------
+function safeParseImages(product) {
+  if (product.images) {
+    try {
+      const parsed = typeof product.images === 'string' ? JSON.parse(product.images) : product.images;
+      return Array.isArray(parsed) ? parsed : [];
+    } catch(e) {
+      console.error(`Invalid JSON in images for product ${product.id}:`, product.images);
+      return [];
+    }
+  } else if (product.image_url) {
+    return [product.image_url];
+  }
+  return [];
 }
 
 // ------------------- REAL-TIME ORDER EVENTS (SSE) -------------------
@@ -149,21 +189,6 @@ function broadcastToCustomer(userId, eventData) {
   const clients = customerClients.get(userId);
   if (!clients) return;
   clients.forEach(client => client.write(`data: ${JSON.stringify(eventData)}\n\n`));
-}
-
-// ------------------- HELPER: safe parse images -------------------
-function safeParseImages(product) {
-  if (product.images) {
-    try {
-      return JSON.parse(product.images);
-    } catch(e) {
-      console.error(`Invalid JSON in images for product ${product.id}:`, product.images);
-      return [];
-    }
-  } else if (product.image_url) {
-    return [product.image_url];
-  }
-  return [];
 }
 
 // ------------------- PRODUCTS (public) -------------------
@@ -347,7 +372,7 @@ app.post('/api/orders', async (req, res) => {
     total_amount, discount_applied, final_amount, items, 
     coupon_code, notes, 
     payment_method, transaction_id,
-    delivery_method, delivery_fee   // <-- ADDED
+    delivery_method, delivery_fee
   } = req.body;
 
   if (!items || !Array.isArray(items) || items.length === 0) {

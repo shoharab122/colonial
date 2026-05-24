@@ -23,7 +23,7 @@
             overflow: hidden;
             border: 1px solid #e5e7eb;
             background: #f9fafb;
-            cursor: move;
+            cursor: pointer;
         }
         .image-item img { width: 100%; height: 100%; object-fit: cover; }
         .image-item .remove-btn {
@@ -66,13 +66,9 @@
         .payment-pending { background: #fef3c7; color: #92400e; }
         .payment-awaiting { background: #fed7aa; color: #9a3412; }
         .payment-failed { background: #fee2e2; color: #991b1b; }
-
-        /* Mobile tap target enhancement for footer links */
-        footer a {
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-        }
+        footer a { min-height: 44px; display: inline-flex; align-items: center; }
+        .upload-progress { font-size: 12px; margin-top: 8px; max-height: 120px; overflow-y: auto; }
+        .progress-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #e5e7eb; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -182,8 +178,9 @@
                         <button type="button" id="upload-multiple-btn" class="mt-2 bg-gray-800 text-white px-3 py-1 rounded text-sm">Upload Selected</button>
                     </div>
                     <div id="image-gallery" class="gallery-container"></div>
+                    <div id="upload-progress" class="upload-progress"></div>
                     <input type="hidden" id="images-hidden" name="images" value="">
-                    <p class="text-xs text-gray-500 mt-1">Upload multiple images (JPG/PNG/GIF, max 5MB each). First image is main.</p>
+                    <p class="text-xs text-gray-500 mt-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple images.</p>
                     <div class="mt-2 flex gap-2 text-xs">
                         <button type="button" id="move-up-btn" class="border px-2 py-1 rounded">↑ Move Up</button>
                         <button type="button" id="move-down-btn" class="border px-2 py-1 rounded">↓ Move Down</button>
@@ -204,10 +201,9 @@
     </div>
 </div>
 
-<!-- ==================== FOOTER SECTION (Admin Panel) ==================== -->
+<!-- Footer -->
 <footer class="bg-black text-white/80 mt-16 py-8 px-4 md:px-6 lg:px-12 border-t border-gray-800">
     <div class="max-w-7xl mx-auto">
-        <!-- Links row – wraps on mobile -->
         <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-center">
             <a href="#" class="hover:underline inline-block">Size Guide</a>
             <a href="#" class="hover:underline inline-block">Fabric Care</a>
@@ -220,7 +216,6 @@
             <a href="#" class="hover:underline inline-block">Lifestyle Card</a>
             <a href="#" class="hover:underline inline-block">Offers</a>
         </div>
-        <!-- Social icons (optional – keep or remove) -->
         <div class="flex justify-center gap-6 mt-6">
             <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-white transition-colors">
                 <i data-lucide="facebook" class="w-5 h-5"></i>
@@ -229,12 +224,12 @@
                 <i data-lucide="instagram" class="w-5 h-5"></i>
             </a>
         </div>
-        <!-- Copyright -->
         <div class="text-center text-xs text-white/50 mt-6 pt-6 border-t border-gray-800">
             &copy; 2026 COLONIAL. All rights reserved.
         </div>
     </div>
 </footer>
+
 <script>
     lucide.createIcons();
     let products = [];
@@ -268,8 +263,11 @@
     }
 
     async function authFetch(url, options = {}) {
-        const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}`, ...options.headers };
-        if (options.body instanceof FormData) delete headers['Content-Type'];
+        const headers = { 'Authorization': `Bearer ${authToken}` };
+        if (options.body && !(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
+        if (options.headers) Object.assign(headers, options.headers);
         const res = await fetch(url, { ...options, headers });
         if (res.status === 401 || res.status === 403) {
             localStorage.removeItem('amoura_admin_token');
@@ -279,6 +277,7 @@
         return res;
     }
 
+    // ========== SIMPLE GALLERY RENDER (full replace) ==========
     function renderImageGallery() {
         const container = document.getElementById('image-gallery');
         if (!container) return;
@@ -288,13 +287,14 @@
             return;
         }
         container.innerHTML = productImages.map((url, idx) => `
-            <div class="image-item" data-index="${idx}">
+            <div class="image-item ${idx === 0 ? 'ring-2 ring-black' : ''}" data-index="${idx}">
                 <img src="${url}">
                 <button type="button" class="remove-btn" onclick="removeImage(${idx})">✕</button>
                 ${idx === 0 ? '<div class="main-badge">Main</div>' : ''}
             </div>
         `).join('');
         document.getElementById('images-hidden').value = JSON.stringify(productImages);
+        console.log('🖼️ Gallery rendered. Total images:', productImages.length);
     }
 
     window.removeImage = function(index) {
@@ -332,23 +332,81 @@
         } else alert('Select an image or cannot move down.');
     }
 
-    document.getElementById('upload-multiple-btn')?.addEventListener('click', async () => {
-        const files = document.getElementById('image-uploads').files;
-        if (!files.length) return alert('Select at least one image.');
-        for (let file of files) {
-            const fd = new FormData();
-            fd.append('image', file);
-            try {
-                const res = await authFetch('/api/upload', { method: 'POST', body: fd, headers: {} });
-                const data = await res.json();
-                if (res.ok) {
-                    productImages.push(data.imageUrl);
-                    renderImageGallery();
-                } else alert(`Failed: ${file.name} – ${data.error}`);
-            } catch (err) { alert(`Error uploading ${file.name}`); }
+    // ========== FIXED UPLOAD – collect all URLs, then render once ==========
+    async function uploadMultipleImages(files) {
+        if (!files.length) {
+            alert('Select at least one image.');
+            return;
         }
+
+        const uploadBtn = document.getElementById('upload-multiple-btn');
+        const originalText = uploadBtn.innerText;
+        uploadBtn.disabled = true;
+        const progressDiv = document.getElementById('upload-progress');
+        progressDiv.innerHTML = '';
+
+        let successCount = 0;
+        let failedFiles = [];
+        let newUrls = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const progressItem = document.createElement('div');
+            progressItem.className = 'progress-item';
+            progressItem.innerHTML = `<span>${escapeHtml(file.name)}</span><span class="text-gray-500">⏳ uploading...</span>`;
+            progressDiv.appendChild(progressItem);
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` },
+                    body: formData
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+                newUrls.push(data.imageUrl);
+                successCount++;
+                progressItem.innerHTML = `<span>${escapeHtml(file.name)}</span><span class="text-green-600">✓ uploaded</span>`;
+                uploadBtn.innerText = `⬆️ Uploaded ${successCount}/${files.length}`;
+                setTimeout(() => progressItem.remove(), 2000);
+            } catch (err) {
+                console.error(`Failed: ${file.name}`, err);
+                failedFiles.push(`${file.name}: ${err.message}`);
+                progressItem.innerHTML = `<span>${escapeHtml(file.name)}</span><span class="text-red-600">✗ failed</span>`;
+            }
+        }
+
+        // After all uploads, add all new URLs to productImages and re-render once
+        if (newUrls.length) {
+            productImages.push(...newUrls);
+            renderImageGallery();  // single full re-render
+        }
+
+        uploadBtn.disabled = false;
+        uploadBtn.innerText = originalText;
         document.getElementById('image-uploads').value = '';
-    });
+
+        if (failedFiles.length) {
+            alert(`❌ ${failedFiles.length} file(s) failed:\n${failedFiles.join('\n')}`);
+        } else if (successCount) {
+            alert(`✅ ${successCount} image(s) uploaded successfully! Gallery now has ${productImages.length} images.`);
+        }
+    }
+
+    // Attach upload button event cleanly
+    const uploadBtn = document.getElementById('upload-multiple-btn');
+    if (uploadBtn) {
+        const newBtn = uploadBtn.cloneNode(true);
+        uploadBtn.parentNode.replaceChild(newBtn, uploadBtn);
+        newBtn.addEventListener('click', () => {
+            const files = document.getElementById('image-uploads').files;
+            uploadMultipleImages(Array.from(files));
+        });
+    }
 
     document.getElementById('move-up-btn')?.addEventListener('click', moveUp);
     document.getElementById('move-down-btn')?.addEventListener('click', moveDown);
@@ -360,6 +418,7 @@
         }
     });
 
+    // ========== SSE, STATS, PRODUCTS, ORDERS (unchanged, using authFetch) ==========
     function setSSEStatus(connected) {
         const span = document.getElementById('sse-status');
         if (connected) {
@@ -546,7 +605,7 @@
     document.getElementById('product-search')?.addEventListener('input', () => renderProducts());
     document.getElementById('add-product-btn')?.addEventListener('click', () => openProductModal());
 
-    // ---------------- Orders with payment info and customer details ----------------
+    // Orders, Reviews, Wishlists (unchanged)
     async function loadOrders() {
         try {
             const res = await authFetch('/api/admin/orders');
@@ -562,9 +621,7 @@
                     if (items.length) {
                         itemsHtml = `
                             <table class="order-items-table">
-                                <thead>
-                                    <tr><th>Image</th><th>Product</th><th>Size</th><th>Colour</th><th>Qty</th><th>Price</th></tr>
-                                </thead>
+                                <thead><tr><th>Image</th><th>Product</th><th>Size</th><th>Colour</th><th>Qty</th><th>Price</th></tr></thead>
                                 <tbody>
                                     ${items.map(i => `
                                         <tr>
@@ -577,7 +634,7 @@
                                         </tr>
                                     `).join('')}
                                 </tbody>
-                            </table>
+                            </tr>
                         `;
                     } else {
                         itemsHtml = '<p class="text-yellow-600 text-sm">⚠️ No items in this order.</p>';
@@ -734,7 +791,7 @@
         }
         container.innerHTML = `
             <table class="wishlist-table w-full bg-white rounded-xl overflow-hidden">
-                <thead><tr><th>Image</th><th>Product</th><th>User</th><th>Price (BDT)</th><th>Date Added</th><th>Actions</th><tr></thead>
+                <thead><tr><th>Image</th><th>Product</th><th>User</th><th>Price (BDT)</th><th>Date Added</th><th>Actions</th></td></thead>
                 <tbody>
                     ${filtered.map(w => `
                         <tr>
@@ -810,12 +867,8 @@
     document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', closeProductModal));
     window.addEventListener('click', (e) => { if (e.target === document.getElementById('product-modal')) closeProductModal(); });
 
-    function openTermsModal() {
-        alert('Terms & Conditions would open here. Implement a modal similar to the storefront if needed.');
-    }
-    function openPrivacyModal() {
-        alert('Privacy Policy would open here. Implement a modal similar to the storefront if needed.');
-    }
+    function openTermsModal() { alert('Terms & Conditions modal would open here.'); }
+    function openPrivacyModal() { alert('Privacy Policy modal would open here.'); }
     document.getElementById('footer-terms-link')?.addEventListener('click', (e) => { e.preventDefault(); openTermsModal(); });
     document.getElementById('footer-privacy-link')?.addEventListener('click', (e) => { e.preventDefault(); openPrivacyModal(); });
 </script>
