@@ -55,8 +55,9 @@
         }
         .gallery-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
         .order-items-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .order-items-table th, .order-items-table td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; }
+        .order-items-table th, .order-items-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; vertical-align: middle; }
         .order-items-table th { background: #f3f4f6; font-weight: 500; }
+        .order-items-table td img { width: 40px; height: 50px; object-fit: cover; border-radius: 4px; }
         .debug-json { background: #f9fafb; padding: 8px; font-size: 11px; white-space: pre-wrap; font-family: monospace; border: 1px solid #e5e7eb; margin-top: 8px; }
         .reviews-table, .wishlist-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .reviews-table th, .reviews-table td, .wishlist-table th, .wishlist-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
@@ -277,7 +278,6 @@
         return res;
     }
 
-    // ========== SIMPLE GALLERY RENDER (full replace) ==========
     function renderImageGallery() {
         const container = document.getElementById('image-gallery');
         if (!container) return;
@@ -332,7 +332,6 @@
         } else alert('Select an image or cannot move down.');
     }
 
-    // ========== FIXED UPLOAD – collect all URLs, then render once ==========
     async function uploadMultipleImages(files) {
         if (!files.length) {
             alert('Select at least one image.');
@@ -380,10 +379,9 @@
             }
         }
 
-        // After all uploads, add all new URLs to productImages and re-render once
         if (newUrls.length) {
             productImages.push(...newUrls);
-            renderImageGallery();  // single full re-render
+            renderImageGallery();
         }
 
         uploadBtn.disabled = false;
@@ -397,7 +395,6 @@
         }
     }
 
-    // Attach upload button event cleanly
     const uploadBtn = document.getElementById('upload-multiple-btn');
     if (uploadBtn) {
         const newBtn = uploadBtn.cloneNode(true);
@@ -418,7 +415,6 @@
         }
     });
 
-    // ========== SSE, STATS, PRODUCTS, ORDERS (unchanged, using authFetch) ==========
     function setSSEStatus(connected) {
         const span = document.getElementById('sse-status');
         if (connected) {
@@ -605,7 +601,6 @@
     document.getElementById('product-search')?.addEventListener('input', () => renderProducts());
     document.getElementById('add-product-btn')?.addEventListener('click', () => openProductModal());
 
-    // Orders, Reviews, Wishlists (unchanged)
     async function loadOrders() {
         try {
             const res = await authFetch('/api/admin/orders');
@@ -625,7 +620,7 @@
                                 <tbody>
                                     ${items.map(i => `
                                         <tr>
-                                            <td><img src="${i.image_url || 'https://placehold.co/40x50/e2e2e2/black?text=No+Img'}" class="w-10 h-12 object-cover rounded"></td>
+                                            <td><img src="${i.image_url || 'https://via.placeholder.com/40x50?text=No+Image'}" class="w-10 h-12 object-cover rounded" onerror="this.src='https://via.placeholder.com/40x50?text=No+Image'"></td>
                                             <td>${escapeHtml(i.name)}</td>
                                             <td>${escapeHtml(i.size || '—')}</td>
                                             <td>${escapeHtml(i.color || '—')}</td>
@@ -634,7 +629,7 @@
                                         </tr>
                                     `).join('')}
                                 </tbody>
-                            </tr>
+                            </table>
                         `;
                     } else {
                         itemsHtml = '<p class="text-yellow-600 text-sm">⚠️ No items in this order.</p>';
@@ -791,11 +786,11 @@
         }
         container.innerHTML = `
             <table class="wishlist-table w-full bg-white rounded-xl overflow-hidden">
-                <thead><tr><th>Image</th><th>Product</th><th>User</th><th>Price (BDT)</th><th>Date Added</th><th>Actions</th></td></thead>
+                <thead><tr><th>Image</th><th>Product</th><th>User</th><th>Price (BDT)</th><th>Date Added</th><th>Actions</th></tr></thead>
                 <tbody>
                     ${filtered.map(w => `
                         <tr>
-                            <td><img src="${w.image_url || 'https://placehold.co/40x50/e2e2e2/black?text=No+Img'}" class="w-10 h-12 object-cover rounded"></td>
+                            <td><img src="${w.image_url || 'https://via.placeholder.com/40x50?text=No+Image'}" class="w-10 h-12 object-cover rounded" onerror="this.src='https://via.placeholder.com/40x50?text=No+Image'"></td>
                             <td>${escapeHtml(w.product_name)}</td>
                             <td>${escapeHtml(w.user_email)} (${escapeHtml(w.user_name || '')})</td>
                             <td>${w.product_price}</td>
