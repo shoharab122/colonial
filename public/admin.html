@@ -70,6 +70,66 @@
         footer a { min-height: 44px; display: inline-flex; align-items: center; }
         .upload-progress { font-size: 12px; margin-top: 8px; max-height: 120px; overflow-y: auto; }
         .progress-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #e5e7eb; }
+
+        /* Invoice Modal Styles */
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            font-family: 'Inter', sans-serif;
+        }
+        .invoice-header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .invoice-header h1 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .invoice-header p {
+            color: #666;
+        }
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        .invoice-details div {
+            flex: 1;
+        }
+        .invoice-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .invoice-items-table th,
+        .invoice-items-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .invoice-items-table th {
+            background: #f3f4f6;
+        }
+        .totals {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .totals p {
+            margin: 5px 0;
+        }
+        .invoice-footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -207,6 +267,20 @@
                 <button type="button" class="close-modal-btn border px-6 py-2 rounded-lg">Cancel</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Invoice Modal -->
+<div id="invoice-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-auto">
+        <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+            <h2 class="text-xl font-bold">Invoice</h2>
+            <div class="flex gap-2">
+                <button id="print-invoice-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">🖨️ Print / Save PDF</button>
+                <button class="close-invoice-modal bg-gray-200 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition">Close</button>
+            </div>
+        </div>
+        <div id="invoice-content" class="p-6"></div>
     </div>
 </div>
 
@@ -618,11 +692,142 @@
     document.getElementById('category-filter')?.addEventListener('change', () => renderProducts());
     document.getElementById('add-product-btn')?.addEventListener('click', () => openProductModal());
 
-    // Orders, Reviews, Wishlists (same as before, but using the placeholder for images)
+    // ========== INVOICE FUNCTIONS ==========
+    function generateInvoiceHTML(order) {
+        let items = [];
+        try {
+            items = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
+        } catch(e) { items = []; }
+
+        const formatBDT = (amount) => `BDT ${parseFloat(amount || 0).toFixed(2)}`;
+
+        let itemsHtml = '';
+        items.forEach(item => {
+            itemsHtml += `
+                <tr>
+                    <td><img src="${item.image_url || 'https://placehold.co/40x50?text=No+Img'}" style="width:40px; height:50px; object-fit:cover; border-radius:4px;"></td>
+                    <td>${escapeHtml(item.name)}</td>
+                    <td>${escapeHtml(item.size || '—')}</td>
+                    <td>${escapeHtml(item.color || '—')}</td>
+                    <td>${item.quantity}</td>
+                    <td>${formatBDT(item.price)}</td>
+                    <td>${formatBDT(item.price * item.quantity)}</td>
+                </tr>
+            `;
+        });
+
+        const subtotal = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const deliveryFee = parseFloat(order.delivery_fee || 0);
+        const discount = parseFloat(order.discount_applied || 0);
+        const total = parseFloat(order.final_amount || order.total_amount || 0);
+        const paymentStatusBadge = getPaymentStatusBadge(order.payment_status);
+
+        return `
+            <div class="invoice-container">
+                <div class="invoice-header">
+                    <h1>COLONIAL</h1>
+                    <p>Timeless Elegance</p>
+                    <p>Chittagong, Bangladesh | https://colonial-ltd-eu.onrender.com/</p>
+                </div>
+
+                <div class="invoice-details">
+                    <div>
+                        <h3>Order Details</h3>
+                        <p><strong>Order #:</strong> ${escapeHtml(order.order_number || order.id)}</p>
+                        <p><strong>Date:</strong> ${formatDate(order.created_at)}</p>
+                        <p><strong>Status:</strong> ${escapeHtml(order.order_status || 'pending')}</p>
+                        <p><strong>Payment Status:</strong> ${paymentStatusBadge}</p>
+                    </div>
+                    <div>
+                        <h3>Customer Details</h3>
+                        <p><strong>Name:</strong> ${escapeHtml(order.customer_name)}</p>
+                        <p><strong>Email:</strong> ${escapeHtml(order.customer_email)}</p>
+                        <p><strong>Phone:</strong> ${escapeHtml(order.customer_phone || '—')}</p>
+                        <p><strong>Address:</strong> ${escapeHtml(order.shipping_address || '—')}</p>
+                    </div>
+                </div>
+
+                <h3>Items Ordered</h3>
+                <table class="invoice-items-table">
+                    <thead>
+                        <tr><th>Image</th><th>Product</th><th>Size</th><th>Colour</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                    </tbody>
+                </table>
+
+                <div class="totals">
+                    <p><strong>Subtotal:</strong> ${formatBDT(subtotal)}</p>
+                    <p><strong>Delivery Fee:</strong> ${formatBDT(deliveryFee)}</p>
+                    ${discount > 0 ? `<p><strong>Discount:</strong> - ${formatBDT(discount)}</p>` : ''}
+                    <p><strong>Total Amount:</strong> ${formatBDT(total)}</p>
+                </div>
+
+                <div class="invoice-footer">
+                    <p>Thank you for shopping with COLONIAL!</p>
+                    <p>For any inquiries, contact colonialbusinessltd@gmail.com | +8801643425517</p>
+                </div>
+            </div>
+        `;
+    }
+
+    function showInvoice(orderId) {
+        const order = window.allOrders.find(o => o.id == orderId);
+        if (!order) return;
+        const invoiceHtml = generateInvoiceHTML(order);
+        document.getElementById('invoice-content').innerHTML = invoiceHtml;
+        document.getElementById('invoice-modal').classList.remove('hidden');
+        document.getElementById('invoice-modal').style.display = 'flex';
+    }
+
+    // Close invoice modal
+    document.querySelector('.close-invoice-modal')?.addEventListener('click', () => {
+        document.getElementById('invoice-modal').classList.add('hidden');
+        document.getElementById('invoice-modal').style.display = 'none';
+    });
+    document.getElementById('invoice-modal')?.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('invoice-modal')) {
+            document.getElementById('invoice-modal').classList.add('hidden');
+            document.getElementById('invoice-modal').style.display = 'none';
+        }
+    });
+
+    // Print invoice
+    document.getElementById('print-invoice-btn')?.addEventListener('click', () => {
+        const printContent = document.getElementById('invoice-content').innerHTML;
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Invoice</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+                    <style>
+                        body { font-family: 'Inter', sans-serif; padding: 20px; }
+                        ${Array.from(document.styleSheets).map(sheet => {
+                            try {
+                                return Array.from(sheet.cssRules || []).map(rule => rule.cssText).join('');
+                            } catch(e) { return ''; }
+                        }).join('')}
+                        .invoice-container { max-width: 800px; margin: 0 auto; }
+                        .invoice-items-table { width: 100%; border-collapse: collapse; }
+                        .invoice-items-table th, .invoice-items-table td { border: 1px solid #ddd; padding: 8px; }
+                    </style>
+                </head>
+                <body>${printContent}</body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+        printWindow.close();
+    });
+
+    // Orders, Reviews, Wishlists (same as before, but with Invoice button added)
     async function loadOrders() {
         try {
             const res = await authFetch('/api/admin/orders');
             const orders = await res.json();
+            window.allOrders = orders; // store globally for invoice
             const container = document.getElementById('orders-list');
             if (!orders.length) { container.innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-500">No orders yet</div>'; return; }
             container.innerHTML = orders.map(o => {
@@ -687,6 +892,7 @@
                                     <option value="cancelled" ${o.order_status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                                 </select>
                                 <button onclick="deleteOrder(${o.id})" class="text-red-600 hover:text-red-800 text-sm border border-red-300 px-2 py-1 rounded">Delete</button>
+                                <button onclick="showInvoice(${o.id})" class="text-blue-600 hover:text-blue-800 text-sm border border-blue-300 px-2 py-1 rounded">Invoice</button>
                                 ${verifyButton}
                             </div>
                         </div>
@@ -887,3 +1093,4 @@
 </script>
 </body>
 </html>
+```
