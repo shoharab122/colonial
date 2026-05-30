@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,10 +13,18 @@
         .carousel-container { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .carousel-container::-webkit-scrollbar { display: none; }
         .carousel-slide { scroll-snap-align: start; }
-        @media (max-width: 640px) { .cart-drawer { width: 100%; } }
-        button, a { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        @media (max-width: 640px) {
+            .cart-drawer { width: 100%; }
+            .product-card .p-4 { padding: 0.75rem; }
+        }
+        button, a, .size-btn, .quantity-btn {
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
         .thumbnail-img.active { border-color: #000; border-width: 2px; }
-        .color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid #ddd; transition: transform 0.1s; display: inline-block; margin: 0 4px; }
+        .color-swatch { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 2px solid #ddd; transition: transform 0.1s; display: inline-block; margin: 0 4px; }
         .color-swatch:hover { transform: scale(1.1); }
         .color-swatch.selected { border-color: black; box-shadow: 0 0 0 2px white, 0 0 0 4px black; }
         .star { font-size: 20px; cursor: pointer; color: #ddd; transition: color 0.1s; }
@@ -28,20 +35,8 @@
         .payment-pending { background: #fef3c7; color: #92400e; }
         .payment-awaiting { background: #fed7aa; color: #9a3412; }
         .payment-failed { background: #fee2e2; color: #991b1b; }
-
-        footer a {
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-        }
-        .modal {
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal.active {
-            display: flex;
-        }
+        .modal { display: none; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
     </style>
 </head>
 <body class="bg-white text-black">
@@ -100,12 +95,12 @@
             <button id="prev-btn" class="absolute left-0 top-1/2 -translate-y-1/2 bg-black/60 text-white p-2 rounded-full hover:bg-black transition shadow-md"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
             <button id="next-btn" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black/60 text-white p-2 rounded-full hover:bg-black transition shadow-md"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
         </div>
-        <button class="mt-8 px-6 py-2 md:px-8 md:py-3 bg-black text-white text-sm uppercase tracking-wider rounded-full hover:bg-gray-800 transition">Shop Now</button>
+        <button onclick="document.getElementById('products-container').scrollIntoView({ behavior: 'smooth' });" class="mt-8 px-6 py-2 md:px-8 md:py-3 bg-black text-white text-sm uppercase tracking-wider rounded-full hover:bg-gray-800 transition">Shop Now</button>
     </div>
 </section>
 
 <!-- Search & Filters -->
-<section class="px-4 md:px-6 lg:px-12 py-6 border-b">
+<section class="px-4 md:px-6 lg:px-12 py-6 border-b filter-bar">
     <div class="max-w-7xl mx-auto flex flex-wrap gap-3 justify-center items-center">
         <input type="text" id="search-input" placeholder="Search products..." class="border border-gray-300 rounded-full px-4 py-2 text-sm w-full md:w-64 focus:outline-none focus:border-black">
         <select id="category-filter" class="border border-gray-300 rounded-full px-4 py-2 text-sm bg-white"><option value="all">All Categories</option></select>
@@ -129,20 +124,18 @@
 </div>
 <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-40 opacity-0 invisible transition-all duration-300" onclick="toggleCart()"></div>
 
-<!-- Checkout Modal (with mandatory delivery fee & transaction ID) -->
+<!-- Checkout Modal -->
 <div id="checkout-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl max-w-md w-full mx-auto p-6 max-h-[90vh] overflow-auto">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-2xl font-serif">Checkout</h3>
             <button onclick="closeCheckout()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
-        
         <input type="text" id="customer-name" placeholder="Full name *" class="w-full border rounded-lg p-2 mb-3" required>
         <input type="email" id="customer-email" placeholder="Email address *" class="w-full border rounded-lg p-2 mb-3" required>
         <input type="text" id="customer-phone" placeholder="Phone (optional)" class="w-full border rounded-lg p-2 mb-3">
         <textarea id="shipping-address" placeholder="Shipping address" class="w-full border rounded-lg p-2 mb-3"></textarea>
 
-        <!-- Delivery Options - MANDATORY -->
         <div class="mb-3">
             <label class="block text-sm font-medium mb-1">Delivery Option <span class="text-red-600">*</span></label>
             <div class="flex flex-wrap gap-4">
@@ -163,14 +156,13 @@
                     <input type="radio" name="payment_method" value="cash_on_delivery" checked> Cash on Delivery
                 </label>
                 <label class="flex items-center gap-2">
-                    <input type="radio" name="payment_method" value="bkash"> Advance Payment (Bkash/Nagad)
+                    <input type="radio" name="payment_method" value="bkash"> Advance Payment (bKash/Nagad)
                 </label>
             </div>
         </div>
 
-        <!-- Transaction ID section - ALWAYS VISIBLE -->
         <div id="manual-payment-details" class="mb-3 p-3 bg-gray-50 rounded-lg">
-            <p id="payment-instruction-heading" class="text-sm font-medium">Advance Payment (Delivery Charge Only+product price):</p>
+            <p id="payment-instruction-heading" class="text-sm font-medium">Advance Payment (Delivery Charge Only):</p>
             <p class="text-lg font-mono font-bold">+8801871330654 (bKash/Nagad)</p>
             <p id="payment-instruction-sub" class="text-xs text-gray-500 mt-1">Pay the delivery charge only and enter the transaction ID below.</p>
             <div class="mt-2 p-2 bg-yellow-50 rounded text-sm">
@@ -256,7 +248,7 @@
     </div>
 </div>
 
-<!-- Login/Register Modal -->
+<!-- Auth Modal -->
 <div id="auth-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl max-w-md w-full mx-auto p-6">
         <div class="flex justify-between items-center mb-4"><h3 id="auth-modal-title" class="text-2xl font-serif">Login</h3><button onclick="closeAuthModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button></div>
@@ -280,8 +272,8 @@
 
 <!-- FOOTER -->
 <footer class="bg-black text-white/80 mt-16 py-8 px-4 md:px-6 lg:px-12 border-t border-gray-800">
-
-        <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-center mt-6 pt-6 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-center">
             <a href="#" id="size-guide-link" class="hover:underline inline-block">Size Guide</a>
             <a href="#" id="fabric-care-link" class="hover:underline inline-block">Fabric Care</a>
             <a href="#" id="delivery-return-link" class="hover:underline inline-block">Delivery & Return</a>
@@ -293,8 +285,6 @@
             <a href="#" id="offers-link" class="hover:underline inline-block">Offers</a>
             <a href="#" id="footer-privacy-link" class="hover:underline inline-block">Privacy Policy</a>
         </div>
-
-        <!-- Social icons using Font Awesome (always visible) -->
         <div class="flex justify-center gap-6 mt-6">
             <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-[#D4AF37] transition-colors text-2xl" aria-label="Facebook">
                 <i class="fab fa-facebook-f"></i>
@@ -303,7 +293,6 @@
                 <i class="fab fa-instagram"></i>
             </a>
         </div>
-
         <div class="text-center text-xs text-white/50 mt-6 pt-6 border-t border-gray-800">
             &copy; 2026 COLONIAL. All rights reserved.
         </div>
