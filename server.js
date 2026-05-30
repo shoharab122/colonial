@@ -1,4 +1,4 @@
-// server.js - PostgreSQL version with Cloudinary image hosting + delivery fee support + production optimizations
+// server.js - PostgreSQL version with Cloudinary image hosting + delivery fee support
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -13,8 +13,6 @@ const multer = require('multer');
 const fs = require('fs');
 const pool = require('./db');
 const cloudinary = require('cloudinary').v2;
-const compression = require('compression');
-const rateLimit = require('express-rate-limit');
 
 // ------------------- Cloudinary Configuration with validation -------------------
 if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
@@ -36,21 +34,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'colonial_super_secret_key_change_me';
 
-// ------------------- Compression -------------------
-app.use(compression());
-
-// ------------------- Rate limiting -------------------
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,                 // 100 requests per windowMs
-  message: { error: 'Too many requests, please try again later.' }
-});
-const strictLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { error: 'Too many requests, please try again later.' }
-});
-
 // ------------------- PRODUCTION SESSION STORE (PostgreSQL) -------------------
 app.use(session({
   store: new pgSession({
@@ -70,23 +53,6 @@ app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('public'));
-
-// ------------------- Apply rate limiting to sensitive routes -------------------
-app.use('/api/orders', strictLimiter);
-app.use('/api/auth/login', strictLimiter);
-app.use('/api/auth/register', strictLimiter);
-app.use('/api/upload', apiLimiter);
-app.use('/api/', apiLimiter);
-
-// ------------------- Health check endpoint (for uptime monitoring) -------------------
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    memory: process.memoryUsage(),
-    uptime: process.uptime()
-  });
-});
 
 // ------------------- PASSPORT SERIALIZATION -------------------
 passport.serializeUser((user, done) => done(null, user.id));
@@ -122,10 +88,10 @@ const fileFilter = (req, file, cb) => {
   if (ext && mime) cb(null, true);
   else cb(new Error('Only images allowed (jpeg, jpg, png, gif, webp)'));
 };
-const upload = multer({
-  storage,
+const upload = multer({ 
+  storage, 
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-  fileFilter
+  fileFilter 
 });
 
 app.post('/api/upload', authenticateToken, requireAdmin, upload.single('image'), async (req, res) => {
