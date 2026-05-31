@@ -48,16 +48,21 @@
 </head>
 <body class="bg-white text-black">
 
-<!-- Header (with search icon added) -->
+<!-- Header (search icon moved to left side) -->
 <header class="fixed top-0 left-0 w-full z-40 bg-white/90 backdrop-blur-md shadow-sm">
     <div class="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 lg:px-12">
-        <button onclick="toggleMenu()" class="hover:opacity-70" aria-label="Menu"><i data-lucide="menu" class="w-5 h-5 md:w-6 md:h-6"></i></button>
-        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tighter font-serif cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">COLONIAL</h1>
-        <div class="flex items-center gap-3 md:gap-4">
-            <!-- Search Icon -->
+        <div class="flex items-center gap-3">
+            <!-- Menu button -->
+            <button onclick="toggleMenu()" class="hover:opacity-70" aria-label="Menu"><i data-lucide="menu" class="w-5 h-5 md:w-6 md:h-6"></i></button>
+            <!-- Search Icon moved to left side -->
             <button id="search-icon-btn" class="hover:opacity-70" aria-label="Search">
                 <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6"></i>
             </button>
+        </div>
+        
+        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tighter font-serif cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">COLONIAL</h1>
+        
+        <div class="flex items-center gap-3 md:gap-4">
             <button id="wishlist-btn" class="relative hover:opacity-70" aria-label="Wishlist">
                 <i data-lucide="heart" class="w-5 h-5 md:w-6 md:h-6"></i>
                 <span id="wishlist-count" class="absolute -top-2 -right-2 bg-black text-white text-[10px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0">0</span>
@@ -329,8 +334,6 @@
         </div>
     </div>
 </footer>
-
-
 <!-- ==================== ALL MODALS ==================== -->
 
 <!-- Terms & Conditions Modal -->
