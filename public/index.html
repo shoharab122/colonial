@@ -52,16 +52,12 @@
 <header class="fixed top-0 left-0 w-full z-40 bg-white/90 backdrop-blur-md shadow-sm">
     <div class="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 lg:px-12">
         <div class="flex items-center gap-3">
-            <!-- Menu button -->
             <button onclick="toggleMenu()" class="hover:opacity-70" aria-label="Menu"><i data-lucide="menu" class="w-5 h-5 md:w-6 md:h-6"></i></button>
-            <!-- Search Icon moved to left side -->
             <button id="search-icon-btn" class="hover:opacity-70" aria-label="Search">
                 <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6"></i>
             </button>
         </div>
-        
         <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tighter font-serif cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">COLONIAL</h1>
-        
         <div class="flex items-center gap-3 md:gap-4">
             <button id="wishlist-btn" class="relative hover:opacity-70" aria-label="Wishlist">
                 <i data-lucide="heart" class="w-5 h-5 md:w-6 md:h-6"></i>
@@ -86,16 +82,22 @@
     </div>
 </header>
 
-<!-- Mobile Menu Drawer -->
-<div id="mobile-menu" class="fixed top-0 left-0 w-64 h-full bg-white z-50 transform -translate-x-full transition-transform duration-300 shadow-lg p-6">
-    <button onclick="toggleMenu()" class="mb-8"><i data-lucide="x" class="w-5 h-5"></i></button>
-    <ul class="space-y-4">
-        <li><a href="#" onclick="filterByCategory('Women'); return false;" class="text-sm uppercase tracking-wide hover:opacity-70">Women</a></li>
-        <li><a href="#" onclick="filterByCategory('Men'); return false;" class="text-sm uppercase tracking-wide hover:opacity-70">Men</a></li>
-        <li><a href="#" onclick="filterByCategory('Children'); return false;" class="text-sm uppercase tracking-wide hover:opacity-70">Children</a></li>
-        <li><a href="#" onclick="filterByCategory('all'); return false;" class="text-sm uppercase tracking-wide text-red-600">Sale</a></li>
-        <li><a href="#" id="mobile-wishlist-link" class="text-sm uppercase tracking-wide hover:opacity-70">Wishlist</a></li>
-    </ul>
+<!-- Mobile Menu Drawer with Login/Logout at bottom -->
+<div id="mobile-menu" class="fixed top-0 left-0 w-64 h-full bg-white z-50 transform -translate-x-full transition-transform duration-300 shadow-lg flex flex-col">
+    <div class="p-6 flex-1">
+        <button onclick="toggleMenu()" class="mb-8"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <ul class="space-y-4">
+            <li><a href="#" onclick="filterByCategory('Women'); toggleMenu(); return false;" class="text-sm uppercase tracking-wide hover:opacity-70 block">Women</a></li>
+            <li><a href="#" onclick="filterByCategory('Men'); toggleMenu(); return false;" class="text-sm uppercase tracking-wide hover:opacity-70 block">Men</a></li>
+            <li><a href="#" onclick="filterByCategory('Children'); toggleMenu(); return false;" class="text-sm uppercase tracking-wide hover:opacity-70 block">Children</a></li>
+            <li><a href="#" onclick="filterByCategory('all'); toggleMenu(); return false;" class="text-sm uppercase tracking-wide text-red-600 block">Sale</a></li>
+            <li><a href="#" id="mobile-wishlist-link" class="text-sm uppercase tracking-wide hover:opacity-70 block">Wishlist</a></li>
+        </ul>
+    </div>
+    <!-- Login/Logout button at bottom -->
+    <div class="p-6 border-t border-gray-200">
+        <button id="mobile-auth-btn" class="w-full bg-black text-white py-2 rounded-lg text-sm uppercase tracking-wider hover:bg-gray-800 transition">Login</button>
+    </div>
 </div>
 
 <!-- Hero Section with Carousel -->
@@ -129,8 +131,6 @@
                 <span class="hidden sm:inline text-sm">Filters</span>
             </button>
         </div>
-        
-        <!-- Expandable Filter Row (hidden by default) -->
         <div id="filter-row" class="hidden mt-3 flex flex-wrap gap-2 animate-slideDown">
             <select id="category-filter" class="border border-gray-300 rounded-full px-4 py-2 text-sm bg-white flex-1 min-w-[120px]">
                 <option value="all">All Categories</option>
@@ -151,7 +151,6 @@
         <div class="text-center mt-12"><button id="load-more" class="bg-black text-white px-6 py-2 rounded-full text-sm uppercase tracking-wider hidden hover:bg-gray-800 transition">Load More</button></div>
     </div>
 </section>
-
 <!-- Cart Drawer -->
 <div id="cart-drawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-white z-50 transform translate-x-full transition-transform duration-300 shadow-xl flex flex-col">
     <div class="p-4 border-b flex justify-between items-center"><h2 class="text-lg font-medium">Your Cart</h2><button onclick="toggleCart()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button></div>
@@ -547,6 +546,47 @@ function closeLifestyleModal() { document.getElementById('lifestyle-modal').styl
 function openOffersModal() { document.getElementById('offers-modal').style.display = 'flex'; }
 function closeOffersModal() { document.getElementById('offers-modal').style.display = 'none'; }
 
+// ==================== MOBILE MENU AUTH BUTTON (NEW) ====================
+function updateMobileAuthButton() {
+    const mobileAuthBtn = document.getElementById('mobile-auth-btn');
+    if (!mobileAuthBtn) return;
+    if (currentUser) {
+        mobileAuthBtn.textContent = 'Logout';
+        mobileAuthBtn.classList.remove('bg-black', 'hover:bg-gray-800');
+        mobileAuthBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+    } else {
+        mobileAuthBtn.textContent = 'Login';
+        mobileAuthBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+        mobileAuthBtn.classList.add('bg-black', 'hover:bg-gray-800');
+    }
+}
+
+function handleMobileAuth() {
+    const mobileAuthBtn = document.getElementById('mobile-auth-btn');
+    if (!mobileAuthBtn) return;
+    mobileAuthBtn.addEventListener('click', () => {
+        if (currentUser) {
+            // Logout
+            if (customerEventSource) customerEventSource.close();
+            localStorage.removeItem('amoura_token');
+            authToken = null;
+            currentUser = null;
+            updateAuthUI();
+            updateMobileAuthButton();
+            toggleMenu(); // close mobile menu
+            showToast('Logged out successfully');
+            // Reload products to reset any user-specific data
+            loadProducts(true);
+            // Optionally reload page to clear all state
+            setTimeout(() => location.reload(), 500);
+        } else {
+            // Login
+            toggleMenu(); // close menu
+            openAuthModal();
+        }
+    });
+}
+
 // ==================== INITIALIZE ON DOM READY ====================
 document.addEventListener('DOMContentLoaded', function() {
     // Footer modal triggers
@@ -637,6 +677,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('next-btn');
     if (prevBtn) prevBtn.addEventListener('click', () => prevSlide());
     if (nextBtn) nextBtn.addEventListener('click', () => nextSlide());
+    
+    // Mobile auth button handler
+    handleMobileAuth();
     
     // Start everything
     lucide.createIcons();
@@ -781,6 +824,8 @@ function updateAuthUI() {
     }
     const emailField = document.getElementById('customer-email');
     if (emailField && currentUser && !emailField.value) emailField.value = currentUser.email;
+    // Update mobile auth button whenever auth state changes
+    updateMobileAuthButton();
 }
 
 // Account dropdown
