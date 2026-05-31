@@ -100,11 +100,18 @@
 </section>
 
 <!-- Search & Filters -->
-<section class="px-4 md:px-6 lg:px-12 py-6 border-b filter-bar">
-    <div class="max-w-7xl mx-auto flex flex-wrap gap-3 justify-center items-center">
-        <input type="text" id="search-input" placeholder="Search products..." class="border border-gray-300 rounded-full px-4 py-2 text-sm w-full md:w-64 focus:outline-none focus:border-black">
-        <select id="category-filter" class="border border-gray-300 rounded-full px-4 py-2 text-sm bg-white"><option value="all">All Categories</option></select>
-        <select id="sort-select" class="border border-gray-300 rounded-full px-4 py-2 text-sm bg-white"><option value="newest">Newest</option><option value="price_asc">Price: Low to High</option><option value="price_desc">Price: High to Low</option></select>
+<!-- Search & Filters (mobile row orientation) -->
+<section class="px-4 md:px-6 lg:px-12 py-4 border-b filter-bar">
+    <div class="max-w-7xl mx-auto flex flex-nowrap gap-2 overflow-x-auto">
+        <input type="text" id="search-input" placeholder="Search products..." class="border border-gray-300 rounded-full px-3 py-2 text-sm flex-1 min-w-[120px] focus:outline-none focus:border-black">
+        <select id="category-filter" class="border border-gray-300 rounded-full px-3 py-2 text-sm bg-white whitespace-nowrap">
+            <option value="all">All Categories</option>
+        </select>
+        <select id="sort-select" class="border border-gray-300 rounded-full px-3 py-2 text-sm bg-white whitespace-nowrap">
+            <option value="newest">Newest</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+        </select>
     </div>
 </section>
 
