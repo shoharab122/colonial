@@ -3,685 +3,1302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>COLONIAL - Timeless Elegance</title>
+    <title>COLONIAL — Timeless Elegance</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/style.css">
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
+        :root {
+            --colonial-bg:          #FDFBF7;
+            --colonial-card:        #FFFCF8;
+            --colonial-border:      #E8E2D5;
+            --colonial-hover:       #F5EFE6;
+            --colonial-accent:      #A28B6F;
+            --colonial-accent-dark: #5C4B3A;
+            --colonial-text:        #3E362E;
+            --colonial-text-muted:  #7A6E5D;
+            --shadow-sm:            0 1px 2px 0 rgba(0,0,0,0.03);
+            --shadow-md:            0 4px 6px -1px rgba(0,0,0,0.05);
+            --shadow-lg:            0 10px 15px -3px rgba(0,0,0,0.07);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: var(--colonial-bg);
+            color: var(--colonial-text);
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+        }
+
+        /* ── TYPOGRAPHY ── */
+        .font-serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--colonial-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--colonial-accent); border-radius: 2px; }
+
+        /* ── CAROUSEL ── */
         .carousel-container { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .carousel-container::-webkit-scrollbar { display: none; }
-        .carousel-slide { scroll-snap-align: start; }
-        @media (max-width: 640px) {
-            .cart-drawer { width: 100%; }
-            .product-card .p-4 { padding: 0.75rem; }
-        }
+
+        /* ── BUTTONS / LINKS MIN-HEIGHT ── */
         button, a, .size-btn, .quantity-btn {
             min-height: 44px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
         }
-        .thumbnail-img.active { border-color: #000; border-width: 2px; }
-        .color-swatch { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 2px solid #ddd; transition: transform 0.1s; display: inline-block; margin: 0 4px; }
-        .color-swatch:hover { transform: scale(1.1); }
-        .color-swatch.selected { border-color: black; box-shadow: 0 0 0 2px white, 0 0 0 4px black; }
-        .star { font-size: 20px; cursor: pointer; color: #ddd; transition: color 0.1s; }
-        .star.active, .star.hover { color: #f5b301; }
-        .star-rating { display: inline-flex; gap: 4px; }
-        .payment-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 500; }
+
+        /* ── PRIMARY BUTTON ── */
+        .btn-primary {
+            background: var(--colonial-text);
+            color: #fff;
+            letter-spacing: .12em;
+            font-family: 'Jost', sans-serif;
+            font-weight: 400;
+            font-size: .72rem;
+            text-transform: uppercase;
+            border: 1.5px solid var(--colonial-text);
+            transition: background .25s, color .25s, border-color .25s;
+        }
+        .btn-primary:hover { background: transparent; color: var(--colonial-text); }
+
+        /* ── GHOST BUTTON ── */
+        .btn-ghost {
+            background: transparent;
+            color: var(--colonial-text);
+            letter-spacing: .12em;
+            font-family: 'Jost', sans-serif;
+            font-weight: 400;
+            font-size: .72rem;
+            text-transform: uppercase;
+            border: 1.5px solid rgba(62,54,46,.25);
+            transition: border-color .25s, background .25s;
+        }
+        .btn-ghost:hover { border-color: var(--colonial-text); background: var(--colonial-hover); }
+
+        /* ── GOLD ACCENT BUTTON ── */
+        .btn-gold {
+            background: var(--colonial-accent);
+            color: #fff;
+            letter-spacing: .12em;
+            font-family: 'Jost', sans-serif;
+            font-weight: 400;
+            font-size: .72rem;
+            text-transform: uppercase;
+            border: 1.5px solid var(--colonial-accent);
+            transition: background .25s, color .25s;
+        }
+        .btn-gold:hover { background: var(--colonial-accent-dark); border-color: var(--colonial-accent-dark); }
+
+        /* ── INPUT ── */
+        .inp {
+            width: 100%;
+            border: 1.5px solid var(--colonial-border);
+            background: var(--colonial-card);
+            padding: .65rem .9rem;
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            font-size: .85rem;
+            color: var(--colonial-text);
+            border-radius: 3px;
+            transition: border-color .2s;
+            outline: none;
+        }
+        .inp:focus { border-color: var(--colonial-accent); }
+        .inp::placeholder { color: var(--colonial-text-muted); opacity: .7; }
+
+        /* ── HEADER ── */
+        #site-header {
+            background: rgba(253,251,247,.92);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--colonial-border);
+        }
+
+        /* ── MOBILE MENU ── */
+        #mobile-menu {
+            background: var(--colonial-bg);
+            border-right: 1px solid var(--colonial-border);
+        }
+        .menu-link {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 400;
+            letter-spacing: .06em;
+            color: var(--colonial-text);
+            padding: .55rem 0;
+            display: block;
+            border-bottom: 1px solid var(--colonial-border);
+            transition: color .2s;
+        }
+        .menu-link:hover { color: var(--colonial-accent); }
+        .menu-link.sale { color: #b94040; }
+
+        /* ── ACCOUNT DROPDOWN ── */
+        #account-dropdown {
+            background: var(--colonial-bg);
+            border: 1px solid var(--colonial-border);
+            border-radius: 4px;
+            box-shadow: 0 12px 40px rgba(62,54,46,.10);
+            min-width: 200px;
+        }
+        #account-dropdown a {
+            font-size: .8rem;
+            letter-spacing: .06em;
+            font-family: 'Jost', sans-serif;
+            font-weight: 400;
+            text-transform: uppercase;
+            color: var(--colonial-text);
+            padding: .75rem 1.2rem;
+            display: block;
+            transition: background .15s, color .15s;
+            border-bottom: 1px solid var(--colonial-border);
+        }
+        #account-dropdown a:last-child { border-bottom: none; }
+        #account-dropdown a:hover { background: var(--colonial-hover); }
+        #account-dropdown a.danger { color: #b94040; }
+
+        /* ── CART DRAWER ── */
+        #cart-drawer {
+            background: var(--colonial-bg);
+            border-left: 1px solid var(--colonial-border);
+            box-shadow: -20px 0 60px rgba(62,54,46,.07);
+        }
+        .cart-header {
+            background: var(--colonial-text);
+            color: #fff;
+            padding: 1.25rem 1.5rem;
+        }
+        .cart-item-row {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--colonial-border);
+        }
+        .cart-item-row:last-child { border-bottom: none; }
+        .cart-item-img {
+            width: 72px;
+            height: 90px;
+            object-fit: cover;
+            background: var(--colonial-hover);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .cart-qty-btn {
+            width: 28px;
+            height: 28px;
+            min-height: 28px;
+            border: 1px solid var(--colonial-border);
+            border-radius: 50%;
+            font-size: .8rem;
+            font-weight: 400;
+            background: var(--colonial-card);
+            transition: background .15s, color .15s;
+            cursor: pointer;
+        }
+        .cart-qty-btn:hover { background: var(--colonial-accent); color: #fff; border-color: var(--colonial-accent); }
+        .cart-footer {
+            background: var(--colonial-card);
+            border-top: 1px solid var(--colonial-border);
+            padding: 1.25rem 1.5rem 1.75rem;
+        }
+
+        /* ── PRODUCT CARD ── */
+        .product-card {
+            background: var(--colonial-card);
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--colonial-border);
+            cursor: pointer;
+            transition: box-shadow .3s, transform .3s;
+        }
+        .product-card:hover { box-shadow: 0 8px 32px rgba(62,54,46,.10); transform: translateY(-2px); }
+        .product-card .badge {
+            position: absolute;
+            top: .75rem;
+            left: .75rem;
+            background: var(--colonial-bg);
+            color: var(--colonial-text);
+            font-size: .65rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: .25rem .65rem;
+            border-radius: 2px;
+            border: 1px solid var(--colonial-border);
+        }
+
+        /* ── SIZE BUTTONS ── */
+        .size-btn {
+            width: 40px;
+            height: 40px;
+            min-height: 40px;
+            border: 1.5px solid var(--colonial-border);
+            border-radius: 50%;
+            font-family: 'Jost', sans-serif;
+            font-size: .72rem;
+            letter-spacing: .06em;
+            font-weight: 400;
+            transition: background .15s, border-color .15s;
+            background: var(--colonial-card);
+            cursor: pointer;
+        }
+        .size-btn:hover, .size-btn.active {
+            background: var(--colonial-text);
+            color: #fff;
+            border-color: var(--colonial-text);
+        }
+
+        /* ── COLOR SWATCH ── */
+        .color-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--colonial-border);
+            transition: transform .15s, box-shadow .15s;
+            display: inline-block;
+            margin: 0 3px;
+        }
+        .color-swatch:hover { transform: scale(1.12); }
+        .color-swatch.selected { box-shadow: 0 0 0 2px var(--colonial-bg), 0 0 0 4px var(--colonial-text); }
+
+        /* ── STARS ── */
+        .star { font-size: 18px; cursor: pointer; color: #ddd; transition: color .1s; }
+        .star.active, .star.hover { color: var(--colonial-accent); }
+        .star-rating { display: inline-flex; gap: 2px; }
+
+        /* ── MODAL OVERLAY ── */
+        .modal-backdrop {
+            background: rgba(62,54,46,.55);
+            backdrop-filter: blur(4px);
+        }
+
+        /* ── MODAL PANEL ── */
+        .modal-panel {
+            background: var(--colonial-bg);
+            border-radius: 4px;
+            box-shadow: 0 30px 90px rgba(62,54,46,.18);
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+        .modal-panel::-webkit-scrollbar { width: 3px; }
+        .modal-panel::-webkit-scrollbar-thumb { background: #D9C4A8; }
+
+        /* ── MODAL HEADER ── */
+        .modal-hd {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1.75rem 1rem;
+            border-bottom: 1px solid var(--colonial-border);
+            position: sticky;
+            top: 0;
+            background: var(--colonial-bg);
+            z-index: 2;
+        }
+        .modal-hd h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.7rem;
+            font-weight: 400;
+            letter-spacing: .02em;
+        }
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            min-height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--colonial-border);
+            background: transparent;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .modal-close:hover { background: var(--colonial-hover); }
+
+        /* ── CHECKOUT MODAL SPECIFICS ── */
+        .checkout-section-title {
+            font-family: 'Jost', sans-serif;
+            font-size: .65rem;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            font-weight: 500;
+            color: var(--colonial-text-muted);
+            margin-bottom: .65rem;
+            margin-top: 1.25rem;
+        }
+        .radio-card {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .75rem 1rem;
+            border: 1.5px solid var(--colonial-border);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            font-size: .82rem;
+            background: var(--colonial-card);
+        }
+        .radio-card:has(input:checked) {
+            border-color: var(--colonial-accent);
+            background: rgba(162,139,111,.06);
+        }
+        .radio-card input[type=radio] { accent-color: var(--colonial-accent); }
+
+        /* ── PAYMENT BOX ── */
+        .payment-box {
+            background: var(--colonial-card);
+            border: 1.5px solid var(--colonial-border);
+            border-radius: 3px;
+            padding: 1.1rem 1.2rem;
+        }
+        .payment-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 500;
+            letter-spacing: .04em;
+            color: var(--colonial-text);
+        }
+        .amount-pill {
+            display: inline-block;
+            background: rgba(162,139,111,.12);
+            color: var(--colonial-accent);
+            border: 1px solid #D9C4A8;
+            padding: .35rem .9rem;
+            border-radius: 2px;
+            font-size: .82rem;
+            font-weight: 400;
+            letter-spacing: .06em;
+            margin-top: .5rem;
+        }
+
+        /* ── PAYMENT BADGES ── */
+        .payment-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; letter-spacing: .06em; }
         .payment-paid { background: #d1fae5; color: #065f46; }
         .payment-pending { background: #fef3c7; color: #92400e; }
         .payment-awaiting { background: #fed7aa; color: #9a3412; }
         .payment-failed { background: #fee2e2; color: #991b1b; }
-        .modal { display: none; align-items: center; justify-content: center; }
-        .modal.active { display: flex; }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        /* ── AUTH MODAL ── */
+        .auth-panel {
+            background: var(--colonial-bg);
+            max-width: 420px;
+            width: 100%;
+            border-radius: 4px;
+            overflow: hidden;
         }
-        .animate-slideDown {
-            animation: slideDown 0.2s ease forwards;
+        .auth-top {
+            background: var(--colonial-accent-dark);
+            padding: 2.5rem 2rem 2rem;
+            text-align: center;
+        }
+        .auth-top .brand {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 400;
+            color: #fff;
+            letter-spacing: .12em;
+        }
+        .auth-top .tagline {
+            font-size: .7rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: #D9C4A8;
+            margin-top: .25rem;
+        }
+        .auth-body { padding: 2rem; }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--colonial-text);
+            color: #fff;
+            font-family: 'Jost', sans-serif;
+            font-size: .78rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: .7rem 1.5rem;
+            border-radius: 2px;
+            z-index: 9999;
+            transition: opacity .3s;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 8px 30px rgba(62,54,46,.18);
+        }
+
+        /* ── SEARCH BAR ── */
+        #search-input {
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            border: 1.5px solid var(--colonial-border);
+            background: var(--colonial-card);
+            border-radius: 2px;
+            padding: .7rem 1rem .7rem 2.8rem;
+            font-size: .88rem;
+            color: var(--colonial-text);
+            outline: none;
+            transition: border-color .2s;
+        }
+        #search-input:focus { border-color: var(--colonial-accent); }
+
+        /* ── FILTER SELECT ── */
+        #category-filter, #sort-select {
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            font-size: .82rem;
+            border: 1.5px solid var(--colonial-border);
+            background: var(--colonial-card);
+            border-radius: 2px;
+            padding: .6rem 1rem;
+            color: var(--colonial-text);
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* ── ORDER CARD ── */
+        .order-card {
+            background: var(--colonial-card);
+            border: 1px solid var(--colonial-border);
+            border-radius: 3px;
+            padding: 1.25rem 1.5rem;
+        }
+        .order-status-chip {
+            display: inline-block;
+            font-size: .65rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: .25rem .75rem;
+            border-radius: 2px;
+            background: var(--colonial-hover);
+            color: var(--colonial-text-muted);
+        }
+
+        /* ── CAROUSEL CARDS ── */
+        .carousel-card {
+            background: var(--colonial-card);
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(62,54,46,.07);
+            transition: transform .3s;
+        }
+        .carousel-card:hover { transform: translateY(-3px); }
+
+        /* ── DIVIDER ── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--colonial-border);
+            margin: 1.25rem 0;
+        }
+
+        /* ── SLIDE ANIMATIONS ── */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slideDown { animation: slideDown .22s ease forwards; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeUp { animation: fadeUp .35s ease forwards; }
+
+        /* ── DECORATIVE RULE ── */
+        .ornament {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            color: var(--colonial-accent);
+            font-size: .7rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+        }
+        .ornament::before, .ornament::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #D9C4A8;
+        }
+
+        /* ── WISHLIST CARD ── */
+        .wishlist-card {
+            background: var(--colonial-card);
+            border: 1px solid var(--colonial-border);
+            border-radius: 3px;
+            overflow: hidden;
+            transition: box-shadow .2s;
+        }
+        .wishlist-card:hover { box-shadow: 0 6px 24px rgba(62,54,46,.09); }
+
+        /* Thumbnail active */
+        .thumbnail-img.active { border-color: var(--colonial-accent) !important; }
+
+        /* coupon input */
+        .coupon-row { display: flex; gap: .5rem; }
+        .coupon-row input { flex: 1; }
+        .coupon-row button { white-space: nowrap; padding: 0 1rem; min-height: 42px; }
+
+        @media (max-width: 640px) {
+            .auth-body { padding: 1.5rem; }
+            .modal-hd { padding: 1.2rem 1.25rem .9rem; }
+            input, select, textarea { font-size: 16px !important; }
         }
     </style>
-</head>
-<body class="bg-white text-black">
 
-<!-- Header (search icon moved to left side) -->
-<header class="fixed top-0 left-0 w-full z-40 bg-white/90 backdrop-blur-md shadow-sm">
-    <div class="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 lg:px-12">
-        <div class="flex items-center gap-3">
-            <button onclick="toggleMenu()" class="hover:opacity-70" aria-label="Menu"><i data-lucide="menu" class="w-5 h-5 md:w-6 md:h-6"></i></button>
-            <button id="search-icon-btn" class="hover:opacity-70" aria-label="Search">
-                <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6"></i>
+<body>
+
+<!-- ════════════════════════ HEADER ════════════════════════ -->
+<header id="site-header" class="fixed top-0 left-0 w-full z-40">
+    <div class="flex items-center justify-between px-5 py-3 md:px-8 lg:px-14">
+
+        <!-- LEFT: menu + search -->
+        <div class="flex items-center gap-4">
+            <button onclick="toggleMenu()" class="hover:opacity-60 transition-opacity" aria-label="Menu">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+            <button id="search-icon-btn" class="hover:opacity-60 transition-opacity" aria-label="Search">
+                <i data-lucide="search" class="w-5 h-5"></i>
             </button>
         </div>
-        <h1 class="text-xl md:text-2xl lg:text-3xl font-bold tracking-tighter font-serif cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">COLONIAL</h1>
-        <div class="flex items-center gap-3 md:gap-4">
-            <button id="wishlist-btn" class="relative hover:opacity-70" aria-label="Wishlist">
-                <i data-lucide="heart" class="w-5 h-5 md:w-6 md:h-6"></i>
-                <span id="wishlist-count" class="absolute -top-2 -right-2 bg-black text-white text-[10px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0">0</span>
+
+        <!-- CENTER: brand -->
+        <h1 onclick="window.scrollTo({top:0,behavior:'smooth'})"
+            class="font-serif text-xl md:text-2xl lg:text-3xl tracking-[.18em] cursor-pointer select-none">
+            COLONIAL
+        </h1>
+
+        <!-- RIGHT: wishlist + account + cart -->
+        <div class="flex items-center gap-4">
+            <button id="wishlist-btn" class="relative hover:opacity-60 transition-opacity" aria-label="Wishlist">
+                <i data-lucide="heart" class="w-5 h-5"></i>
+                <span id="wishlist-count"
+                      class="absolute -top-2 -right-2 bg-[var(--gold)] text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0 transition-opacity">0</span>
             </button>
+
             <div class="relative" id="account-container">
-                <button id="account-btn" class="hover:opacity-70"><i data-lucide="user" class="w-5 h-5 md:w-6 md:h-6"></i></button>
-                <div id="account-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden z-50">
-                    <div class="py-2">
-                        <div id="user-info" class="px-4 py-2 text-sm text-gray-700 border-b"></div>
-                        <a href="#" id="my-orders-link" class="block px-4 py-2 text-sm hover:bg-gray-100">My Orders</a>
-                        <a href="#" id="wishlist-dropdown-link" class="block px-4 py-2 text-sm hover:bg-gray-100">Wishlist</a>
-                        <a href="#" id="logout-link" class="block px-4 py-2 text-sm hover:bg-gray-100 text-red-600">Logout</a>
-                    </div>
+                <button id="account-btn" class="hover:opacity-60 transition-opacity" aria-label="Account">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </button>
+                <div id="account-dropdown" class="absolute right-0 mt-3 hidden z-50 animate-slideDown" style="min-width:200px;">
+                    <div id="user-info" class="px-5 py-3 border-b border-[var(--border)] text-sm"></div>
+                    <a href="#" id="my-orders-link">My Orders</a>
+                    <a href="#" id="wishlist-dropdown-link">Wishlist</a>
+                    <a href="#" id="logout-link" class="danger">Sign Out</a>
                 </div>
             </div>
-            <button onclick="toggleCart()" class="relative hover:opacity-70">
-                <i data-lucide="shopping-bag" class="w-5 h-5 md:w-6 md:h-6"></i>
-                <span id="cart-count" class="absolute -top-2 -right-2 bg-black text-white text-[10px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0">0</span>
+
+            <button onclick="toggleCart()" class="relative hover:opacity-60 transition-opacity" aria-label="Cart">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <span id="cart-count"
+                      class="absolute -top-2 -right-2 bg-[var(--ink)] text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0 transition-opacity">0</span>
             </button>
         </div>
+
     </div>
 </header>
 
-<!-- Mobile Menu Drawer with Login/Logout at bottom -->
-<div id="mobile-menu" class="fixed top-0 left-0 w-64 h-full bg-white z-50 transform -translate-x-full transition-transform duration-300 shadow-lg flex flex-col">
-    <div class="p-6 flex-1">
-        <button onclick="toggleMenu()" class="mb-8"><i data-lucide="x" class="w-5 h-5"></i></button>
-        <ul class="space-y-4">
-            <li><a href="#" onclick="filterByCategory('Women'); toggleMenu(); return false;" class="text-sm uppercase tracking-wide hover:opacity-70 block">Women</a></li>
-            <li><a href="#" onclick="filterByCategory('Men'); toggleMenu(); return false;" class="text-sm uppercase tracking-wide hover:opacity-70 block">Men</a></li>
-            <li><a href="#" onclick="filterByCategory('Children'); toggleMenu(); return false;" class="text-sm uppercase tracking-wide hover:opacity-70 block">Children</a></li>
-            <li><a href="#" onclick="filterByCategory('all'); toggleMenu(); return false;" class="text-sm uppercase tracking-wide text-red-600 block">Sale</a></li>
-            <li><a href="#" id="mobile-wishlist-link" class="text-sm uppercase tracking-wide hover:opacity-70 block">Wishlist</a></li>
-        </ul>
+
+<!-- ════════════════════════ MOBILE MENU ════════════════════════ -->
+<div id="mobile-menu" class="fixed top-0 left-0 w-72 h-full z-50 transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
+    <!-- Top -->
+    <div class="px-7 py-6 border-b border-[var(--border)] flex items-center justify-between">
+        <span class="font-serif text-xl tracking-[.15em]">COLONIAL</span>
+        <button onclick="toggleMenu()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
     </div>
-    <!-- Login/Logout button at bottom -->
-    <div class="p-6 border-t border-gray-200">
-        <button id="mobile-auth-btn" class="w-full bg-black text-white py-2 rounded-lg text-sm uppercase tracking-wider hover:bg-gray-800 transition">Login</button>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-7 py-8 overflow-y-auto">
+        <ul class="space-y-0">
+            <li><a href="#" class="menu-link" onclick="filterByCategory('Women'); toggleMenu(); return false;">Women</a></li>
+            <li><a href="#" class="menu-link" onclick="filterByCategory('Men'); toggleMenu(); return false;">Men</a></li>
+            <li><a href="#" class="menu-link" onclick="filterByCategory('Children'); toggleMenu(); return false;">Children</a></li>
+            <li><a href="#" class="menu-link sale" onclick="filterByCategory('all'); toggleMenu(); return false;">Sale</a></li>
+            <li><a href="#" id="mobile-wishlist-link" class="menu-link">Wishlist</a></li>
+        </ul>
+    </nav>
+
+    <!-- Auth button -->
+    <div class="px-7 py-6 border-t border-[var(--border)]">
+        <button id="mobile-auth-btn"
+                class="btn-primary w-full py-3 rounded-sm">Login</button>
     </div>
 </div>
+<div id="menu-overlay" class="fixed inset-0 bg-black/30 z-40 opacity-0 invisible transition-all duration-300" onclick="toggleMenu()"></div>
 
-<!-- Hero Section with Carousel -->
-<section class="pt-20 md:pt-28 pb-12 text-center bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4">
-        <p class="text-xs tracking-widest uppercase text-gray-500 mb-2">Spring 2026</p>
-        <h2 class="text-3xl md:text-5xl lg:text-6xl font-serif mb-3">Timeless Elegance</h2>
-        <p class="text-gray-600 max-w-xl mx-auto mb-6 text-sm md:text-base">Discover our new collection – where minimalism meets sophistication.</p>
-        <div class="relative max-w-7xl mx-auto px-10 md:px-12">
+
+<!-- ════════════════════════ HERO ════════════════════════ -->
+<section class="pt-20 md:pt-28 pb-16" style="background: linear-gradient(160deg, #f0ece6 0%, var(--bone) 60%);">
+    <div class="max-w-7xl mx-auto px-5 text-center">
+        <p class="text-[.65rem] tracking-[.28em] uppercase text-[var(--muted)] mb-3">Spring — Summer 2026</p>
+        <h2 class="font-serif text-4xl md:text-6xl lg:text-7xl font-light leading-none mb-4">Timeless Elegance</h2>
+        <p class="text-[var(--muted)] max-w-md mx-auto mb-10 text-sm leading-relaxed">
+            Where minimalism meets sophistication — each piece crafted for the discerning few.
+        </p>
+
+        <!-- Carousel -->
+        <div class="relative max-w-7xl mx-auto px-12">
             <div class="carousel-container overflow-x-auto">
-                <div id="product-carousel" class="flex transition-transform duration-500" style="will-change: transform;"></div>
+                <div id="product-carousel" class="flex transition-transform duration-500" style="will-change:transform;"></div>
             </div>
-            <button id="prev-btn" class="absolute left-0 top-1/2 -translate-y-1/2 bg-black/60 text-white p-2 rounded-full hover:bg-black transition shadow-md"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-            <button id="next-btn" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black/60 text-white p-2 rounded-full hover:bg-black transition shadow-md"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+            <button id="prev-btn"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 min-h-0 bg-[var(--bone)] border border-[var(--border)] rounded-full shadow-md hover:bg-[var(--warm)] transition">
+                <i data-lucide="chevron-left" class="w-4 h-4 mx-auto"></i>
+            </button>
+            <button id="next-btn"
+                    class="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 min-h-0 bg-[var(--bone)] border border-[var(--border)] rounded-full shadow-md hover:bg-[var(--warm)] transition">
+                <i data-lucide="chevron-right" class="w-4 h-4 mx-auto"></i>
+            </button>
         </div>
-        <button onclick="document.getElementById('products-container').scrollIntoView({ behavior: 'smooth' });" class="mt-8 px-6 py-2 md:px-8 md:py-3 bg-black text-white text-sm uppercase tracking-wider rounded-full hover:bg-gray-800 transition">Shop Now</button>
+
+        <button onclick="document.getElementById('products-container').scrollIntoView({behavior:'smooth'});"
+                class="btn-primary mt-10 px-10 py-3 rounded-sm">
+            Explore the Collection
+        </button>
     </div>
 </section>
 
-<!-- Enhanced Sticky Search Bar with Filter Toggle -->
-<section class="sticky top-[64px] md:top-[72px] z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm py-3 px-4 md:px-6 lg:px-12">
+
+<!-- ════════════════════════ SEARCH / FILTER BAR ════════════════════════ -->
+<section class="sticky top-[57px] md:top-[65px] z-30 bg-[var(--bone)]/95 backdrop-blur-sm border-b border-[var(--border)] py-3 px-5 md:px-8 lg:px-14">
     <div class="max-w-7xl mx-auto">
         <div class="flex items-center gap-3">
             <div class="relative flex-1">
-                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                <input type="text" id="search-input" placeholder="Search products..." 
-                       class="w-full pl-11 pr-4 py-3 rounded-full border border-gray-300 focus:border-black focus:ring-2 focus:ring-black/20 transition-all text-base">
+                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)]"></i>
+                <input type="text" id="search-input" placeholder="Search the collection…"
+                       class="w-full pl-10 pr-4 py-2.5">
             </div>
-            <button id="filter-toggle-btn" class="flex items-center gap-2 px-4 py-3 rounded-full border border-gray-300 hover:border-black transition whitespace-nowrap">
-                <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
-                <span class="hidden sm:inline text-sm">Filters</span>
+            <button id="filter-toggle-btn"
+                    class="btn-ghost flex items-center gap-2 px-4 py-2.5 rounded-sm whitespace-nowrap text-xs">
+                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Filter</span>
             </button>
         </div>
-        <div id="filter-row" class="hidden mt-3 flex flex-wrap gap-2 animate-slideDown">
-            <select id="category-filter" class="border border-gray-300 rounded-full px-4 py-2 text-sm bg-white flex-1 min-w-[120px]">
-                <option value="all">All Categories</option>
-            </select>
-            <select id="sort-select" class="border border-gray-300 rounded-full px-4 py-2 text-sm bg-white flex-1 min-w-[120px]">
-                <option value="newest">Newest</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
+        <div id="filter-row" class="hidden mt-3 flex flex-wrap gap-3 animate-slideDown">
+            <select id="category-filter" class="flex-1 min-w-[130px] rounded-sm"></select>
+            <select id="sort-select" class="flex-1 min-w-[130px] rounded-sm">
+                <option value="newest">Newest First</option>
+                <option value="price_asc">Price: Low → High</option>
+                <option value="price_desc">Price: High → Low</option>
             </select>
         </div>
     </div>
 </section>
 
-<!-- Product Grid -->
-<section class="px-4 md:px-6 lg:px-12 py-12">
+
+<!-- ════════════════════════ PRODUCT GRID ════════════════════════ -->
+<section class="px-5 md:px-8 lg:px-14 py-14">
     <div class="max-w-7xl mx-auto">
-        <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"></div>
-        <div class="text-center mt-12"><button id="load-more" class="bg-black text-white px-6 py-2 rounded-full text-sm uppercase tracking-wider hidden hover:bg-gray-800 transition">Load More</button></div>
+        <div id="products-container"
+             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"></div>
+        <div class="text-center mt-14">
+            <button id="load-more"
+                    class="btn-ghost px-10 py-3 rounded-sm hidden">Load More</button>
+        </div>
     </div>
 </section>
-<!-- Cart Drawer -->
-<div id="cart-drawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-white z-50 transform translate-x-full transition-transform duration-300 shadow-xl flex flex-col">
-    <div class="p-4 border-b flex justify-between items-center"><h2 class="text-lg font-medium">Your Cart</h2><button onclick="toggleCart()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-    <div id="cart-items-list" class="flex-1 overflow-auto p-4 space-y-4"></div>
-    <div class="p-4 border-t bg-gray-50"><div class="flex justify-between mb-3 text-lg font-medium"><span>Total</span><span id="cart-total-price">BDT 0.00</span></div><button onclick="openCheckout()" class="w-full bg-black text-white py-3 text-sm uppercase tracking-wider rounded-lg hover:bg-gray-800 transition">Checkout</button></div>
+
+
+<!-- ════════════════════════ CART DRAWER ════════════════════════ -->
+<div id="cart-drawer"
+     class="fixed top-0 right-0 w-full max-w-[420px] h-full z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- Header -->
+    <div class="cart-header flex items-center justify-between">
+        <div>
+            <p class="text-[.6rem] tracking-[.2em] uppercase text-[var(--gold-pale)] mb-0.5">Your Selection</p>
+            <h2 class="font-serif text-2xl font-light text-white">Shopping Bag</h2>
+        </div>
+        <button onclick="toggleCart()" class="w-9 h-9 min-h-0 rounded-full border border-white/20 hover:border-white/60 transition text-white">
+            <i data-lucide="x" class="w-4 h-4 mx-auto"></i>
+        </button>
+    </div>
+
+    <!-- Items -->
+    <div id="cart-items-list" class="flex-1 overflow-auto px-5 py-2"></div>
+
+    <!-- Footer -->
+    <div class="cart-footer">
+        <div class="flex items-center justify-between mb-1">
+            <span class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)]">Subtotal</span>
+            <span id="cart-total-price" class="font-serif text-xl font-light">BDT 0.00</span>
+        </div>
+        <p class="text-[.68rem] text-[var(--muted)] mb-4">Delivery calculated at checkout</p>
+        <button onclick="openCheckout()" class="btn-primary w-full py-3.5 rounded-sm">Proceed to Checkout</button>
+    </div>
 </div>
-<div id="cart-overlay" class="fixed inset-0 bg-black/50 z-40 opacity-0 invisible transition-all duration-300" onclick="toggleCart()"></div>
+<div id="cart-overlay"
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 opacity-0 invisible transition-all duration-300"
+     onclick="toggleCart()"></div>
 
-<!-- Checkout Modal -->
-<div id="checkout-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-md w-full mx-auto p-6 max-h-[90vh] overflow-auto">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Checkout</h3>
-            <button onclick="closeCheckout()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+
+<!-- ════════════════════════ CHECKOUT MODAL ════════════════════════ -->
+<div id="checkout-modal"
+     class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-lg animate-fadeUp">
+
+        <div class="modal-hd">
+            <h3>Checkout</h3>
+            <button onclick="closeCheckout()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
-        <input type="text" id="customer-name" placeholder="Full name *" class="w-full border rounded-lg p-2 mb-3" required>
-        <input type="email" id="customer-email" placeholder="Email address *" class="w-full border rounded-lg p-2 mb-3" required>
-        <input type="text" id="customer-phone" placeholder="Phone (optional)" class="w-full border rounded-lg p-2 mb-3">
-        <textarea id="shipping-address" placeholder="Shipping address" class="w-full border rounded-lg p-2 mb-3"></textarea>
 
-        <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Delivery Option <span class="text-red-600">*</span></label>
-            <div class="flex flex-wrap gap-4">
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="delivery_option" value="inside" data-fee="80" checked> Inside Chittagong – BDT 80
+        <div class="px-7 pb-8">
+            <!-- Contact -->
+            <p class="checkout-section-title">Contact Information</p>
+            <div class="space-y-3">
+                <input type="text" id="customer-name" placeholder="Full Name *" class="inp" required>
+                <input type="email" id="customer-email" placeholder="Email Address *" class="inp" required>
+                <input type="text" id="customer-phone" placeholder="Phone Number (optional)" class="inp">
+                <textarea id="shipping-address" placeholder="Shipping Address" class="inp" rows="2" style="resize:vertical;min-height:72px;"></textarea>
+            </div>
+
+            <!-- Delivery -->
+            <p class="checkout-section-title">Delivery Option *</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="radio-card">
+                    <input type="radio" name="delivery_option" value="inside" data-fee="80" checked>
+                    <div>
+                        <p class="text-sm font-medium leading-none mb-0.5">Inside Chittagong</p>
+                        <p class="text-xs text-[var(--muted)]">BDT 80</p>
+                    </div>
                 </label>
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="delivery_option" value="outside" data-fee="150"> Outside Chittagong – BDT 150
+                <label class="radio-card">
+                    <input type="radio" name="delivery_option" value="outside" data-fee="150">
+                    <div>
+                        <p class="text-sm font-medium leading-none mb-0.5">Outside Chittagong</p>
+                        <p class="text-xs text-[var(--muted)]">BDT 150</p>
+                    </div>
                 </label>
             </div>
-            <p class="text-xs text-gray-500 mt-1">Delivery fee is mandatory for all orders.</p>
-        </div>
+            <p class="text-[.68rem] text-[var(--muted)] mt-1.5">Delivery fee is mandatory for all orders.</p>
 
-        <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Payment Method</label>
-            <div class="flex gap-4">
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="payment_method" value="cash_on_delivery" checked> Cash on Delivery
+            <!-- Payment method -->
+            <p class="checkout-section-title">Payment Method</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="radio-card">
+                    <input type="radio" name="payment_method" value="cash_on_delivery" checked>
+                    <div>
+                        <p class="text-sm font-medium leading-none mb-0.5">Cash on Delivery</p>
+                        <p class="text-xs text-[var(--muted)]">Pay upon arrival</p>
+                    </div>
                 </label>
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="payment_method" value="bkash"> Advance Payment (bKash/Nagad)
+                <label class="radio-card">
+                    <input type="radio" name="payment_method" value="bkash">
+                    <div>
+                        <p class="text-sm font-medium leading-none mb-0.5">Advance Payment</p>
+                        <p class="text-xs text-[var(--muted)]">bKash / Nagad</p>
+                    </div>
                 </label>
             </div>
-        </div>
 
-        <div id="manual-payment-details" class="mb-3 p-3 bg-gray-50 rounded-lg">
-            <p id="payment-instruction-heading" class="text-sm font-medium">Advance Payment (Delivery Charge Only):</p>
-            <p class="text-lg font-mono font-bold">+8801871330654 (bKash/Nagad)</p>
-            <p id="payment-instruction-sub" class="text-xs text-gray-500 mt-1">Pay the delivery charge only and enter the transaction ID below.</p>
-            <div class="mt-2 p-2 bg-yellow-50 rounded text-sm">
-                Amount to pay: <strong id="payable-amount">BDT 0</strong>
+            <!-- Payment details box -->
+            <div id="manual-payment-details" class="payment-box mt-4">
+    <p id="payment-instruction-heading" class="text-[.68rem] tracking-[.1em] uppercase text-[var(--muted)] mb-1">Advance Payment</p>
+    <p class="text-base font-mono font-medium text-[var(--text)] tracking-normal">+8801871330654</p>
+    <p class="text-xs text-[var(--muted)]">bKash / Nagad</p>
+    <p id="payment-instruction-sub" class="text-xs text-[var(--muted)] mt-2">Pay the delivery charge only and enter the transaction ID below.</p>
+    <div class="amount-pill">Amount to pay: <strong id="payable-amount">BDT 0</strong></div>
+    <input type="text" id="transaction-id" placeholder="Transaction ID  (e.g. 8E7A2K9L)" class="inp mt-3">
+    <p class="text-xs text-red-500 hidden mt-1" id="txn-error">Transaction ID is required.</p>
+</div>
+            <!-- Coupon -->
+            <p class="checkout-section-title">Coupon Code</p>
+            <div class="coupon-row">
+                <input type="text" id="coupon-code" placeholder="Enter coupon code" class="inp">
+                <button id="apply-coupon-btn" class="btn-ghost rounded-sm text-xs px-4">Apply</button>
             </div>
-            <input type="text" id="transaction-id" placeholder="Transaction ID (e.g., 8E7A2K9L)" class="w-full border rounded-lg p-2 mt-2">
-            <p class="text-xs text-red-500 hidden mt-1" id="txn-error">Transaction ID is required for bKash/Nagad payments.</p>
-        </div>
+            <div id="coupon-feedback" class="text-xs mt-1.5"></div>
 
-        <div class="mb-3">
-            <input type="text" id="coupon-code" placeholder="Coupon code" class="w-full border rounded-lg p-2 mb-1">
-            <button id="apply-coupon-btn" class="text-sm text-blue-600">Apply coupon</button>
-            <div id="coupon-feedback" class="text-xs mt-1"></div>
+            <!-- Actions -->
+            <div class="flex flex-col gap-3 mt-7">
+                <button onclick="placeOrder()" class="btn-gold w-full py-3.5 rounded-sm">Place Order</button>
+                <button onclick="closeCheckout()" class="btn-ghost w-full py-3 rounded-sm">Cancel</button>
+            </div>
         </div>
-
-        <button onclick="placeOrder()" class="w-full bg-black text-white py-2 rounded-lg text-sm uppercase tracking-wider">Place Order</button>
-        <button onclick="closeCheckout()" class="w-full mt-2 border border-gray-300 py-2 rounded-lg text-sm hover:bg-gray-100">Cancel</button>
     </div>
 </div>
 
-<!-- Product Quick View Modal -->
-<div id="product-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-4 md:p-6 max-h-[90vh] overflow-auto">
-        <div class="flex justify-between items-start">
-            <h3 id="modal-name" class="text-2xl font-serif"></h3>
+
+<!-- ════════════════════════ PRODUCT QUICK VIEW MODAL ════════════════════════ -->
+<div id="product-modal"
+     class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+
+        <div class="modal-hd">
+            <h3 id="modal-name"></h3>
             <div class="flex gap-2">
-                <button id="modal-wishlist-btn" class="hover:opacity-70"><i data-lucide="heart" class="w-5 h-5"></i></button>
-                <button onclick="closeProductModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button id="modal-wishlist-btn"
+                        class="w-9 h-9 min-h-0 rounded-full border border-[var(--border)] hover:border-[var(--gold)] transition">
+                    <i data-lucide="heart" class="w-4 h-4 mx-auto"></i>
+                </button>
+                <button onclick="closeProductModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
         </div>
-        <div class="relative">
-            <img id="modal-main-img" class="w-full h-64 md:h-80 object-cover rounded-lg cursor-pointer" onclick="openLightbox()" loading="lazy">
-            <div id="modal-thumbnails" class="flex gap-2 mt-3 overflow-x-auto pb-2"></div>
-        </div>
-        <p id="modal-price" class="text-xl font-semibold mt-3"></p>
-        <div class="flex items-center gap-2 mt-1">
-            <div id="modal-rating" class="star-rating"></div>
-            <span id="modal-review-count" class="text-sm text-gray-500"></span>
-        </div>
-        <p id="modal-desc" class="text-gray-600 my-3 leading-relaxed text-sm"></p>
-        <div class="mt-3">
-            <p class="text-sm uppercase tracking-wider font-medium mb-2">Select Size</p>
-            <div class="flex gap-2" id="size-options">
-                <button class="size-btn w-10 h-10 border rounded-full" data-size="XS">XS</button>
-                <button class="size-btn w-10 h-10 border rounded-full" data-size="S">S</button>
-                <button class="size-btn w-10 h-10 border rounded-full active" data-size="M">M</button>
-                <button class="size-btn w-10 h-10 border rounded-full" data-size="L">L</button>
-                <button class="size-btn w-10 h-10 border rounded-full" data-size="XL">XL</button>
+
+        <div class="px-6 pb-8">
+            <!-- Image -->
+            <div class="mt-4">
+                <img id="modal-main-img"
+                     class="w-full h-72 md:h-96 object-cover rounded-sm cursor-zoom-in"
+                     onclick="openLightbox()" loading="lazy">
+                <div id="modal-thumbnails" class="flex gap-2 mt-3 overflow-x-auto pb-1"></div>
+            </div>
+
+            <!-- Price + rating -->
+            <div class="flex items-center justify-between mt-4">
+                <p id="modal-price" class="font-serif text-2xl font-light"></p>
+                <div class="flex items-center gap-2">
+                    <div id="modal-rating" class="star-rating" style="font-size:14px; color:var(--gold);"></div>
+                    <span id="modal-review-count" class="text-xs text-[var(--muted)]"></span>
+                </div>
+            </div>
+
+            <p id="modal-desc" class="text-sm text-[var(--muted)] mt-3 leading-relaxed"></p>
+
+            <!-- Size -->
+            <div class="mt-5">
+                <p class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)] mb-2.5">Select Size</p>
+                <div class="flex gap-2" id="size-options">
+                    <button class="size-btn" data-size="XS">XS</button>
+                    <button class="size-btn" data-size="S">S</button>
+                    <button class="size-btn active" data-size="M">M</button>
+                    <button class="size-btn" data-size="L">L</button>
+                    <button class="size-btn" data-size="XL">XL</button>
+                </div>
+            </div>
+
+            <!-- Colour -->
+            <div id="color-selector" class="mt-5">
+                <p class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)] mb-2.5">Select Colour</p>
+                <div id="color-swatches" class="flex gap-2 flex-wrap"></div>
+                <p id="selected-color-name" class="text-xs text-[var(--muted)] mt-1.5"></p>
+            </div>
+
+            <button onclick="addCurrentToCart()"
+                    class="btn-primary w-full mt-7 py-3.5 rounded-sm">Add to Bag</button>
+
+            <hr class="divider">
+
+            <!-- Reviews -->
+            <h4 class="font-serif text-xl font-light mb-3">Reviews</h4>
+            <div id="reviews-container" class="max-h-52 overflow-y-auto space-y-3"></div>
+
+            <div id="add-review-section" class="mt-5 pt-4 border-t border-[var(--border)]">
+                <p class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)] mb-2">Write a Review</p>
+                <div class="star-rating mb-3" id="review-stars">
+                    <span class="star" data-rating="1">★</span>
+                    <span class="star" data-rating="2">★</span>
+                    <span class="star" data-rating="3">★</span>
+                    <span class="star" data-rating="4">★</span>
+                    <span class="star" data-rating="5">★</span>
+                </div>
+                <textarea id="review-comment" rows="2" class="inp" placeholder="Share your experience…"></textarea>
+                <button id="submit-review-btn"
+                        class="btn-primary mt-3 px-6 py-2 rounded-sm text-xs">Submit Review</button>
             </div>
         </div>
-        <div id="color-selector" class="mt-4">
-            <p class="text-sm uppercase tracking-wider font-medium mb-2">Select Colour</p>
-            <div id="color-swatches" class="flex gap-3 flex-wrap"></div>
-            <p id="selected-color-name" class="text-xs text-gray-500 mt-1"></p>
+    </div>
+</div>
+
+
+<!-- ════════════════════════ WISHLIST MODAL ════════════════════════ -->
+<div id="wishlist-modal"
+     class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-3xl animate-fadeUp">
+        <div class="modal-hd">
+            <h3>My Wishlist</h3>
+            <button onclick="closeWishlistModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
-        <button onclick="addCurrentToCart()" class="mt-6 w-full bg-black text-white py-3 rounded-lg text-sm uppercase tracking-wider">Add to Cart</button>
-        <hr class="my-4">
-        <h4 class="font-semibold text-lg">Customer Reviews</h4>
-        <div id="reviews-container" class="max-h-60 overflow-y-auto space-y-3 mt-2"></div>
-        <div id="add-review-section" class="mt-4 border-t pt-3">
-            <h5 class="font-medium">Write a review</h5>
-            <div class="star-rating mb-2" id="review-stars">
-                <span class="star" data-rating="1">★</span>
-                <span class="star" data-rating="2">★</span>
-                <span class="star" data-rating="3">★</span>
-                <span class="star" data-rating="4">★</span>
-                <span class="star" data-rating="5">★</span>
+        <div class="p-6">
+            <div id="wishlist-items" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════ AUTH MODAL ════════════════════════ -->
+<div id="auth-modal"
+     class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="auth-panel animate-fadeUp">
+        <!-- Dark top band -->
+        <div class="auth-top">
+            <p class="brand">COLONIAL</p>
+            <p class="tagline">Timeless Elegance</p>
+            <p id="auth-tagline-sub" class="text-[.7rem] text-white/50 mt-2 tracking-[.1em] uppercase">Welcome back</p>
+        </div>
+
+        <!-- Form body -->
+        <div class="auth-body">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="auth-modal-title" class="font-serif text-2xl font-light">Sign In</h3>
+                <button onclick="closeAuthModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
-            <textarea id="review-comment" rows="2" class="w-full border rounded p-2 text-sm" placeholder="Share your experience..."></textarea>
-            <button id="submit-review-btn" class="mt-2 bg-black text-white px-4 py-1 text-sm rounded">Submit Review</button>
+
+            <div id="auth-name-group" class="hidden mb-3">
+                <input type="text" id="auth-name" placeholder="Full Name" class="inp">
+            </div>
+            <div class="mb-3">
+                <input type="email" id="auth-email" placeholder="Email Address" class="inp">
+            </div>
+            <div class="mb-5">
+                <input type="password" id="auth-password" placeholder="Password" class="inp">
+            </div>
+
+            <button id="auth-submit" class="btn-primary w-full py-3.5 rounded-sm">Sign In</button>
+
+            <p class="text-center text-xs text-[var(--muted)] mt-5">
+                <span id="auth-toggle-text">Don't have an account?</span>
+                <button id="auth-toggle-btn"
+                        class="text-[var(--gold)] ml-1 underline min-h-0 h-auto font-medium">Create one</button>
+            </p>
         </div>
     </div>
 </div>
 
-<!-- Wishlist Modal -->
-<div id="wishlist-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-3xl w-full mx-auto p-6 max-h-[80vh] overflow-auto">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">My Wishlist</h3>
-            <button onclick="closeWishlistModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div id="wishlist-items" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
-    </div>
-</div>
 
-<!-- Auth Modal -->
-<div id="auth-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-md w-full mx-auto p-6">
-        <div class="flex justify-between items-center mb-4"><h3 id="auth-modal-title" class="text-2xl font-serif">Login</h3><button onclick="closeAuthModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-        <div id="auth-form">
-            <input type="email" id="auth-email" placeholder="Email" class="w-full border rounded-lg p-2 mb-3">
-            <input type="password" id="auth-password" placeholder="Password" class="w-full border rounded-lg p-2 mb-4">
-            <div id="auth-name-group" class="hidden"><input type="text" id="auth-name" placeholder="Full name" class="w-full border rounded-lg p-2 mb-3"></div>
-            <button id="auth-submit" class="w-full bg-black text-white py-2 rounded-lg">Login</button>
-            <p class="text-center text-sm mt-4"><span id="auth-toggle-text">Don't have an account?</span><button id="auth-toggle-btn" class="text-blue-600 ml-1">Register</button></p>
+<!-- ════════════════════════ MY ORDERS MODAL ════════════════════════ -->
+<div id="orders-modal"
+     class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-3xl animate-fadeUp">
+        <div class="modal-hd">
+            <h3>My Orders</h3>
+            <button onclick="closeOrdersModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <div class="p-6">
+            <div id="orders-list-container" class="space-y-4"></div>
         </div>
     </div>
 </div>
 
-<!-- My Orders Modal -->
-<div id="orders-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-3xl w-full mx-auto p-6 max-h-[80vh] overflow-auto">
-        <div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-serif">My Orders</h3><button onclick="closeOrdersModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-        <div id="orders-list-container" class="space-y-4"></div>
-    </div>
-</div>
 
-<!-- FOOTER -->
-<footer class="bg-black text-white/80 mt-16 py-8 px-4 md:px-6 lg:px-12 border-t border-gray-800">
+<!-- ════════════════════════ FOOTER ════════════════════════ -->
+<footer class="bg-[var(--ink)] text-white/60 mt-20 py-12 px-5 md:px-8 lg:px-14">
     <div class="max-w-7xl mx-auto">
-        <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-center">
-            <a href="#" id="size-guide-link" class="hover:underline inline-block">Size Guide</a>
-            <a href="#" id="fabric-care-link" class="hover:underline inline-block">Fabric Care</a>
-            <a href="#" id="delivery-return-link" class="hover:underline inline-block">Delivery & Return</a>
-            <a href="#" id="billing-link" class="hover:underline inline-block">Billing</a>
-            <a href="#" id="footer-terms-link" class="hover:underline inline-block">Terms & Conditions</a>
-            <a href="#" id="contact-link" class="hover:underline inline-block">Contact</a>
-            <a href="#" id="about-link" class="hover:underline inline-block">About Us</a>
-            <a href="#" id="lifestyle-link" class="hover:underline inline-block">Lifestyle Card</a>
-            <a href="#" id="offers-link" class="hover:underline inline-block">Offers</a>
-            <a href="#" id="footer-privacy-link" class="hover:underline inline-block">Privacy Policy</a>
+        <div class="text-center mb-8">
+            <p class="font-serif text-3xl tracking-[.2em] text-white mb-1">COLONIAL</p>
+            <p class="text-[.62rem] tracking-[.22em] uppercase text-[var(--gold-pale)]"> Bangladesh</p>
         </div>
-        <div class="flex justify-center gap-6 mt-6">
-            <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-[#D4AF37] transition-colors text-2xl" aria-label="Facebook">
+        <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[.7rem] tracking-[.1em] uppercase text-center mb-8">
+            <a href="#" id="size-guide-link" class="hover:text-[var(--gold)] transition-colors">Size Guide</a>
+            <a href="#" id="fabric-care-link" class="hover:text-[var(--gold)] transition-colors">Fabric Care</a>
+            <a href="#" id="delivery-return-link" class="hover:text-[var(--gold)] transition-colors">Delivery & Return</a>
+            <a href="#" id="billing-link" class="hover:text-[var(--gold)] transition-colors">Billing</a>
+            <a href="#" id="footer-terms-link" class="hover:text-[var(--gold)] transition-colors">Terms</a>
+            <a href="#" id="contact-link" class="hover:text-[var(--gold)] transition-colors">Contact</a>
+            <a href="#" id="about-link" class="hover:text-[var(--gold)] transition-colors">About</a>
+            <a href="#" id="lifestyle-link" class="hover:text-[var(--gold)] transition-colors">Lifestyle Card</a>
+            <a href="#" id="offers-link" class="hover:text-[var(--gold)] transition-colors">Offers</a>
+            <a href="#" id="footer-privacy-link" class="hover:text-[var(--gold)] transition-colors">Privacy</a>
+        </div>
+        <div class="flex justify-center gap-6 mb-8">
+            <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer"
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors text-sm">
                 <i class="fab fa-facebook-f"></i>
             </a>
-            <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-[#D4AF37] transition-colors text-2xl" aria-label="Instagram">
+            <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer"
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors text-sm">
                 <i class="fab fa-instagram"></i>
             </a>
+            <a href="https://www.tiktok.com/@colonial.ltd?_r=1&_t=ZG-96KR9ohiG0H" target="_blank" rel="noopener noreferrer"
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors text-sm">
+                <i class="fab fa-tiktok"></i>
+            </a>
         </div>
-        <div class="text-center text-xs text-white/50 mt-6 pt-6 border-t border-gray-800">
+        <div class="text-center text-[.65rem] text-white/30 border-t border-white/10 pt-6">
             &copy; 2026 COLONIAL. All rights reserved.
         </div>
     </div>
 </footer>
-<!-- ==================== ALL MODALS ==================== -->
 
-<!-- Terms & Conditions Modal -->
-<div id="terms-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Terms & Conditions</h3>
-            <button onclick="closeTermsModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+
+<!-- ════════════════════════ FOOTER MODALS ════════════════════════ -->
+
+<!-- Terms -->
+<div id="terms-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Terms &amp; Conditions</h3><button onclick="closeTermsModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+            <p><strong class="text-[var(--ink)]">1. General</strong><br>By accessing or using the COLONIAL website, you agree to be bound by these Terms &amp; Conditions.</p>
+            <p><strong class="text-[var(--ink)]">2. Products &amp; Pricing</strong><br>All product descriptions, prices, and availability are subject to change without notice.</p>
+            <p><strong class="text-[var(--ink)]">3. Orders &amp; Payment</strong><br>Orders are confirmed only after payment verification. For bKash/Nagad orders, payment status must be verified by our admin before shipment.</p>
+            <p><strong class="text-[var(--ink)]">4. Shipping &amp; Delivery</strong><br>We ship within Bangladesh. Delivery times are estimates. Risk of loss passes to you upon delivery.</p>
+            <p><strong class="text-[var(--ink)]">5. Returns &amp; Refunds</strong><br>Items must be returned unused within 7 days of delivery. Refunds will be processed after inspection.</p>
+            <p><strong class="text-[var(--ink)]">6. Contact</strong><br>Email us at Colonialbusinessltd@gmail.com or call +8801643425517.</p>
+            <p><strong class="text-[var(--ink)]">7. Governing Law</strong><br>These terms are governed by the laws of Bangladesh.</p>
         </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>1. General</strong><br>By accessing or using the COLONIAL website, you agree to be bound by these Terms & Conditions.</p>
-            <p><strong>2. Products & Pricing</strong><br>All product descriptions, prices, and availability are subject to change without notice. We reserve the right to limit quantities.</p>
-            <p><strong>3. Orders & Payment</strong><br>Orders are confirmed only after payment verification. For bKash/Nagad orders, payment status must be verified by our admin before shipment.</p>
-            <p><strong>4. Shipping & Delivery</strong><br>We ship within Bangladesh. Delivery times are estimates. Risk of loss passes to you upon delivery.</p>
-            <p><strong>5. Returns & Refunds</strong><br>Items must be returned unused within 7 days of delivery. Refunds will be processed after inspection.</p>
-            <p><strong>6. Intellectual Property</strong><br>All content (logos, images, text) is property of COLONIAL and may not be used without permission.</p>
-            <p><strong>7. Contact</strong><br>For any questions, email us at Colonialbusinessltd@gmail.com or call +8801643425517.</p>
-            <p><strong>8. Governing Law</strong><br>These terms are governed by the laws of Bangladesh.</p>
-        </div>
-        <button onclick="closeTermsModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeTermsModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- Privacy Policy Modal -->
-<div id="privacy-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Privacy Policy</h3>
-            <button onclick="closePrivacyModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+<!-- Privacy -->
+<div id="privacy-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Privacy Policy</h3><button onclick="closePrivacyModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+            <p><strong class="text-[var(--ink)]">Information We Collect</strong><br>We collect name, email, shipping address, phone number, and order details to process your purchases.</p>
+            <p><strong class="text-[var(--ink)]">How We Use Your Information</strong><br>Your data is used solely for order fulfillment, customer support, and improving our service.</p>
+            <p><strong class="text-[var(--ink)]">Payment Security</strong><br>All online payments are processed through secure gateways.</p>
+            <p><strong class="text-[var(--ink)]">Cookies</strong><br>We use cookies to remember cart items and preferences.</p>
+            <p><strong class="text-[var(--ink)]">Your Rights</strong><br>Email Colonialbusinessltd@gmail.com to request access, correction, or deletion of your data.</p>
         </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>Information We Collect</strong><br>We collect name, email, shipping address, phone number, and order details to process your purchases.</p>
-            <p><strong>How We Use Your Information</strong><br>Your data is used solely for order fulfillment, customer support, and improving our service. We do not sell your personal information.</p>
-            <p><strong>Payment Security</strong><br>All online payments are processed through secure gateways. We do not store full payment credentials.</p>
-            <p><strong>Cookies</strong><br>We use cookies to remember cart items and preferences. You may disable cookies in your browser.</p>
-            <p><strong>Third-Party Sharing</strong><br>We share data only with delivery partners and payment processors as necessary.</p>
-            <p><strong>Your Rights</strong><br>You may request access, correction, or deletion of your data by emailing Colonialbusinessltd@gmail.com.</p>
-            <p><strong>Updates</strong><br>This policy may be updated. Changes will be posted on this page.</p>
-        </div>
-        <button onclick="closePrivacyModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closePrivacyModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- Size Guide Modal -->
-<div id="size-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Size Guide</h3>
-            <button onclick="closeSizeModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>International Size Chart</strong></p>
-            <table class="w-full border-collapse border border-gray-300">
-                <thead><tr class="bg-gray-100"><th class="border p-2">Size</th><th class="border p-2">Chest (in)</th><th class="border p-2">Waist (in)</th><th class="border p-2">Hip (in)</th></tr></thead>
-                <tbody>
-                    <tr><td class="border p-2">XS</td><td class="border p-2">32-34</td><td class="border p-2">26-28</td><td class="border p-2">34-36</td></tr>
-                    <tr><td class="border p-2">S</td><td class="border p-2">35-37</td><td class="border p-2">29-31</td><td class="border p-2">37-39</td></tr>
-                    <tr><td class="border p-2">M</td><td class="border p-2">38-40</td><td class="border p-2">32-34</td><td class="border p-2">40-42</td></tr>
-                    <tr><td class="border p-2">L</td><td class="border p-2">41-43</td><td class="border p-2">35-37</td><td class="border p-2">43-45</td></tr>
-                    <tr><td class="border p-2">XL</td><td class="border p-2">44-46</td><td class="border p-2">38-40</td><td class="border p-2">46-48</td></tr>
+<!-- Size Guide -->
+<div id="size-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Size Guide</h3><button onclick="closeSizeModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8">
+            <table class="w-full text-sm border-collapse">
+                <thead>
+                    <tr style="background:var(--warm);">
+                        <th class="border border-[var(--border)] p-2.5 text-left font-medium">Size</th>
+                        <th class="border border-[var(--border)] p-2.5 text-left font-medium">Chest (in)</th>
+                        <th class="border border-[var(--border)] p-2.5 text-left font-medium">Waist (in)</th>
+                        <th class="border border-[var(--border)] p-2.5 text-left font-medium">Hip (in)</th>
+                    </tr>
+                </thead>
+                <tbody class="text-[var(--muted)]">
+                    <tr><td class="border border-[var(--border)] p-2.5">XS</td><td class="border border-[var(--border)] p-2.5">32–34</td><td class="border border-[var(--border)] p-2.5">26–28</td><td class="border border-[var(--border)] p-2.5">34–36</td></tr>
+                    <tr><td class="border border-[var(--border)] p-2.5">S</td><td class="border border-[var(--border)] p-2.5">35–37</td><td class="border border-[var(--border)] p-2.5">29–31</td><td class="border border-[var(--border)] p-2.5">37–39</td></tr>
+                    <tr><td class="border border-[var(--border)] p-2.5">M</td><td class="border border-[var(--border)] p-2.5">38–40</td><td class="border border-[var(--border)] p-2.5">32–34</td><td class="border border-[var(--border)] p-2.5">40–42</td></tr>
+                    <tr><td class="border border-[var(--border)] p-2.5">L</td><td class="border border-[var(--border)] p-2.5">41–43</td><td class="border border-[var(--border)] p-2.5">35–37</td><td class="border border-[var(--border)] p-2.5">43–45</td></tr>
+                    <tr><td class="border border-[var(--border)] p-2.5">XL</td><td class="border border-[var(--border)] p-2.5">44–46</td><td class="border border-[var(--border)] p-2.5">38–40</td><td class="border border-[var(--border)] p-2.5">46–48</td></tr>
                 </tbody>
             </table>
-            <p class="mt-2">Measure your body and match with the chart above. If between sizes, order the larger size for comfort.</p>
+            <p class="text-xs text-[var(--muted)] mt-4">If between sizes, order the larger size for comfort.</p>
         </div>
-        <button onclick="closeSizeModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeSizeModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- Fabric Care Modal -->
-<div id="fabric-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Fabric Care Instructions</h3>
-            <button onclick="closeFabricModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+<!-- Fabric Care -->
+<div id="fabric-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Fabric Care</h3><button onclick="closeFabricModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+            <p><strong class="text-[var(--ink)]">General Care</strong><br>Machine wash cold with similar colors. Do not bleach. Tumble dry low. Iron on low heat if needed.</p>
+            <p><strong class="text-[var(--ink)]">Cotton</strong> — Wash inside out, avoid harsh detergents, air dry for longevity.</p>
+            <p><strong class="text-[var(--ink)]">Linen</strong> — Gentle cycle, remove promptly, iron while damp.</p>
+            <p><strong class="text-[var(--ink)]">Wool / Blends</strong> — Dry clean recommended or hand wash cold, lay flat to dry.</p>
         </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>General Care</strong><br>Machine wash cold with similar colors. Do not bleach. Tumble dry low. Iron on low heat if needed.</p>
-            <p><strong>Cotton:</strong> Wash inside out, avoid harsh detergents, air dry for longevity.</p>
-            <p><strong>Linen:</strong> Gentle cycle, remove promptly, iron while damp.</p>
-            <p><strong>Wool/Blends:</strong> Dry clean recommended or hand wash cold, lay flat to dry.</p>
-        </div>
-        <button onclick="closeFabricModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeFabricModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- Delivery & Return Modal (120-day return) -->
-<div id="delivery-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Delivery & Return</h3>
-            <button onclick="closeDeliveryModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+<!-- Delivery & Return -->
+<div id="delivery-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Delivery &amp; Return</h3><button onclick="closeDeliveryModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+            <p><strong class="text-[var(--ink)]">Shipping Policy</strong><br>We ship within Bangladesh. Standard delivery takes 3–5 business days. Express delivery available at extra cost.</p>
+            <p><strong class="text-[var(--ink)]">Return Policy</strong><br>We don't provide a return policy from the date of delivery.</p>
+            <p><strong class="text-[var(--ink)]">Exchange</strong><br>Free size exchange within 10 days with delivery charges added. Contact support to arrange pickup.</p>
         </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>Shipping Policy</strong><br>We ship within Bangladesh. Standard delivery takes 3-5 business days. Express delivery available at extra cost.</p>
-            <p><strong>Return Policy</strong><br>We don't <strong>provide no return policy</strong> from the date of delivery.</p>
-            <p><strong>Exchange</strong><br>Free size exchange within 1o days with delivery charges added. Contact support to arrange pickup.</p>
-        </div>
-        <button onclick="closeDeliveryModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeDeliveryModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- Billing Modal -->
-<div id="billing-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Billing Information</h3>
-            <button onclick="closeBillingModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+<!-- Billing -->
+<div id="billing-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Billing Information</h3><button onclick="closeBillingModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+            <p><strong class="text-[var(--ink)]">Payment Options</strong><br>We accept Cash on Delivery, BKash, and Nagad.</p>
+            <p><strong class="text-[var(--ink)]">Invoicing</strong><br>An invoice is sent to your email after order confirmation. For bulk orders, contact us directly.</p>
+            <p><strong class="text-[var(--ink)]">Tax &amp; Fees</strong><br>All prices include VAT. No hidden fees.</p>
         </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>Payment Options</strong><br>We accept Cash on Delivery, BKash, Nagad.</p>
-            <p><strong>Invoicing</strong><br>An invoice is sent to your email after order confirmation. For bulk orders or corporate billing, contact us directly.</p>
-            <p><strong>Tax & Fees</strong><br>All prices include VAT. No hidden fees.</p>
-        </div>
-        <button onclick="closeBillingModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeBillingModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- Contact Modal -->
-<div id="contact-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Contact Us</h3>
-            <button onclick="closeContactModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+<!-- Contact -->
+<div id="contact-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Contact Us</h3><button onclick="closeContactModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+            <p><strong class="text-[var(--ink)]">Email</strong> — <a href="mailto:colonialbusinessltd@gmail.com" class="text-[var(--gold)] hover:underline">colonialbusinessltd@gmail.com</a></p>
+            <p><strong class="text-[var(--ink)]">bKash / Nagad Support</strong> — +880 18713-330654</p>
+            <p><strong class="text-[var(--ink)]">Customer Support</strong> — +880 1643-425517</p>
+            <p><strong class="text-[var(--ink)]">Address</strong> — Chittagong, Bangladesh</p>
+            <p><strong class="text-[var(--ink)]">Business Hours</strong> — Saturday–Thursday, 10am – 8pm (Friday closed)</p>
         </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>Email:</strong> <a href="mailto:colonialbusinessltd@gmail.com" class="text-blue-600">colonialbusinessltd@gmail.com</a></p>
-            <p><strong>Phone:</strong> +880 18713-330654 (BKash/Nagad support)</p>
-            <p><strong>Support:</strong> +880 1643-425517</p>
-            <p><strong>Address:</strong> Chittagong, Bangladesh</p>
-            <p><strong>Business Hours:</strong> Saturday–Thursday, 10am – 8pm (Friday closed)</p>
-        </div>
-        <button onclick="closeContactModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeContactModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- About Us Modal -->
-<div id="about-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">About COLONIAL</h3>
-            <button onclick="closeAboutModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div class="space-y-4 text-sm">
+<!-- About -->
+<div id="about-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>About COLONIAL</h3><button onclick="closeAboutModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
             <p>Founded in 2026, COLONIAL is a contemporary fashion brand that blends timeless elegance with modern minimalist design. We believe in quality craftsmanship, sustainable practices, and creating pieces that transcend seasons.</p>
             <p>Our collections are inspired by the raw beauty of nature and the precision of architecture. Every garment is designed with care, using premium materials sourced responsibly.</p>
             <p>We are proud to serve customers across Bangladesh and look forward to bringing our vision worldwide.</p>
         </div>
-        <button onclick="closeAboutModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeAboutModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- Lifestyle Card Modal -->
-<div id="lifestyle-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Lifestyle Card</h3>
-            <button onclick="closeLifestyleModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>Join the COLONIAL Lifestyle Card – Free!</strong></p>
+<!-- Lifestyle -->
+<div id="lifestyle-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Lifestyle Card</h3><button onclick="closeLifestyleModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+            <p class="font-medium text-[var(--ink)]">Join the COLONIAL Lifestyle Card — Free!</p>
             <p>Earn points on every purchase, get early access to sales, birthday discounts, and exclusive members‑only collections.</p>
-            <p><strong>Benefits:</strong></p>
-            <ul class="list-disc pl-6">
+            <ul class="space-y-1 pl-4 list-disc">
                 <li>5% back in points on every order</li>
-                <li>Free express shipping on orders over BDT 5000</li>
+                <li>Free express shipping on orders over BDT 5,000</li>
                 <li>15% birthday discount</li>
                 <li>Exclusive early access to new arrivals</li>
             </ul>
             <p>Sign up on your next checkout or contact us to activate your card.</p>
         </div>
-        <button onclick="closeLifestyleModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeLifestyleModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
 
-<!-- Offers Modal -->
-<div id="offers-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-auto p-6 max-h-[80vh] overflow-auto text-gray-800">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-2xl font-serif">Current Offers</h3>
-            <button onclick="closeOffersModal()" class="hover:opacity-70"><i data-lucide="x" class="w-5 h-5"></i></button>
+<!-- Offers -->
+<div id="offers-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd"><h3>Current Offers</h3><button onclick="closeOffersModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+            <p><strong class="text-[var(--ink)]">🎉 Summer Launch Sale</strong><br>Up to 30% off on new arrivals. Use code: <code class="font-mono bg-[var(--warm)] px-2 py-0.5 rounded text-[var(--ink)]">SUMMER30</code></p>
+            <p><strong class="text-[var(--ink)]">💳 First Order</strong><br>Get 10% off your first purchase — automatically applied at checkout.</p>
+            <p><strong class="text-[var(--ink)]">🚚 Free Shipping</strong><br>On all orders over BDT 4,000. No code needed.</p>
+            <p><strong class="text-[var(--ink)]">👭 Refer a Friend</strong><br>Give 15% off, get 15% off when they order.</p>
         </div>
-        <div class="space-y-4 text-sm">
-            <p><strong>🎉 Summer Launch Sale</strong><br>Up to 30% off on new arrivals. Use code: <span class="font-mono bg-gray-100 px-2 py-1">SUMMER30</span></p>
-            <p><strong>💳 First Order?</strong><br>Get 10% off your first purchase – automatically applied at checkout.</p>
-            <p><strong>🚚 Free Shipping</strong><br>On all orders over BDT 4000. No code needed.</p>
-            <p><strong>👭 Refer a Friend</strong><br>Give 15% off, get 15% off when they order.</p>
-        </div>
-        <button onclick="closeOffersModal()" class="mt-6 w-full bg-black text-white py-2 rounded-lg">Close</button>
+        <div class="px-7 pb-7"><button onclick="closeOffersModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
+
+
+<!-- ════════════════════════ TOAST ════════════════════════ -->
+<div id="toast"></div>
+
+
+<!-- ════════════════════════ SCRIPTS ════════════════════════ -->
 <script>
-// ==================== MODAL FUNCTIONS (footer links) ====================
-function openTermsModal() { document.getElementById('terms-modal').style.display = 'flex'; }
-function closeTermsModal() { document.getElementById('terms-modal').style.display = 'none'; }
-function openPrivacyModal() { document.getElementById('privacy-modal').style.display = 'flex'; }
-function closePrivacyModal() { document.getElementById('privacy-modal').style.display = 'none'; }
-function openSizeModal() { document.getElementById('size-modal').style.display = 'flex'; }
-function closeSizeModal() { document.getElementById('size-modal').style.display = 'none'; }
-function openFabricModal() { document.getElementById('fabric-modal').style.display = 'flex'; }
-function closeFabricModal() { document.getElementById('fabric-modal').style.display = 'none'; }
-function openDeliveryModal() { document.getElementById('delivery-modal').style.display = 'flex'; }
-function closeDeliveryModal() { document.getElementById('delivery-modal').style.display = 'none'; }
-function openBillingModal() { document.getElementById('billing-modal').style.display = 'flex'; }
-function closeBillingModal() { document.getElementById('billing-modal').style.display = 'none'; }
-function openContactModal() { document.getElementById('contact-modal').style.display = 'flex'; }
-function closeContactModal() { document.getElementById('contact-modal').style.display = 'none'; }
-function openAboutModal() { document.getElementById('about-modal').style.display = 'flex'; }
-function closeAboutModal() { document.getElementById('about-modal').style.display = 'none'; }
-function openLifestyleModal() { document.getElementById('lifestyle-modal').style.display = 'flex'; }
-function closeLifestyleModal() { document.getElementById('lifestyle-modal').style.display = 'none'; }
-function openOffersModal() { document.getElementById('offers-modal').style.display = 'flex'; }
-function closeOffersModal() { document.getElementById('offers-modal').style.display = 'none'; }
+// ==================== MODAL HELPERS ====================
+function openTermsModal()    { document.getElementById('terms-modal').style.display='flex'; }
+function closeTermsModal()   { document.getElementById('terms-modal').style.display='none'; }
+function openPrivacyModal()  { document.getElementById('privacy-modal').style.display='flex'; }
+function closePrivacyModal() { document.getElementById('privacy-modal').style.display='none'; }
+function openSizeModal()     { document.getElementById('size-modal').style.display='flex'; }
+function closeSizeModal()    { document.getElementById('size-modal').style.display='none'; }
+function openFabricModal()   { document.getElementById('fabric-modal').style.display='flex'; }
+function closeFabricModal()  { document.getElementById('fabric-modal').style.display='none'; }
+function openDeliveryModal() { document.getElementById('delivery-modal').style.display='flex'; }
+function closeDeliveryModal(){ document.getElementById('delivery-modal').style.display='none'; }
+function openBillingModal()  { document.getElementById('billing-modal').style.display='flex'; }
+function closeBillingModal() { document.getElementById('billing-modal').style.display='none'; }
+function openContactModal()  { document.getElementById('contact-modal').style.display='flex'; }
+function closeContactModal() { document.getElementById('contact-modal').style.display='none'; }
+function openAboutModal()    { document.getElementById('about-modal').style.display='flex'; }
+function closeAboutModal()   { document.getElementById('about-modal').style.display='none'; }
+function openLifestyleModal(){ document.getElementById('lifestyle-modal').style.display='flex'; }
+function closeLifestyleModal(){ document.getElementById('lifestyle-modal').style.display='none'; }
+function openOffersModal()   { document.getElementById('offers-modal').style.display='flex'; }
+function closeOffersModal()  { document.getElementById('offers-modal').style.display='none'; }
 
-// ==================== MOBILE MENU AUTH BUTTON (NEW) ====================
+// ==================== MOBILE MENU AUTH ====================
 function updateMobileAuthButton() {
-    const mobileAuthBtn = document.getElementById('mobile-auth-btn');
-    if (!mobileAuthBtn) return;
+    const btn = document.getElementById('mobile-auth-btn');
+    if (!btn) return;
     if (currentUser) {
-        mobileAuthBtn.textContent = 'Logout';
-        mobileAuthBtn.classList.remove('bg-black', 'hover:bg-gray-800');
-        mobileAuthBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+        btn.textContent = 'Sign Out';
+        btn.style.background = '#b94040';
+        btn.style.borderColor = '#b94040';
     } else {
-        mobileAuthBtn.textContent = 'Login';
-        mobileAuthBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
-        mobileAuthBtn.classList.add('bg-black', 'hover:bg-gray-800');
+        btn.textContent = 'Login';
+        btn.style.background = '';
+        btn.style.borderColor = '';
     }
 }
 
 function handleMobileAuth() {
-    const mobileAuthBtn = document.getElementById('mobile-auth-btn');
-    if (!mobileAuthBtn) return;
-    mobileAuthBtn.addEventListener('click', () => {
+    const btn = document.getElementById('mobile-auth-btn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
         if (currentUser) {
-            // Logout
             if (customerEventSource) customerEventSource.close();
             localStorage.removeItem('amoura_token');
-            authToken = null;
-            currentUser = null;
-            updateAuthUI();
-            updateMobileAuthButton();
-            toggleMenu(); // close mobile menu
-            showToast('Logged out successfully');
-            // Reload products to reset any user-specific data
+            authToken = null; currentUser = null;
+            updateAuthUI(); updateMobileAuthButton();
+            toggleMenu();
+            showToast('Signed out successfully');
             loadProducts(true);
-            // Optionally reload page to clear all state
             setTimeout(() => location.reload(), 500);
         } else {
-            // Login
-            toggleMenu(); // close menu
+            toggleMenu();
             openAuthModal();
         }
     });
 }
 
-// ==================== INITIALIZE ON DOM READY ====================
-document.addEventListener('DOMContentLoaded', function() {
-    // Footer modal triggers
-    document.getElementById('size-guide-link')?.addEventListener('click', (e) => { e.preventDefault(); openSizeModal(); });
-    document.getElementById('fabric-care-link')?.addEventListener('click', (e) => { e.preventDefault(); openFabricModal(); });
-    document.getElementById('delivery-return-link')?.addEventListener('click', (e) => { e.preventDefault(); openDeliveryModal(); });
-    document.getElementById('billing-link')?.addEventListener('click', (e) => { e.preventDefault(); openBillingModal(); });
-    document.getElementById('footer-terms-link')?.addEventListener('click', (e) => { e.preventDefault(); openTermsModal(); });
-    document.getElementById('contact-link')?.addEventListener('click', (e) => { e.preventDefault(); openContactModal(); });
-    document.getElementById('about-link')?.addEventListener('click', (e) => { e.preventDefault(); openAboutModal(); });
-    document.getElementById('lifestyle-link')?.addEventListener('click', (e) => { e.preventDefault(); openLifestyleModal(); });
-    document.getElementById('offers-link')?.addEventListener('click', (e) => { e.preventDefault(); openOffersModal(); });
-    document.getElementById('footer-privacy-link')?.addEventListener('click', (e) => { e.preventDefault(); openPrivacyModal(); });
-    
-    // Wishlist link in footer (if exists)
-    const footerWishlist = document.getElementById('footer-wishlist-link');
-    if (footerWishlist) footerWishlist.addEventListener('click', (e) => { e.preventDefault(); openWishlistModal(); });
-    
-    // Filter toggle button (show/hide category & sort row)
-    const filterToggle = document.getElementById('filter-toggle-btn');
-    const filterRow = document.getElementById('filter-row');
-    if (filterToggle && filterRow) {
-        filterToggle.addEventListener('click', () => {
-            filterRow.classList.toggle('hidden');
-        });
-    }
-    
-    // Search icon focuses the search input
-    const searchIcon = document.getElementById('search-icon-btn');
-    const searchInput = document.getElementById('search-input');
-    if (searchIcon && searchInput) {
-        searchIcon.addEventListener('click', () => {
-            searchInput.focus();
-            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
-    }
-    
+// ==================== DOM READY ====================
+document.addEventListener('DOMContentLoaded', function () {
+    // Footer links
+    document.getElementById('size-guide-link')?.addEventListener('click',    e => { e.preventDefault(); openSizeModal(); });
+    document.getElementById('fabric-care-link')?.addEventListener('click',   e => { e.preventDefault(); openFabricModal(); });
+    document.getElementById('delivery-return-link')?.addEventListener('click', e => { e.preventDefault(); openDeliveryModal(); });
+    document.getElementById('billing-link')?.addEventListener('click',       e => { e.preventDefault(); openBillingModal(); });
+    document.getElementById('footer-terms-link')?.addEventListener('click',  e => { e.preventDefault(); openTermsModal(); });
+    document.getElementById('contact-link')?.addEventListener('click',       e => { e.preventDefault(); openContactModal(); });
+    document.getElementById('about-link')?.addEventListener('click',         e => { e.preventDefault(); openAboutModal(); });
+    document.getElementById('lifestyle-link')?.addEventListener('click',     e => { e.preventDefault(); openLifestyleModal(); });
+    document.getElementById('offers-link')?.addEventListener('click',        e => { e.preventDefault(); openOffersModal(); });
+    document.getElementById('footer-privacy-link')?.addEventListener('click', e => { e.preventDefault(); openPrivacyModal(); });
+    document.getElementById('footer-wishlist-link')?.addEventListener('click', e => { e.preventDefault(); openWishlistModal(); });
+
+    // Filter toggle
+    document.getElementById('filter-toggle-btn')?.addEventListener('click', () => {
+        document.getElementById('filter-row')?.classList.toggle('hidden');
+    });
+
+    // Search icon → focus input
+    document.getElementById('search-icon-btn')?.addEventListener('click', () => {
+        const si = document.getElementById('search-input');
+        si?.focus();
+        si?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
     // Debounced search
-    let searchTimeout;
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                currentFilters.q = e.target.value;
-                loadProducts(true);
-            }, 300);
-        });
-    }
-    
-    // Category filter
-    const categoryFilter = document.getElementById('category-filter');
-    if (categoryFilter) {
-        categoryFilter.addEventListener('change', (e) => {
-            currentFilters.category = e.target.value;
-            loadProducts(true);
-        });
-    }
-    
-    // Sort select
-    const sortSelect = document.getElementById('sort-select');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', (e) => {
-            currentFilters.sort = e.target.value;
-            loadProducts(true);
-        });
-    }
-    
-    // Load More button
-    const loadMoreBtn = document.getElementById('load-more');
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', () => {
-            currentPage++;
-            loadProducts(false);
-        });
-    }
-    
-    // Size selection inside product modal (delegation)
-    document.addEventListener('click', (e) => {
-        if (e.target.classList && e.target.classList.contains('size-btn')) {
-            document.querySelectorAll('#size-options .size-btn').forEach(btn => btn.classList.remove('active'));
+    let st;
+    document.getElementById('search-input')?.addEventListener('input', e => {
+        clearTimeout(st);
+        st = setTimeout(() => { currentFilters.q = e.target.value; loadProducts(true); }, 300);
+    });
+
+    // Category / sort
+    document.getElementById('category-filter')?.addEventListener('change', e => { currentFilters.category = e.target.value; loadProducts(true); });
+    document.getElementById('sort-select')?.addEventListener('change',    e => { currentFilters.sort = e.target.value; loadProducts(true); });
+
+    // Load more
+    document.getElementById('load-more')?.addEventListener('click', () => { currentPage++; loadProducts(false); });
+
+    // Size selection (delegated)
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('size-btn')) {
+            document.querySelectorAll('#size-options .size-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
-            selectedSize = e.target.getAttribute('data-size');
+            selectedSize = e.target.dataset.size;
         }
     });
-    
-    // Carousel navigation
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    if (prevBtn) prevBtn.addEventListener('click', () => prevSlide());
-    if (nextBtn) nextBtn.addEventListener('click', () => nextSlide());
-    
-    // Mobile auth button handler
+
+    // Carousel nav
+    document.getElementById('prev-btn')?.addEventListener('click', prevSlide);
+    document.getElementById('next-btn')?.addEventListener('click', nextSlide);
+
     handleMobileAuth();
-    
-    // Start everything
     lucide.createIcons();
     loadCategories();
     loadProducts(true);
@@ -690,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCurrentUser();
 });
 
-// ------------------- MAIN APPLICATION STATE -------------------
+// ==================== STATE ====================
 let currentPage = 1, totalPages = 1;
 let currentFilters = { q: '', category: 'all', sort: 'newest' };
 let cart = JSON.parse(localStorage.getItem('amoura_cart')) || [];
@@ -706,257 +1323,331 @@ let carouselProducts = [], currentSlide = 0, slideInterval;
 let wishlist = [];
 let currentRating = 0;
 
-function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : m); }
-function showToast(message) {
-    let toast = document.getElementById('toast');
-    if (!toast) { toast = document.createElement('div'); toast.id = 'toast'; toast.className = 'fixed bottom-4 right-4 bg-black text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300 opacity-0 text-sm'; document.body.appendChild(toast); }
-    toast.innerText = message; toast.style.opacity = '1'; setTimeout(() => toast.style.opacity = '0', 3000);
+function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;');
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.opacity = '1';
+    clearTimeout(t._to);
+    t._to = setTimeout(() => t.style.opacity = '0', 3000);
 }
 
 function getPaymentStatusBadge(status) {
-    const map = { 'paid': 'payment-paid', 'pending': 'payment-pending', 'awaiting_verification': 'payment-awaiting', 'failed': 'payment-failed' };
-    return `<span class="payment-badge ${map[status] || 'payment-pending'}">${escapeHtml(status ? status.replace('_', ' ') : 'pending')}</span>`;
+    const map = { paid:'payment-paid', pending:'payment-pending', awaiting_verification:'payment-awaiting', failed:'payment-failed' };
+    return `<span class="payment-badge ${map[status]||'payment-pending'}">${escapeHtml(status?status.replace('_',' '):'pending')}</span>`;
 }
 
+// ==================== WISHLIST ====================
 async function loadWishlistCount() {
     if (!authToken) return;
     try {
-        const res = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${authToken}` } });
-        wishlist = (await res.json()).map(p => p.id);
-        const countSpan = document.getElementById('wishlist-count');
-        if (countSpan) {
-            countSpan.innerText = wishlist.length;
-            countSpan.style.opacity = wishlist.length ? '1' : '0';
-        }
-    } catch(err) { console.error(err); }
+        const r = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${authToken}` } });
+        wishlist = (await r.json()).map(p => p.id);
+        const s = document.getElementById('wishlist-count');
+        if (s) { s.textContent = wishlist.length; s.style.opacity = wishlist.length ? '1' : '0'; }
+    } catch(e) { console.error(e); }
 }
 
 async function toggleWishlist(productId) {
     if (!authToken) { openAuthModal(); return; }
-    const inWishlist = wishlist.includes(productId);
-    const url = inWishlist ? `/api/wishlist/${productId}` : '/api/wishlist';
-    const method = inWishlist ? 'DELETE' : 'POST';
+    const inW = wishlist.includes(productId);
+    const url = inW ? `/api/wishlist/${productId}` : '/api/wishlist';
     try {
-        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` }, body: JSON.stringify({ product_id: productId }) });
-        if (res.ok) {
-            if (inWishlist) wishlist = wishlist.filter(id => id !== productId);
-            else wishlist.push(productId);
-            const countSpan = document.getElementById('wishlist-count');
-            if (countSpan) {
-                countSpan.innerText = wishlist.length;
-                countSpan.style.opacity = wishlist.length ? '1' : '0';
-            }
-            showToast(inWishlist ? 'Removed from wishlist' : 'Added to wishlist');
+        const r = await fetch(url, { method: inW?'DELETE':'POST', headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${authToken}` }, body: JSON.stringify({ product_id: productId }) });
+        if (r.ok) {
+            if (inW) wishlist = wishlist.filter(id => id !== productId); else wishlist.push(productId);
+            const s = document.getElementById('wishlist-count');
+            if (s) { s.textContent = wishlist.length; s.style.opacity = wishlist.length ? '1' : '0'; }
+            showToast(inW ? 'Removed from wishlist' : 'Added to wishlist');
             renderWishlistModal();
-            const heartIcon = document.getElementById('modal-wishlist-btn')?.querySelector('i');
-            if (heartIcon) inWishlist ? heartIcon.classList.remove('fill-red-500') : heartIcon.classList.add('fill-red-500');
+            const hi = document.getElementById('modal-wishlist-btn')?.querySelector('i');
+            if (hi) inW ? hi.classList.remove('fill-red-500') : hi.classList.add('fill-red-500');
         }
-    } catch(err) { console.error(err); }
+    } catch(e) { console.error(e); }
 }
 
 async function renderWishlistModal() {
     if (!authToken) return;
-    const products = await (await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${authToken}` } })).json();
-    const container = document.getElementById('wishlist-items');
-    if (!container) return;
-    if (!products.length) { container.innerHTML = '<div class="col-span-full text-center text-gray-500">Your wishlist is empty.</div>'; return; }
-    container.innerHTML = products.map(p => `
-        <div class="border rounded p-2 text-center">
-            <img src="${p.image_url || 'https://placehold.co/150x180'}" class="h-32 w-full object-cover">
-            <p class="font-medium mt-1">${escapeHtml(p.name)}</p>
-            <p>BDT ${p.final_price || p.price}</p>
-            <button onclick="addToCart({id:${p.id}, name:'${p.name.replace(/'/g, "\\'")}', price:${p.final_price || p.price}, image_url:'${p.image_url}'}, 1); closeWishlistModal();" class="bg-black text-white text-xs px-2 py-1 rounded mt-1">Add to Cart</button>
-            <button onclick="toggleWishlist(${p.id})" class="text-xs underline ml-1">Remove</button>
+    const prods = await (await fetch('/api/wishlist', { headers: { 'Authorization':`Bearer ${authToken}` } })).json();
+    const c = document.getElementById('wishlist-items');
+    if (!c) return;
+    if (!prods.length) { c.innerHTML = '<div class="col-span-full text-center text-[var(--muted)] py-8">Your wishlist is empty.</div>'; return; }
+    c.innerHTML = prods.map(p => `
+        <div class="wishlist-card">
+            <img src="${p.image_url||'https://placehold.co/300x360/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-40 object-cover">
+            <div class="p-3">
+                <p class="font-serif text-base font-light leading-snug mb-1">${escapeHtml(p.name)}</p>
+                <p class="text-sm text-[var(--muted)] mb-3">BDT ${p.final_price||p.price}</p>
+                <div class="flex gap-2">
+                    <button onclick="addToCart({id:${p.id},name:'${p.name.replace(/'/g,"\\'")}',price:${p.final_price||p.price},image_url:'${p.image_url}'},1);closeWishlistModal();"
+                            class="btn-primary flex-1 py-2 rounded-sm text-[.65rem]">Add to Bag</button>
+                    <button onclick="toggleWishlist(${p.id})"
+                            class="btn-ghost px-3 py-2 rounded-sm text-[.65rem]">✕</button>
+                </div>
+            </div>
         </div>
     `).join('');
 }
 
-function openWishlistModal() { if (!authToken) { openAuthModal(); return; } renderWishlistModal(); document.getElementById('wishlist-modal').style.display = 'flex'; }
-function closeWishlistModal() { document.getElementById('wishlist-modal').style.display = 'none'; }
+function openWishlistModal()  { if (!authToken) { openAuthModal(); return; } renderWishlistModal(); document.getElementById('wishlist-modal').style.display='flex'; }
+function closeWishlistModal() { document.getElementById('wishlist-modal').style.display='none'; }
 
+// ==================== REVIEWS ====================
 async function loadReviews(productId) {
     const reviews = await (await fetch(`/api/products/${productId}/reviews`)).json();
-    const container = document.getElementById('reviews-container');
-    if (!container) return;
-    if (!reviews.length) container.innerHTML = '<div class="text-gray-500 text-sm">No reviews yet. Be the first!</div>';
-    else container.innerHTML = reviews.map(r => `<div class="border-b pb-2"><div class="flex items-center gap-1"><div class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div><span class="text-xs text-gray-500">${escapeHtml(r.reviewer_name)}</span></div><p class="text-sm">${escapeHtml(r.comment)}</p></div>`).join('');
-    const avg = reviews.reduce((s,r)=>s+r.rating,0)/reviews.length || 0;
-    const ratingDiv = document.getElementById('modal-rating');
-    if (ratingDiv) ratingDiv.innerHTML = '<span class="star-rating">' + '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg)) + '</span>';
-    const countSpan = document.getElementById('modal-review-count');
-    if (countSpan) countSpan.innerText = `(${reviews.length} reviews)`;
+    const c = document.getElementById('reviews-container');
+    if (!c) return;
+    if (!reviews.length) { c.innerHTML = '<p class="text-sm text-[var(--muted)]">No reviews yet. Be the first!</p>'; }
+    else c.innerHTML = reviews.map(r => `
+        <div class="pb-3 border-b border-[var(--border)] last:border-0">
+            <div class="flex items-center gap-2 mb-1">
+                <span style="color:var(--gold);font-size:13px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+                <span class="text-xs text-[var(--muted)]">${escapeHtml(r.reviewer_name)}</span>
+            </div>
+            <p class="text-sm text-[var(--muted)] leading-relaxed">${escapeHtml(r.comment)}</p>
+        </div>
+    `).join('');
+    const avg = reviews.reduce((s,r)=>s+r.rating,0)/reviews.length||0;
+    const rd = document.getElementById('modal-rating');
+    if (rd) rd.innerHTML = `<span style="color:var(--gold);font-size:14px;">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</span>`;
+    const rc = document.getElementById('modal-review-count');
+    if (rc) rc.textContent = `(${reviews.length} review${reviews.length!==1?'s':''})`;
 }
 
 async function submitReview(productId, rating, comment) {
-    if (!authToken) { alert('Please login to review.'); openAuthModal(); return; }
-    const res = await fetch(`/api/products/${productId}/reviews`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` }, body: JSON.stringify({ rating, comment }) });
-    if (res.ok) { showToast('Review submitted!'); loadReviews(productId); }
-    else alert((await res.json()).error);
+    if (!authToken) { alert('Please sign in to leave a review.'); openAuthModal(); return; }
+    const r = await fetch(`/api/products/${productId}/reviews`, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json','Authorization':`Bearer ${authToken}` },
+        body: JSON.stringify({ rating, comment })
+    });
+    if (r.ok) { showToast('Review submitted — thank you!'); loadReviews(productId); }
+    else alert((await r.json()).error);
 }
 
+// ==================== SSE ====================
 function initCustomerSSE() {
     if (customerEventSource) customerEventSource.close();
     if (!authToken) return;
     customerEventSource = new EventSource(`/api/customer/order-events?token=${authToken}`);
-    customerEventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'order_status_update') showToast(`Order #${data.orderId} status changed to ${data.newStatus}`);
-        else if (data.type === 'payment_status_update') showToast(`Payment for order #${data.orderId} is now ${data.paymentStatus}`);
-        if (document.getElementById('orders-modal').style.display === 'flex') loadCustomerOrders();
+    customerEventSource.onmessage = e => {
+        const d = JSON.parse(e.data);
+        if (d.type === 'order_status_update') showToast(`Order #${d.orderId} → ${d.newStatus}`);
+        else if (d.type === 'payment_status_update') showToast(`Payment for order #${d.orderId}: ${d.paymentStatus}`);
+        if (document.getElementById('orders-modal').style.display==='flex') loadCustomerOrders();
     };
     customerEventSource.onerror = () => setTimeout(initCustomerSSE, 5000);
 }
 
+// ==================== AUTH ====================
 async function loadCurrentUser() {
     if (!authToken) return;
     try {
-        const res = await fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${authToken}` } });
-        if (res.ok) { currentUser = await res.json(); updateAuthUI(); initCustomerSSE(); loadWishlistCount(); }
-        else { localStorage.removeItem('amoura_token'); authToken = null; currentUser = null; updateAuthUI(); }
-    } catch(err){ console.error(err); }
+        const r = await fetch('/api/auth/me', { headers:{ 'Authorization':`Bearer ${authToken}` } });
+        if (r.ok) { currentUser = await r.json(); updateAuthUI(); initCustomerSSE(); loadWishlistCount(); }
+        else { localStorage.removeItem('amoura_token'); authToken=null; currentUser=null; updateAuthUI(); }
+    } catch(e) { console.error(e); }
 }
 
 function updateAuthUI() {
     const ui = document.getElementById('user-info');
     if (ui) {
-        if (currentUser) ui.innerHTML = `<div class="font-medium">${escapeHtml(currentUser.name || currentUser.email)}</div><div class="text-xs text-gray-500">${currentUser.role}</div>`;
-        else ui.innerHTML = '<div class="text-gray-500">Not logged in</div>';
+        if (currentUser) ui.innerHTML = `
+            <p class="font-medium text-[var(--ink)] text-sm">${escapeHtml(currentUser.name||currentUser.email)}</p>
+            <p class="text-[.65rem] tracking-[.08em] uppercase text-[var(--muted)] mt-0.5">${escapeHtml(currentUser.role||'')}</p>`;
+        else ui.innerHTML = '<p class="text-xs text-[var(--muted)]">Not signed in</p>';
     }
-    const emailField = document.getElementById('customer-email');
-    if (emailField && currentUser && !emailField.value) emailField.value = currentUser.email;
-    // Update mobile auth button whenever auth state changes
+    const ef = document.getElementById('customer-email');
+    if (ef && currentUser && !ef.value) ef.value = currentUser.email;
     updateMobileAuthButton();
 }
 
-// Account dropdown
-const accountBtn = document.getElementById('account-btn');
-if (accountBtn) {
-    accountBtn.addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('account-dropdown')?.classList.toggle('hidden'); });
-}
+// Account dropdown toggle
+document.getElementById('account-btn')?.addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('account-dropdown')?.classList.toggle('hidden');
+});
 document.addEventListener('click', () => document.getElementById('account-dropdown')?.classList.add('hidden'));
 
-const myOrdersLink = document.getElementById('my-orders-link');
-if (myOrdersLink) myOrdersLink.addEventListener('click', (e) => { e.preventDefault(); if (!currentUser) openAuthModal(); else loadCustomerOrders(); });
-
-const logoutLink = document.getElementById('logout-link');
-if (logoutLink) logoutLink.addEventListener('click', (e) => { e.preventDefault(); if (customerEventSource) customerEventSource.close(); localStorage.removeItem('amoura_token'); authToken = null; currentUser = null; updateAuthUI(); location.reload(); });
-
-const wishlistBtn = document.getElementById('wishlist-btn');
-if (wishlistBtn) wishlistBtn.addEventListener('click', () => openWishlistModal());
-
-const wishlistDropdown = document.getElementById('wishlist-dropdown-link');
-if (wishlistDropdown) wishlistDropdown.addEventListener('click', (e) => { e.preventDefault(); openWishlistModal(); });
-
-const mobileWishlist = document.getElementById('mobile-wishlist-link');
-if (mobileWishlist) mobileWishlist.addEventListener('click', (e) => { e.preventDefault(); openWishlistModal(); });
+document.getElementById('my-orders-link')?.addEventListener('click', e => { e.preventDefault(); if (!currentUser) openAuthModal(); else loadCustomerOrders(); });
+document.getElementById('logout-link')?.addEventListener('click', e => {
+    e.preventDefault();
+    if (customerEventSource) customerEventSource.close();
+    localStorage.removeItem('amoura_token');
+    authToken=null; currentUser=null; updateAuthUI(); location.reload();
+});
+document.getElementById('wishlist-btn')?.addEventListener('click', openWishlistModal);
+document.getElementById('wishlist-dropdown-link')?.addEventListener('click', e => { e.preventDefault(); openWishlistModal(); });
+document.getElementById('mobile-wishlist-link')?.addEventListener('click', e => { e.preventDefault(); openWishlistModal(); });
 
 let isLoginMode = true;
-function openAuthModal() { isLoginMode = true; document.getElementById('auth-modal-title').innerText = 'Login'; document.getElementById('auth-submit').innerText = 'Login'; document.getElementById('auth-toggle-text').innerText = "Don't have an account?"; document.getElementById('auth-name-group').classList.add('hidden'); document.getElementById('auth-modal').style.display = 'flex'; }
+function openAuthModal() {
+    isLoginMode = true;
+    document.getElementById('auth-modal-title').textContent = 'Sign In';
+    document.getElementById('auth-submit').textContent = 'Sign In';
+    document.getElementById('auth-toggle-text').textContent = "Don't have an account?";
+    document.getElementById('auth-toggle-btn').textContent = 'Create one';
+    document.getElementById('auth-tagline-sub').textContent = 'Welcome back';
+    document.getElementById('auth-name-group').classList.add('hidden');
+    document.getElementById('auth-modal').style.display = 'flex';
+}
 function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
 
-const authToggle = document.getElementById('auth-toggle-btn');
-if (authToggle) {
-    authToggle.addEventListener('click', () => {
-        isLoginMode = !isLoginMode;
-        if (isLoginMode) { document.getElementById('auth-modal-title').innerText = 'Login'; document.getElementById('auth-submit').innerText = 'Login'; document.getElementById('auth-toggle-text').innerText = "Don't have an account?"; document.getElementById('auth-name-group').classList.add('hidden'); }
-        else { document.getElementById('auth-modal-title').innerText = 'Register'; document.getElementById('auth-submit').innerText = 'Register'; document.getElementById('auth-toggle-text').innerText = "Already have an account?"; document.getElementById('auth-name-group').classList.remove('hidden'); }
-    });
-}
+document.getElementById('auth-toggle-btn')?.addEventListener('click', () => {
+    isLoginMode = !isLoginMode;
+    if (isLoginMode) {
+        document.getElementById('auth-modal-title').textContent = 'Sign In';
+        document.getElementById('auth-submit').textContent = 'Sign In';
+        document.getElementById('auth-toggle-text').textContent = "Don't have an account?";
+        document.getElementById('auth-toggle-btn').textContent = 'Create one';
+        document.getElementById('auth-tagline-sub').textContent = 'Welcome back';
+        document.getElementById('auth-name-group').classList.add('hidden');
+    } else {
+        document.getElementById('auth-modal-title').textContent = 'Create Account';
+        document.getElementById('auth-submit').textContent = 'Register';
+        document.getElementById('auth-toggle-text').textContent = 'Already have an account?';
+        document.getElementById('auth-toggle-btn').textContent = 'Sign in';
+        document.getElementById('auth-tagline-sub').textContent = 'Join COLONIAL';
+        document.getElementById('auth-name-group').classList.remove('hidden');
+    }
+});
 
-const authSubmit = document.getElementById('auth-submit');
-if (authSubmit) {
-    authSubmit.addEventListener('click', async () => {
-        const email = document.getElementById('auth-email').value.trim(), password = document.getElementById('auth-password').value;
-        if (!email || !password) return alert('Email and password required');
-        const endpoint = isLoginMode ? '/api/auth/login' : '/api/auth/register';
-        const body = { email, password }; if (!isLoginMode) body.name = document.getElementById('auth-name').value.trim();
-        try {
-            const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Authentication failed');
-            authToken = data.token; localStorage.setItem('amoura_token', authToken); currentUser = data.user; updateAuthUI(); closeAuthModal(); initCustomerSSE(); loadWishlistCount();
-        } catch(err) { alert(err.message); }
-    });
-}
+document.getElementById('auth-submit')?.addEventListener('click', async () => {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    if (!email || !password) { showToast('Email and password are required'); return; }
+    const endpoint = isLoginMode ? '/api/auth/login' : '/api/auth/register';
+    const body = { email, password };
+    if (!isLoginMode) body.name = document.getElementById('auth-name').value.trim();
+    try {
+        const r = await fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error||'Authentication failed');
+        authToken = d.token; localStorage.setItem('amoura_token', authToken);
+        currentUser = d.user; updateAuthUI(); closeAuthModal(); initCustomerSSE(); loadWishlistCount();
+        showToast(`Welcome, ${d.user.name||d.user.email}!`);
+    } catch(e) { showToast(e.message); }
+});
 
+// ==================== ORDERS ====================
 async function loadCustomerOrders() {
     if (!authToken) return;
     try {
-        const orders = await (await fetch('/api/customer/orders', { headers: { 'Authorization': `Bearer ${authToken}` } })).json();
-        const container = document.getElementById('orders-list-container');
-        if (!container) return;
-        if (!orders.length) container.innerHTML = '<div class="text-center text-gray-500 py-8">You have no orders yet.</div>';
-        else {
-            container.innerHTML = orders.map(o => {
-                let itemsHtml = '';
-                try {
-                    const items = JSON.parse(o.items || '[]');
-                    itemsHtml = items.map(i => `
-                        <div class="flex gap-3 items-center border-b pb-2 mb-2">
-                            <img src="${i.image_url || 'https://placehold.co/40x50/e2e2e2/black?text=No+Img'}" class="w-10 h-12 object-cover rounded">
-                            <div class="flex-1">
-                                <div>${escapeHtml(i.name)} ${i.size ? `(${i.size})` : ''} ${i.color ? `- ${i.color}` : ''}</div>
-                                <div class="flex justify-between text-sm"><span>Qty: ${i.quantity}</span><span>BDT ${i.price}</span></div>
-                            </div>
+        const orders = await (await fetch('/api/customer/orders', { headers:{ 'Authorization':`Bearer ${authToken}` } })).json();
+        const c = document.getElementById('orders-list-container');
+        if (!c) return;
+        if (!orders.length) { c.innerHTML = '<p class="text-center text-[var(--muted)] py-10">No orders yet.</p>'; }
+        else c.innerHTML = orders.map(o => {
+            let itemsHtml = '';
+            try {
+                const items = JSON.parse(o.items||'[]');
+                itemsHtml = items.map(i => `
+                    <div class="flex gap-3 items-center py-2.5 border-b border-[var(--border)] last:border-0">
+                        <img src="${i.image_url||'https://placehold.co/44x56/e8e2d9/7a7570?text=C'}" class="w-11 h-14 object-cover rounded-sm">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">${escapeHtml(i.name)}${i.size?` <span class="text-[var(--muted)]">(${i.size})</span>`:''}</p>
+                            <p class="text-xs text-[var(--muted)] mt-0.5">Qty ${i.quantity} · BDT ${i.price}</p>
                         </div>
-                    `).join('');
-                } catch(e) { itemsHtml = 'Unable to load items'; }
-                return `<div class="border rounded-lg p-4"><div class="flex justify-between flex-wrap gap-2"><div><strong>Order #${escapeHtml(o.order_number || o.id)}</strong><br>${new Date(o.created_at).toLocaleDateString()}</div><div class="text-right"><span class="font-semibold">BDT ${parseFloat(o.final_amount || o.total_amount || 0).toFixed(2)}</span><br><span class="text-sm capitalize">${escapeHtml(o.order_status || 'pending')}</span><br><span class="text-xs">Payment: ${getPaymentStatusBadge(o.payment_status)}</span></div></div><div class="mt-2">${itemsHtml}</div></div>`;
-            }).join('');
-        }
+                    </div>`).join('');
+            } catch(e) { itemsHtml = '<p class="text-xs text-[var(--muted)]">Unable to load items</p>'; }
+            return `
+                <div class="order-card">
+                    <div class="flex flex-wrap justify-between gap-3 mb-3">
+                        <div>
+                            <p class="text-[.65rem] tracking-[.12em] uppercase text-[var(--muted)]">Order</p>
+                            <p class="font-serif text-lg font-light">#${escapeHtml(o.order_number||String(o.id))}</p>
+                            <p class="text-xs text-[var(--muted)] mt-0.5">${new Date(o.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-serif text-xl font-light">BDT ${parseFloat(o.final_amount||o.total_amount||0).toFixed(2)}</p>
+                            <span class="order-status-chip mt-1">${escapeHtml(o.order_status||'pending')}</span>
+                            <div class="mt-1">${getPaymentStatusBadge(o.payment_status)}</div>
+                        </div>
+                    </div>
+                    <div>${itemsHtml}</div>
+                </div>`;
+        }).join('');
         document.getElementById('orders-modal').style.display = 'flex';
-    } catch(err) { alert('Could not load your orders.'); }
+    } catch(e) { showToast('Could not load your orders.'); }
 }
-function closeOrdersModal() { document.getElementById('orders-modal').style.display = 'none'; }
+function closeOrdersModal() { document.getElementById('orders-modal').style.display='none'; }
 
+// ==================== CART ====================
 function saveCart() { localStorage.setItem('amoura_cart', JSON.stringify(cart)); updateCartUI(); }
+
 function updateCartUI() {
-    const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+    const subtotal = cart.reduce((s,i) => s+(i.price*i.quantity), 0);
     const total = subtotal - couponDiscount;
-    const totalSpan = document.getElementById('cart-total-price');
-    if (totalSpan) totalSpan.innerText = `BDT ${Math.max(0, total).toFixed(2)}`;
-    const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
-    const cartCountSpan = document.getElementById('cart-count');
-    if (cartCountSpan) {
-        cartCountSpan.innerText = totalItems;
-        cartCountSpan.style.opacity = totalItems ? '1' : '0';
-    }
+    const ts = document.getElementById('cart-total-price');
+    if (ts) ts.textContent = `BDT ${Math.max(0,total).toFixed(2)}`;
+    const ti = cart.reduce((s,i) => s+i.quantity, 0);
+    const cs = document.getElementById('cart-count');
+    if (cs) { cs.textContent = ti; cs.style.opacity = ti ? '1' : '0'; }
+
     const container = document.getElementById('cart-items-list');
     if (!container) return;
-    if (!cart.length) container.innerHTML = '<p class="text-center text-gray-500 py-12">Your cart is empty</p>';
-    else {
+
+    if (!cart.length) {
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-full text-center py-16">
+                <div class="w-14 h-14 rounded-full bg-[var(--warm)] flex items-center justify-center mb-4">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--muted)]"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                </div>
+                <p class="font-serif text-lg font-light text-[var(--ink)] mb-1">Your bag is empty</p>
+                <p class="text-xs text-[var(--muted)]">Add items to get started</p>
+            </div>`;
+    } else {
         container.innerHTML = cart.map((item, idx) => `
-            <div class="flex gap-3 border-b pb-3">
-                <img src="${item.image_url || 'https://placehold.co/70x90/e2e2e2/black?text=COLONIAL'}" class="w-16 h-20 object-cover bg-gray-100 rounded">
-                <div class="flex-1">
-                    <p class="font-medium text-sm">${escapeHtml(item.name)}</p>
-                    <p class="text-xs text-gray-500">Size: ${item.size || 'M'} | Colour: ${item.color || 'Default'}</p>
-                    <p class="text-sm text-gray-600 mt-1">BDT ${item.price}</p>
-                    <div class="flex items-center gap-2 mt-2">
-                        <button onclick="changeQty(${idx}, -1)" class="w-6 h-6 border rounded-full flex items-center justify-center text-xs">-</button>
-                        <span class="w-6 text-center text-sm">${item.quantity}</span>
-                        <button onclick="changeQty(${idx}, 1)" class="w-6 h-6 border rounded-full flex items-center justify-center text-xs">+</button>
-                        <button onclick="removeFromCart(${idx})" class="text-red-500 text-xs ml-2 underline">Remove</button>
+            <div class="cart-item-row">
+                <img src="${item.image_url||'https://placehold.co/72x90/e8e2d9/7a7570?text=C'}" class="cart-item-img">
+                <div class="flex-1 min-w-0">
+                    <p class="font-medium text-sm leading-snug truncate">${escapeHtml(item.name)}</p>
+                    <p class="text-xs text-[var(--muted)] mt-0.5">Size ${item.size||'M'} · ${item.color||'Default'}</p>
+                    <p class="font-serif text-base font-light mt-1">BDT ${item.price}</p>
+                    <div class="flex items-center gap-2 mt-2.5">
+                        <button onclick="changeQty(${idx},-1)" class="cart-qty-btn">−</button>
+                        <span class="w-6 text-center text-sm font-medium">${item.quantity}</span>
+                        <button onclick="changeQty(${idx},1)" class="cart-qty-btn">+</button>
+                        <button onclick="removeFromCart(${idx})"
+                                class="ml-3 text-xs text-[var(--muted)] hover:text-red-500 transition-colors underline min-h-0 h-auto">Remove</button>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            </div>`).join('');
     }
+
     if (typeof updatePaymentInstruction === 'function') updatePaymentInstruction();
     lucide.createIcons();
 }
-function changeQty(idx, delta) { let q = cart[idx].quantity + delta; if (q <= 0) cart.splice(idx, 1); else cart[idx].quantity = q; saveCart(); }
-function removeFromCart(idx) { cart.splice(idx, 1); saveCart(); }
-function addToCart(product, qty = 1) {
-    const size = selectedSize || 'M';
-    const color = selectedColor.name || 'Default';
-    const existing = cart.find(i => i.id === product.id && i.size === size && i.color === color);
-    if (existing) existing.quantity += qty;
-    else cart.push({ ...product, quantity: qty, size, color, image_url: product.image_url || (product.images?.[0] || '') });
+
+function changeQty(idx, delta) {
+    const q = cart[idx].quantity + delta;
+    if (q <= 0) cart.splice(idx,1); else cart[idx].quantity = q;
     saveCart();
-    toggleCart();
 }
-function toggleCart() { 
+function removeFromCart(idx) { cart.splice(idx,1); saveCart(); }
+
+function addToCart(product, qty=1) {
+    const size = selectedSize||'M', color = selectedColor.name||'Default';
+    const existing = cart.find(i => i.id===product.id && i.size===size && i.color===color);
+    if (existing) existing.quantity += qty;
+    else cart.push({ ...product, quantity:qty, size, color, image_url: product.image_url||(product.images?.[0]||'') });
+    saveCart();
+    // open cart drawer
+    const drawer = document.getElementById('cart-drawer');
+    const overlay = document.getElementById('cart-overlay');
+    if (drawer && drawer.classList.contains('translate-x-full')) {
+        drawer.classList.remove('translate-x-full');
+        overlay.classList.remove('opacity-0','invisible');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function toggleCart() {
     const drawer = document.getElementById('cart-drawer');
     const overlay = document.getElementById('cart-overlay');
     if (drawer && overlay) {
@@ -966,313 +1657,317 @@ function toggleCart() {
         document.body.style.overflow = drawer.classList.contains('translate-x-full') ? '' : 'hidden';
     }
 }
-function toggleMenu() { document.getElementById('mobile-menu')?.classList.toggle('-translate-x-full'); }
 
-function getSlideWidth() { const first = document.querySelector('#product-carousel .flex-shrink-0'); if (!first) return 352; const style = getComputedStyle(first); return first.offsetWidth + parseFloat(style.marginLeft) + parseFloat(style.marginRight); }
-function updateCarouselPosition() { const container = document.getElementById('product-carousel'); if (container) container.style.transform = `translateX(-${currentSlide * getSlideWidth()}px)`; }
-async function loadCarouselProducts() { try { const res = await fetch('/api/products?limit=6'); carouselProducts = (await res.json()).slice(0, 6); renderCarousel(); startAutoSlide(); window.addEventListener('resize', updateCarouselPosition); } catch(e) { console.error(e); } }
+function toggleMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const ov = document.getElementById('menu-overlay');
+    if (menu) menu.classList.toggle('-translate-x-full');
+    if (ov) { ov.classList.toggle('opacity-0'); ov.classList.toggle('invisible'); }
+}
+
+// ==================== CAROUSEL ====================
+function getSlideWidth() {
+    const first = document.querySelector('#product-carousel .flex-shrink-0');
+    if (!first) return 352;
+    const s = getComputedStyle(first);
+    return first.offsetWidth + parseFloat(s.marginLeft) + parseFloat(s.marginRight);
+}
+function updateCarouselPosition() {
+    const c = document.getElementById('product-carousel');
+    if (c) c.style.transform = `translateX(-${currentSlide * getSlideWidth()}px)`;
+}
+async function loadCarouselProducts() {
+    try {
+        const r = await fetch('/api/products?limit=6');
+        carouselProducts = (await r.json()).slice(0,6);
+        renderCarousel(); startAutoSlide();
+        window.addEventListener('resize', updateCarouselPosition);
+    } catch(e) { console.error(e); }
+}
 function renderCarousel() {
-    const container = document.getElementById('product-carousel');
-    if (!container) return;
-    if (!carouselProducts.length) { container.innerHTML = '<div class="w-full text-center py-12 text-gray-500">No products</div>'; return; }
-    container.innerHTML = carouselProducts.map(p => `<div class="flex-shrink-0 w-64 md:w-80 mx-3 md:mx-4 bg-white rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-105 duration-300"><img src="${p.image_url || 'https://placehold.co/400x500/e2e2e2/black?text=COLONIAL'}" class="w-full h-48 md:h-64 object-cover"><div class="p-3 md:p-4 text-center"><h3 class="font-serif text-lg md:text-xl mb-1">${escapeHtml(p.name)}</h3><p class="text-gray-600 text-sm">BDT ${p.final_price || p.price}</p><button onclick="addToCart({id:${p.id}, name:'${p.name.replace(/'/g, "\\'")}', price:${p.final_price || p.price}, image_url:'${p.image_url}'}, 1)" class="mt-3 bg-black text-white px-3 py-1 text-xs rounded-full hover:bg-gray-800 transition">Quick Shop</button></div></div>`).join('');
+    const c = document.getElementById('product-carousel');
+    if (!c) return;
+    if (!carouselProducts.length) { c.innerHTML = '<div class="w-full text-center py-12 text-[var(--muted)]">No products</div>'; return; }
+    c.innerHTML = carouselProducts.map(p => `
+        <div class="flex-shrink-0 w-56 md:w-72 mx-3 md:mx-4 carousel-card cursor-pointer" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            <img src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-56 md:h-72 object-cover">
+            <div class="p-4 text-center">
+                <h3 class="font-serif text-lg font-light leading-snug mb-1">${escapeHtml(p.name)}</h3>
+                <p class="text-sm text-[var(--muted)] mb-3">BDT ${p.final_price||p.price}</p>
+                <button onclick="event.stopPropagation();addToCart({id:${p.id},name:'${p.name.replace(/'/g,"\\'")}',price:${p.final_price||p.price},image_url:'${p.image_url}'},1)"
+                        class="btn-primary px-5 py-2 rounded-sm text-[.65rem]">Quick Add</button>
+            </div>
+        </div>`).join('');
     lucide.createIcons();
     updateCarouselPosition();
 }
-function startAutoSlide() { if (slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => { if (carouselProducts.length) { currentSlide = (currentSlide + 1) % carouselProducts.length; updateCarouselPosition(); } }, 5000); }
-function nextSlide() { if (!carouselProducts.length) return; currentSlide = (currentSlide + 1) % carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
-function prevSlide() { if (!carouselProducts.length) return; currentSlide = (currentSlide - 1 + carouselProducts.length) % carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
-function resetAutoSlide() { if (slideInterval) clearInterval(slideInterval); slideInterval = setInterval(() => { currentSlide = (currentSlide + 1) % carouselProducts.length; updateCarouselPosition(); }, 5000); }
+function startAutoSlide() {
+    if (slideInterval) clearInterval(slideInterval);
+    slideInterval = setInterval(() => { currentSlide = (currentSlide+1)%carouselProducts.length; updateCarouselPosition(); }, 5000);
+}
+function nextSlide() { currentSlide = (currentSlide+1)%carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
+function prevSlide() { currentSlide = (currentSlide-1+carouselProducts.length)%carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
+function resetAutoSlide() { if (slideInterval) clearInterval(slideInterval); startAutoSlide(); }
 
-async function loadProducts(resetPage = true) {
-    if (resetPage) currentPage = 1;
+// ==================== PRODUCTS ====================
+async function loadProducts(resetPage=true) {
+    if (resetPage) currentPage=1;
     const container = document.getElementById('products-container');
     if (!container) return;
-    if (resetPage) container.innerHTML = '<div class="col-span-full text-center py-12">Loading products...</div>';
+    if (resetPage) container.innerHTML = '<div class="col-span-full text-center py-16 text-[var(--muted)] text-sm tracking-widest uppercase">Loading…</div>';
     try {
-        let products = [];
-        let total = 0;
-        let totalPagesCalc = 1;
-        if (currentFilters.category === 'all' && !currentFilters.q) {
-            const res = await fetch('/api/products');
-            const data = await res.json();
-            products = data;
-            total = products.length;
-            totalPagesCalc = Math.ceil(total / 8);
+        let products=[], total=0, totalPagesCalc=1;
+        if (currentFilters.category==='all' && !currentFilters.q) {
+            const d = await (await fetch('/api/products')).json();
+            products=d; total=d.length; totalPagesCalc=Math.ceil(total/8);
         } else {
-            const params = new URLSearchParams({ q: currentFilters.q, category: currentFilters.category, sort: currentFilters.sort, page: currentPage, limit: 8 });
-            const res = await fetch(`/api/products/search?${params}`);
-            const data = await res.json();
-            products = data.products;
-            total = data.total;
-            totalPagesCalc = data.totalPages || Math.ceil(total / 8);
+            const params = new URLSearchParams({ q:currentFilters.q, category:currentFilters.category, sort:currentFilters.sort, page:currentPage, limit:8 });
+            const d = await (await fetch(`/api/products/search?${params}`)).json();
+            products=d.products; total=d.total; totalPagesCalc=d.totalPages||Math.ceil(total/8);
         }
-        container.innerHTML = '';
+        container.innerHTML='';
         if (!products.length) {
-            container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">No products found.</div>';
-            const loadMore = document.getElementById('load-more');
-            if (loadMore) loadMore.classList.add('hidden');
+            container.innerHTML='<div class="col-span-full text-center py-16 text-[var(--muted)]">No products found.</div>';
+            document.getElementById('load-more')?.classList.add('hidden');
             return;
         }
         products.forEach(p => {
             const card = document.createElement('div');
-            card.className = 'product-card group bg-white rounded-xl overflow-hidden shadow-sm cursor-pointer';
-            card.innerHTML = `<div class="relative aspect-[3/4] overflow-hidden bg-gray-100"><img src="${p.image_url || 'https://placehold.co/600x800/e2e2e2/black?text=COLONIAL'}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">${p.badge ? `<span class="absolute top-2 left-2 bg-white text-black text-xs px-2 py-1 rounded-full z-10">${escapeHtml(p.badge)}</span>` : ''}<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-end p-3"><button class="w-full bg-white text-black py-2 text-xs uppercase tracking-wider font-medium rounded" onclick="event.stopPropagation(); addToCart({id:${p.id}, name:'${p.name.replace(/'/g, "\\'")}', price:${p.final_price || p.price}, image_url:'${p.image_url}'}, 1)">Quick Add</button></div></div><div class="p-4"><h3 class="font-medium text-gray-900">${escapeHtml(p.name)}</h3><div class="flex items-center gap-2 mt-1"><span class="font-semibold">BDT ${p.final_price || p.price}</span>${p.discount_amount > 0 ? `<span class="text-sm text-gray-400 line-through">BDT ${p.price}</span>` : ''}${p.discount_percent > 0 ? `<span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">-${p.discount_percent}%</span>` : ''}</div>${p.colors && p.colors.length ? `<div class="flex gap-1 mt-2">${p.colors.slice(0,3).map(c => `<div class="w-3 h-3 rounded-full border border-gray-300" style="background-color:${c}"></div>`).join('')}</div>` : ''}</div>`;
+            card.className = 'product-card group';
+            card.innerHTML = `
+                <div class="relative aspect-[3/4] overflow-hidden bg-[var(--warm)]">
+                    <img src="${p.image_url||'https://placehold.co/600x800/e8e2d9/7a7570?text=COLONIAL'}"
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                    ${p.badge?`<span class="badge">${escapeHtml(p.badge)}</span>`:''}
+                    <div class="absolute inset-0 bg-[var(--ink)]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <button class="w-full bg-white text-[var(--ink)] py-2.5 text-[.65rem] uppercase tracking-[.12em] font-medium rounded-sm"
+                                onclick="event.stopPropagation();selectedSize='M';selectedColor={hex:'',name:'Default'};addToCart({id:${p.id},name:'${p.name.replace(/'/g,"\\'")}',price:${p.final_price||p.price},image_url:'${p.image_url}'},1)">
+                            Quick Add
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-medium text-sm leading-snug">${escapeHtml(p.name)}</h3>
+                    <div class="flex items-center gap-2 mt-1.5">
+                        <span class="font-serif text-base font-light">BDT ${p.final_price||p.price}</span>
+                        ${p.discount_amount>0?`<span class="text-xs text-[var(--muted)] line-through">BDT ${p.price}</span>`:''}
+                        ${p.discount_percent>0?`<span class="text-[.65rem] bg-red-50 text-red-600 px-1.5 py-0.5 rounded">−${p.discount_percent}%</span>`:''}
+                    </div>
+                    ${p.colors&&p.colors.length?`<div class="flex gap-1 mt-2">${p.colors.slice(0,3).map(c=>`<div class="w-2.5 h-2.5 rounded-full border border-[var(--border)]" style="background:${c}"></div>`).join('')}</div>`:''}
+                </div>`;
             card.onclick = () => openProductModal(p);
             container.appendChild(card);
         });
         totalPages = totalPagesCalc;
-        const loadMore = document.getElementById('load-more');
-        if (loadMore) loadMore.classList.toggle('hidden', currentPage >= totalPages);
-    } catch (err) {
-        console.error('Load products error:', err);
-        container.innerHTML = '<div class="col-span-full text-center py-12 text-red-500">Error loading products. Please refresh.</div>';
+        document.getElementById('load-more')?.classList.toggle('hidden', currentPage>=totalPages);
+    } catch(e) {
+        console.error(e);
+        container.innerHTML='<div class="col-span-full text-center py-16 text-red-500">Error loading products. Please refresh.</div>';
     }
 }
 
-async function loadCategories() { 
-    const prods = await (await fetch('/api/products')).json(); 
-    const cats = ['all', ...new Set(prods.map(p => p.category))]; 
-    const catSelect = document.getElementById('category-filter');
-    if (catSelect) catSelect.innerHTML = cats.map(cat => `<option value="${cat}">${cat === 'all' ? 'All Categories' : cat}</option>`).join('');
+async function loadCategories() {
+    const prods = await (await fetch('/api/products')).json();
+    const cats = ['all', ...new Set(prods.map(p=>p.category))];
+    const sel = document.getElementById('category-filter');
+    if (sel) sel.innerHTML = cats.map(c => `<option value="${c}">${c==='all'?'All Categories':c}</option>`).join('');
 }
-function filterByCategory(cat) { 
-    const catSelect = document.getElementById('category-filter');
-    if (catSelect) catSelect.value = cat;
-    currentFilters.category = cat; 
-    loadProducts(true); 
+function filterByCategory(cat) {
+    const s = document.getElementById('category-filter');
+    if (s) s.value=cat;
+    currentFilters.category=cat; loadProducts(true);
 }
 window.filterByCategory = filterByCategory;
 
-let currentProductImages = [];
+// ==================== PRODUCT MODAL ====================
+let currentProductImages=[];
 async function openProductModal(product) {
     currentProduct = product;
-    const nameSpan = document.getElementById('modal-name');
-    if (nameSpan) nameSpan.innerText = product.name;
-    const priceSpan = document.getElementById('modal-price');
-    if (priceSpan) priceSpan.innerHTML = `BDT ${product.final_price || product.price}`;
-    const descSpan = document.getElementById('modal-desc');
-    if (descSpan) descSpan.innerText = product.description || 'Premium quality garment.';
-    currentProductImages = (product.images?.length) ? [...product.images] : (product.image_url ? [product.image_url] : []);
-    const mainImg = document.getElementById('modal-main-img');
-    if (mainImg) mainImg.src = currentProductImages[0] || 'https://placehold.co/600x800/e2e2e2/black?text=COLONIAL';
-    const thumbsContainer = document.getElementById('modal-thumbnails');
-    if (thumbsContainer) thumbsContainer.innerHTML = currentProductImages.slice(1).map(img => `<img src="${img}" class="thumbnail-img w-16 h-20 object-cover rounded cursor-pointer border-2 border-transparent" onclick="changeMainImage('${img}', this)">`).join('');
-    document.querySelectorAll('#size-options .size-btn').forEach(btn => btn.classList.remove('active'));
-    const defaultSize = document.querySelector('#size-options .size-btn[data-size="M"]');
-    if (defaultSize) defaultSize.classList.add('active');
-    selectedSize = 'M';
-    const colors = product.colors || [];
-    const swatchDiv = document.getElementById('color-swatches');
-    if (!swatchDiv) return;
+    document.getElementById('modal-name').textContent = product.name;
+    document.getElementById('modal-price').innerHTML = `BDT ${product.final_price||product.price}`;
+    document.getElementById('modal-desc').textContent = product.description||'Premium quality garment.';
+    currentProductImages = product.images?.length ? [...product.images] : (product.image_url?[product.image_url]:[]);
+    const mi = document.getElementById('modal-main-img');
+    if (mi) mi.src = currentProductImages[0]||'https://placehold.co/600x800/e8e2d9/7a7570?text=COLONIAL';
+    const tc = document.getElementById('modal-thumbnails');
+    if (tc) tc.innerHTML = currentProductImages.slice(1).map(img => `<img src="${img}" class="thumbnail-img w-14 h-18 object-cover rounded-sm cursor-pointer border-2 border-transparent hover:border-[var(--gold)] transition-colors" onclick="changeMainImage('${img}',this)">`).join('');
+    document.querySelectorAll('#size-options .size-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('#size-options .size-btn[data-size="M"]')?.classList.add('active');
+    selectedSize='M';
+    const colors=product.colors||[];
+    const sw=document.getElementById('color-swatches');
+    if (!sw) return;
     if (!colors.length) {
-        swatchDiv.innerHTML = '<p class="text-gray-400 text-sm">No colour options</p>';
-        selectedColor = { hex: '', name: 'Default' };
-        const colorNameSpan = document.getElementById('selected-color-name');
-        if (colorNameSpan) colorNameSpan.innerText = '';
+        sw.innerHTML='<p class="text-sm text-[var(--muted)]">No colour options</p>';
+        selectedColor={hex:'',name:'Default'};
+        document.getElementById('selected-color-name').textContent='';
     } else {
-        swatchDiv.innerHTML = colors.map(c => `<div class="color-swatch" style="background-color: ${c};" data-color-hex="${c}" data-color-name="${c === '#000000' ? 'Black' : c === '#ffffff' ? 'White' : c}"></div>`).join('');
-        const first = document.querySelector('.color-swatch');
-        if (first) {
-            first.classList.add('selected');
-            selectedColor = { hex: first.dataset.colorHex, name: first.dataset.colorName };
-            const colorNameSpan = document.getElementById('selected-color-name');
-            if (colorNameSpan) colorNameSpan.innerText = `Selected: ${selectedColor.name}`;
-        }
-        document.querySelectorAll('.color-swatch').forEach(sw => sw.addEventListener('click', () => {
-            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
-            sw.classList.add('selected');
-            selectedColor = { hex: sw.dataset.colorHex, name: sw.dataset.colorName };
-            const colorNameSpan = document.getElementById('selected-color-name');
-            if (colorNameSpan) colorNameSpan.innerText = `Selected: ${selectedColor.name}`;
+        sw.innerHTML=colors.map(c=>`<div class="color-swatch" style="background:${c};" data-color-hex="${c}" data-color-name="${c==='#000000'?'Black':c==='#ffffff'?'White':c}"></div>`).join('');
+        const first=document.querySelector('.color-swatch');
+        if (first) { first.classList.add('selected'); selectedColor={hex:first.dataset.colorHex,name:first.dataset.colorName}; document.getElementById('selected-color-name').textContent=`Selected: ${selectedColor.name}`; }
+        document.querySelectorAll('.color-swatch').forEach(s=>s.addEventListener('click',()=>{
+            document.querySelectorAll('.color-swatch').forEach(x=>x.classList.remove('selected'));
+            s.classList.add('selected');
+            selectedColor={hex:s.dataset.colorHex,name:s.dataset.colorName};
+            document.getElementById('selected-color-name').textContent=`Selected: ${selectedColor.name}`;
         }));
     }
-    const inWishlist = wishlist.includes(product.id);
-    const heartIcon = document.getElementById('modal-wishlist-btn')?.querySelector('i');
-    if (heartIcon) inWishlist ? heartIcon.classList.add('fill-red-500') : heartIcon.classList.remove('fill-red-500');
+    const inW=wishlist.includes(product.id);
+    const hi=document.getElementById('modal-wishlist-btn')?.querySelector('i');
+    if (hi) inW?hi.classList.add('fill-red-500'):hi.classList.remove('fill-red-500');
     await loadReviews(product.id);
-    const modal = document.getElementById('product-modal');
-    if (modal) modal.style.display = 'flex';
+    document.getElementById('product-modal').style.display='flex';
 }
-function changeMainImage(url, el) { 
-    const mainImg = document.getElementById('modal-main-img');
-    if (mainImg) mainImg.src = url;
-    document.querySelectorAll('.thumbnail-img').forEach(img => img.classList.remove('border-black', 'border-2')); 
-    el.classList.add('border-black', 'border-2'); 
+
+function changeMainImage(url,el) {
+    const mi=document.getElementById('modal-main-img');
+    if (mi) mi.src=url;
+    document.querySelectorAll('.thumbnail-img').forEach(i=>i.classList.remove('border-[var(--gold)]','border-2'));
+    el.classList.add('border-[var(--gold)]','border-2');
 }
+
 function openLightbox() {
     if (!currentProductImages.length) return;
-    let idx = 0;
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4';
-    modal.innerHTML = `<button class="absolute top-4 right-4 text-white text-2xl z-10" onclick="this.parentElement.remove()">✕</button><button class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 p-2 rounded-full text-white" id="lightbox-prev">◀</button><img id="lightbox-img" class="max-h-[90vh] max-w-[90vw] object-contain"><button class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 p-2 rounded-full text-white" id="lightbox-next">▶</button>`;
+    let idx=0;
+    const modal=document.createElement('div');
+    modal.className='fixed inset-0 bg-black/95 z-[999] flex items-center justify-center p-4';
+    modal.innerHTML=`
+        <button class="absolute top-5 right-5 text-white/70 hover:text-white text-3xl leading-none z-10" onclick="this.parentElement.remove()">✕</button>
+        <button class="absolute left-5 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full text-white transition" id="lb-prev">◀</button>
+        <img id="lb-img" class="max-h-[90vh] max-w-[90vw] object-contain">
+        <button class="absolute right-5 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full text-white transition" id="lb-next">▶</button>`;
     document.body.appendChild(modal);
-    const imgEl = document.getElementById('lightbox-img');
-    if (imgEl) imgEl.src = currentProductImages[0];
-    const prevBtn = document.getElementById('lightbox-prev');
-    if (prevBtn) prevBtn.onclick = () => { idx = (idx - 1 + currentProductImages.length) % currentProductImages.length; if (imgEl) imgEl.src = currentProductImages[idx]; };
-    const nextBtnLb = document.getElementById('lightbox-next');
-    if (nextBtnLb) nextBtnLb.onclick = () => { idx = (idx + 1) % currentProductImages.length; if (imgEl) imgEl.src = currentProductImages[idx]; };
+    const img=document.getElementById('lb-img');
+    if (img) img.src=currentProductImages[0];
+    document.getElementById('lb-prev').onclick=()=>{ idx=(idx-1+currentProductImages.length)%currentProductImages.length; if(img)img.src=currentProductImages[idx]; };
+    document.getElementById('lb-next').onclick=()=>{ idx=(idx+1)%currentProductImages.length; if(img)img.src=currentProductImages[idx]; };
 }
-function closeProductModal() { const modal = document.getElementById('product-modal'); if (modal) modal.style.display = 'none'; }
-function addCurrentToCart() { if (currentProduct) addToCart(currentProduct, 1); closeProductModal(); }
 
-const reviewStars = document.querySelectorAll('#review-stars .star');
-reviewStars.forEach(star => {
-    star.addEventListener('mouseenter', () => highlightStars(parseInt(star.dataset.rating)));
-    star.addEventListener('mouseleave', () => highlightStars(currentRating));
-    star.addEventListener('click', () => { currentRating = parseInt(star.dataset.rating); highlightStars(currentRating); });
+function closeProductModal() { document.getElementById('product-modal').style.display='none'; }
+function addCurrentToCart() { if (currentProduct) addToCart(currentProduct,1); closeProductModal(); }
+
+// Stars
+const reviewStars=document.querySelectorAll('#review-stars .star');
+reviewStars.forEach(s=>{
+    s.addEventListener('mouseenter',()=>highlightStars(parseInt(s.dataset.rating)));
+    s.addEventListener('mouseleave',()=>highlightStars(currentRating));
+    s.addEventListener('click',()=>{ currentRating=parseInt(s.dataset.rating); highlightStars(currentRating); });
 });
-function highlightStars(rating) { reviewStars.forEach((star, idx) => idx < rating ? star.classList.add('active') : star.classList.remove('active')); }
-const submitReviewBtn = document.getElementById('submit-review-btn');
-if (submitReviewBtn) {
-    submitReviewBtn.addEventListener('click', async () => {
-        if (!currentProduct) return;
-        const comment = document.getElementById('review-comment').value.trim();
-        if (!currentRating) { alert('Please select a rating'); return; }
-        await submitReview(currentProduct.id, currentRating, comment);
-        const commentBox = document.getElementById('review-comment');
-        if (commentBox) commentBox.value = '';
-        currentRating = 0;
-        highlightStars(0);
-    });
-}
-const modalWishlistBtn = document.getElementById('modal-wishlist-btn');
-if (modalWishlistBtn) modalWishlistBtn.addEventListener('click', () => { if (currentProduct) toggleWishlist(currentProduct.id); });
+function highlightStars(n) { reviewStars.forEach((s,i)=>i<n?s.classList.add('active'):s.classList.remove('active')); }
 
-// ========== DYNAMIC PAYMENT INSTRUCTION & DELIVERY HANDLING ==========
+document.getElementById('submit-review-btn')?.addEventListener('click', async()=>{
+    if (!currentProduct) return;
+    const comment=document.getElementById('review-comment').value.trim();
+    if (!currentRating) { showToast('Please select a star rating'); return; }
+    await submitReview(currentProduct.id, currentRating, comment);
+    document.getElementById('review-comment').value='';
+    currentRating=0; highlightStars(0);
+});
+
+document.getElementById('modal-wishlist-btn')?.addEventListener('click',()=>{ if(currentProduct) toggleWishlist(currentProduct.id); });
+
+// ==================== PAYMENT INSTRUCTION ====================
 function updatePaymentInstruction() {
-    const selectedPayment = document.querySelector('input[name="payment_method"]:checked')?.value;
-    const deliveryRadio = document.querySelector('input[name="delivery_option"]:checked');
-    const deliveryFee = deliveryRadio ? parseInt(deliveryRadio.dataset.fee) : 80;
-    const productTotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-    const fullAmount = productTotal + deliveryFee;
-    
-    const heading = document.getElementById('payment-instruction-heading');
-    const subText = document.getElementById('payment-instruction-sub');
-    const amountSpan = document.getElementById('payable-amount');
-    
-    if (selectedPayment === 'bkash') {
-        if (heading) heading.textContent = 'bKash / Nagad Payment (Full Amount):';
-        if (subText) subText.textContent = 'Pay the full amount (product price + delivery charge) and enter the transaction ID below.';
-        if (amountSpan) amountSpan.textContent = `BDT ${fullAmount.toFixed(2)}`;
+    const pm=document.querySelector('input[name="payment_method"]:checked')?.value;
+    const dr=document.querySelector('input[name="delivery_option"]:checked');
+    const fee=dr?parseInt(dr.dataset.fee):80;
+    const prod=cart.reduce((s,i)=>s+(i.price*i.quantity),0);
+    const full=prod+fee;
+    const hd=document.getElementById('payment-instruction-heading');
+    const sub=document.getElementById('payment-instruction-sub');
+    const amt=document.getElementById('payable-amount');
+    if (pm==='bkash') {
+        if(hd)hd.textContent='bKash / Nagad — Full Amount:';
+        if(sub)sub.textContent='Pay the full amount (product price + delivery charge) and enter the transaction ID below.';
+        if(amt)amt.textContent=`BDT ${full.toFixed(2)}`;
     } else {
-        if (heading) heading.textContent = 'Cash on Delivery (Advance Delivery Charge):';
-        if (subText) subText.textContent = 'Pay only the delivery charge in advance and enter the transaction ID. The product price will be paid upon delivery.';
-        if (amountSpan) amountSpan.textContent = `BDT ${deliveryFee.toFixed(2)}`;
+        if(hd)hd.textContent='Cash on Delivery — Advance Delivery Charge:';
+        if(sub)sub.textContent='Pay only the delivery charge now. Product price is paid upon delivery.';
+        if(amt)amt.textContent=`BDT ${fee.toFixed(2)}`;
     }
 }
 
-// Attach event listeners for delivery and payment method changes
-const deliveryRadios = document.querySelectorAll('input[name="delivery_option"]');
-const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
-deliveryRadios.forEach(radio => radio.addEventListener('change', updatePaymentInstruction));
-paymentRadios.forEach(radio => radio.addEventListener('change', updatePaymentInstruction));
+document.querySelectorAll('input[name="delivery_option"]').forEach(r=>r.addEventListener('change',updatePaymentInstruction));
+document.querySelectorAll('input[name="payment_method"]').forEach(r=>r.addEventListener('change',updatePaymentInstruction));
+const manualDiv=document.getElementById('manual-payment-details');
+if(manualDiv)manualDiv.classList.remove('hidden');
 updatePaymentInstruction();
 
-// Ensure transaction ID section is always visible
-const manualDiv = document.getElementById('manual-payment-details');
-if (manualDiv) manualDiv.classList.remove('hidden');
+// ==================== COUPON ====================
+document.getElementById('apply-coupon-btn')?.addEventListener('click', async()=>{
+    const code=document.getElementById('coupon-code').value.trim();
+    if (!code) return;
+    const subtotal=cart.reduce((s,i)=>s+i.price*i.quantity,0);
+    try {
+        const r=await fetch('/api/validate-coupon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,cartTotal:subtotal})});
+        const d=await r.json();
+        if (!r.ok) throw new Error(d.error);
+        appliedCoupon=code; couponDiscount=d.discount;
+        const fb=document.getElementById('coupon-feedback');
+        if(fb)fb.innerHTML=`<span class="text-green-700">✓ Coupon applied — you save BDT ${couponDiscount}</span>`;
+        updateCartUI();
+    } catch(e) {
+        const fb=document.getElementById('coupon-feedback');
+        if(fb)fb.innerHTML=`<span class="text-red-600">${e.message}</span>`;
+    }
+});
 
-const applyCouponBtn = document.getElementById('apply-coupon-btn');
-if (applyCouponBtn) {
-    applyCouponBtn.addEventListener('click', async () => {
-        const code = document.getElementById('coupon-code').value.trim();
-        if (!code) return;
-        const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-        try {
-            const res = await fetch('/api/validate-coupon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, cartTotal: subtotal }) });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
-            appliedCoupon = code; couponDiscount = data.discount;
-            const feedback = document.getElementById('coupon-feedback');
-            if (feedback) feedback.innerHTML = `<span class="text-green-600">Coupon applied! You save BDT ${couponDiscount}</span>`;
-            updateCartUI();
-        } catch(err) { 
-            const feedback = document.getElementById('coupon-feedback');
-            if (feedback) feedback.innerHTML = `<span class="text-red-600">${err.message}</span>`;
-        }
-    });
-}
+// ==================== CHECKOUT ====================
+function openCheckout()  { if (!cart.length) { showToast('Your bag is empty'); return; } document.getElementById('checkout-modal').style.display='flex'; }
+function closeCheckout() { document.getElementById('checkout-modal').style.display='none'; }
 
-function openCheckout() { if (!cart.length) { alert('Your cart is empty.'); return; } document.getElementById('checkout-modal').style.display = 'flex'; }
-function closeCheckout() { document.getElementById('checkout-modal').style.display = 'none'; }
-
-// ========== UPDATED placeOrder ==========
 async function placeOrder() {
-    if (!cart.length) { alert('Your cart is empty. Add some products first.'); return; }
-
-    const name = document.getElementById('customer-name').value.trim();
-    const email = document.getElementById('customer-email').value.trim();
-    const phone = document.getElementById('customer-phone').value.trim();
+    if (!cart.length) { showToast('Your bag is empty'); return; }
+    const name    = document.getElementById('customer-name').value.trim();
+    const email   = document.getElementById('customer-email').value.trim();
+    const phone   = document.getElementById('customer-phone').value.trim();
     const address = document.getElementById('shipping-address').value.trim();
-    if (!name || !email) { alert('Name and email are required'); return; }
+    if (!name||!email) { showToast('Name and email are required'); return; }
 
-    const deliveryRadio = document.querySelector('input[name="delivery_option"]:checked');
-    if (!deliveryRadio) {
-        alert('Please select a delivery option.');
-        return;
-    }
-    const delivery_method = deliveryRadio.value === 'inside' ? 'Inside Chittagong' : 'Outside Chittagong';
-    const delivery_fee = parseInt(deliveryRadio.dataset.fee);
-    if (isNaN(delivery_fee) || delivery_fee <= 0) {
-        alert('Invalid delivery fee. Please refresh and try again.');
-        return;
-    }
+    const dr=document.querySelector('input[name="delivery_option"]:checked');
+    if (!dr) { showToast('Please select a delivery option'); return; }
+    const delivery_method=dr.value==='inside'?'Inside Chittagong':'Outside Chittagong';
+    const delivery_fee=parseInt(dr.dataset.fee);
+    if (isNaN(delivery_fee)||delivery_fee<=0) { showToast('Invalid delivery fee — please refresh'); return; }
 
-    const payment_method = document.querySelector('input[name="payment_method"]:checked')?.value || 'cash_on_delivery';
-    
-    let transaction_id = document.getElementById('transaction-id')?.value.trim();
+    const payment_method=document.querySelector('input[name="payment_method"]:checked')?.value||'cash_on_delivery';
+    const transaction_id=document.getElementById('transaction-id')?.value.trim();
     if (!transaction_id) {
-        const txnError = document.getElementById('txn-error');
-        if (txnError) txnError.classList.remove('hidden');
-        alert('Please enter the transaction ID after sending payment to +8801871330654.');
+        document.getElementById('txn-error')?.classList.remove('hidden');
+        showToast('Please enter the transaction ID');
         return;
-    } else {
-        const txnError = document.getElementById('txn-error');
-        if (txnError) txnError.classList.add('hidden');
     }
+    document.getElementById('txn-error')?.classList.add('hidden');
 
-    const items = cart.map(i => ({
-        id: i.id, name: i.name, price: i.price, quantity: i.quantity,
-        size: i.size || 'M', color: i.color || 'Default', image_url: i.image_url || ''
-    }));
+    const items=cart.map(i=>({ id:i.id,name:i.name,price:i.price,quantity:i.quantity,size:i.size||'M',color:i.color||'Default',image_url:i.image_url||'' }));
+    const subtotal=cart.reduce((s,i)=>s+(i.price*i.quantity),0)+delivery_fee;
+    const finalAmount=Math.max(0,subtotal-couponDiscount);
 
-    const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0) + delivery_fee;
-    const finalAmount = Math.max(0, subtotal - couponDiscount);
-
-    const orderData = {
-        customer_name: name, customer_email: email, customer_phone: phone, shipping_address: address,
-        total_amount: subtotal, discount_applied: couponDiscount, final_amount: finalAmount,
-        items, coupon_code: appliedCoupon, notes: '',
-        payment_method, transaction_id,
-        delivery_method, delivery_fee
+    const orderData={
+        customer_name:name,customer_email:email,customer_phone:phone,shipping_address:address,
+        total_amount:subtotal,discount_applied:couponDiscount,final_amount:finalAmount,
+        items,coupon_code:appliedCoupon,notes:'',
+        payment_method,transaction_id,delivery_method,delivery_fee
     };
 
     try {
-        const headers = { 'Content-Type': 'application/json' };
-        if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
-        const res = await fetch('/api/orders', { method: 'POST', headers, body: JSON.stringify(orderData) });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Order failed');
-        alert(`Order placed successfully! Your transaction ID (${transaction_id}) will be verified by admin.`);
-        cart = []; couponDiscount = 0; appliedCoupon = null; saveCart();
+        const headers={'Content-Type':'application/json'};
+        if (authToken) headers['Authorization']=`Bearer ${authToken}`;
+        const r=await fetch('/api/orders',{method:'POST',headers,body:JSON.stringify(orderData)});
+        const d=await r.json();
+        if (!r.ok) throw new Error(d.error||'Order failed');
+
+        showToast('Order placed — thank you!');
+        cart=[]; couponDiscount=0; appliedCoupon=null; saveCart();
         closeCheckout(); toggleCart();
-        document.getElementById('customer-name').value = '';
-        document.getElementById('customer-email').value = '';
-        document.getElementById('customer-phone').value = '';
-        document.getElementById('shipping-address').value = '';
-        document.getElementById('coupon-code').value = '';
-        const feedback = document.getElementById('coupon-feedback');
-        if (feedback) feedback.innerHTML = '';
-        const txIdField = document.getElementById('transaction-id');
-        if (txIdField) txIdField.value = '';
-        const codRadio = document.querySelector('input[name="payment_method"][value="cash_on_delivery"]');
-        if (codRadio) codRadio.checked = true;
-        const insideRadio = document.querySelector('input[name="delivery_option"][value="inside"]');
-        if (insideRadio) insideRadio.checked = true;
+
+        // Reset form
+        ['customer-name','customer-phone','shipping-address','coupon-code','transaction-id'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+        document.getElementById('coupon-feedback').innerHTML='';
+        document.querySelector('input[name="payment_method"][value="cash_on_delivery"]').checked=true;
+        document.querySelector('input[name="delivery_option"][value="inside"]').checked=true;
         updatePaymentInstruction();
-    } catch(err) { alert(err.message); }
+    } catch(e) { showToast(e.message); }
 }
 </script>
 </body>
