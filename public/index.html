@@ -1864,49 +1864,58 @@ document.getElementById('submit-review-btn')?.addEventListener('click', async()=
 
 document.getElementById('modal-wishlist-btn')?.addEventListener('click',()=>{ if(currentProduct) toggleWishlist(currentProduct.id); });
 
-// ==================== PAYMENT INSTRUCTION ====================
+// ==================== PAYMENT INSTRUCTION (FIXED - WORKS WITH ANY ADVANCE PAYMENT VALUE) ====================
 function updatePaymentInstruction() {
-    const pm=document.querySelector('input[name="payment_method"]:checked')?.value;
-    const dr=document.querySelector('input[name="delivery_option"]:checked');
-    const fee=dr?parseInt(dr.dataset.fee):80;
-    const prod=cart.reduce((s,i)=>s+(i.price*i.quantity),0);
-    const full=prod+fee;
-    const hd=document.getElementById('payment-instruction-heading');
-    const sub=document.getElementById('payment-instruction-sub');
-    const amt=document.getElementById('payable-amount');
-    if (pm==='bkash') {
-        if(hd)hd.textContent='bKash / Nagad — Full Amount:';
-        if(sub)sub.textContent='Pay the full amount (product price + delivery charge) and enter the transaction ID below.';
-        if(amt)amt.textContent=`BDT ${full.toFixed(2)}`;
+    const pm = document.querySelector('input[name="payment_method"]:checked')?.value;
+    const dr = document.querySelector('input[name="delivery_option"]:checked');
+    const fee = dr ? parseInt(dr.dataset.fee) : 80;
+    const productTotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const fullAmount = productTotal + fee;
+
+    const heading = document.getElementById('payment-instruction-heading');
+    const sub = document.getElementById('payment-instruction-sub');
+    const amountSpan = document.getElementById('payable-amount');
+
+    // Check if payment method is advance (bKash/Nagad) – supports values: 'bkash', 'advance', 'bkash/nagad', etc.
+    const isAdvance = pm && (pm.toLowerCase() === 'bkash' || pm.toLowerCase() === 'advance' || pm.toLowerCase().includes('bkash'));
+
+    if (isAdvance) {
+        // Advance Payment – pay full amount (products + delivery)
+        if (heading) heading.textContent = 'bKash / Nagad — Full Amount:';
+        if (sub) sub.textContent = 'Pay the full amount (product price + delivery charge) via bKash/Nagad and enter the transaction ID below.';
+        if (amountSpan) amountSpan.textContent = `BDT ${fullAmount.toFixed(2)}`;
     } else {
-        if(hd)hd.textContent='Cash on Delivery — Advance Delivery Charge:';
-        if(sub)sub.textContent='Pay only the delivery charge now. Product price is paid upon delivery.';
-        if(amt)amt.textContent=`BDT ${fee.toFixed(2)}`;
+        // Cash on Delivery – pay only delivery fee in advance
+        if (heading) heading.textContent = 'Cash on Delivery — Advance Delivery Charge:';
+        if (sub) sub.textContent = 'Pay only the delivery charge now. Product price is paid upon delivery.';
+        if (amountSpan) amountSpan.textContent = `BDT ${fee.toFixed(2)}`;
     }
 }
 
-document.querySelectorAll('input[name="delivery_option"]').forEach(r=>r.addEventListener('change',updatePaymentInstruction));
-document.querySelectorAll('input[name="payment_method"]').forEach(r=>r.addEventListener('change',updatePaymentInstruction));
-const manualDiv=document.getElementById('manual-payment-details');
-if(manualDiv)manualDiv.classList.remove('hidden');
+// Event listeners for delivery and payment method changes
+document.querySelectorAll('input[name="delivery_option"]').forEach(r => r.addEventListener('change', updatePaymentInstruction));
+document.querySelectorAll('input[name="payment_method"]').forEach(r => r.addEventListener('change', updatePaymentInstruction));
+const manualDiv = document.getElementById('manual-payment-details');
+if (manualDiv) manualDiv.classList.remove('hidden');
 updatePaymentInstruction();
 
 // ==================== COUPON ====================
-document.getElementById('apply-coupon-btn')?.addEventListener('click', async()=>{
-    const code=document.getElementById('coupon-code').value.trim();
+document.getElementById('apply-coupon-btn')?.addEventListener('click', async() => {
+    const code = document.getElementById('coupon-code').value.trim();
     if (!code) return;
-    const subtotal=cart.reduce((s,i)=>s+i.price*i.quantity,0);
+    const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
     try {
-        const r=await fetch('/api/validate-coupon',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,cartTotal:subtotal})});
-        const d=await r.json();
+        const r = await fetch('/api/validate-coupon', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ code, cartTotal: subtotal }) });
+        const d = await r.json();
         if (!r.ok) throw new Error(d.error);
-        appliedCoupon=code; couponDiscount=d.discount;
-        const fb=document.getElementById('coupon-feedback');
-        if(fb)fb.innerHTML=`<span class="text-green-700">✓ Coupon applied — you save BDT ${couponDiscount}</span>`;
+        appliedCoupon = code;
+        couponDiscount = d.discount;
+        const fb = document.getElementById('coupon-feedback');
+        if (fb) fb.innerHTML = `<span class="text-green-700">✓ Coupon applied — you save BDT ${couponDiscount}</span>`;
         updateCartUI();
     } catch(e) {
-        const fb=document.getElementById('coupon-feedback');
-        if(fb)fb.innerHTML=`<span class="text-red-600">${e.message}</span>`;
+        const fb = document.getElementById('coupon-feedback');
+        if (fb) fb.innerHTML = `<span class="text-red-600">${e.message}</span>`;
     }
 });
 
@@ -1920,16 +1929,16 @@ async function placeOrder() {
     const email   = document.getElementById('customer-email').value.trim();
     const phone   = document.getElementById('customer-phone').value.trim();
     const address = document.getElementById('shipping-address').value.trim();
-    if (!name||!email) { showToast('Name and email are required'); return; }
+    if (!name || !email) { showToast('Name and email are required'); return; }
 
-    const dr=document.querySelector('input[name="delivery_option"]:checked');
+    const dr = document.querySelector('input[name="delivery_option"]:checked');
     if (!dr) { showToast('Please select a delivery option'); return; }
-    const delivery_method=dr.value==='inside'?'Inside Chittagong':'Outside Chittagong';
-    const delivery_fee=parseInt(dr.dataset.fee);
-    if (isNaN(delivery_fee)||delivery_fee<=0) { showToast('Invalid delivery fee — please refresh'); return; }
+    const delivery_method = dr.value === 'inside' ? 'Inside Chittagong' : 'Outside Chittagong';
+    const delivery_fee = parseInt(dr.dataset.fee);
+    if (isNaN(delivery_fee) || delivery_fee <= 0) { showToast('Invalid delivery fee — please refresh'); return; }
 
-    const payment_method=document.querySelector('input[name="payment_method"]:checked')?.value||'cash_on_delivery';
-    const transaction_id=document.getElementById('transaction-id')?.value.trim();
+    const payment_method = document.querySelector('input[name="payment_method"]:checked')?.value || 'cash_on_delivery';
+    const transaction_id = document.getElementById('transaction-id')?.value.trim();
     if (!transaction_id) {
         document.getElementById('txn-error')?.classList.remove('hidden');
         showToast('Please enter the transaction ID');
@@ -1937,36 +1946,43 @@ async function placeOrder() {
     }
     document.getElementById('txn-error')?.classList.add('hidden');
 
-    const items=cart.map(i=>({ id:i.id,name:i.name,price:i.price,quantity:i.quantity,size:i.size||'M',color:i.color||'Default',image_url:i.image_url||'' }));
-    const subtotal=cart.reduce((s,i)=>s+(i.price*i.quantity),0)+delivery_fee;
-    const finalAmount=Math.max(0,subtotal-couponDiscount);
+    const items = cart.map(i => ({ id:i.id, name:i.name, price:i.price, quantity:i.quantity, size:i.size||'M', color:i.color||'Default', image_url:i.image_url||'' }));
+    const subtotal = cart.reduce((s,i) => s + (i.price * i.quantity), 0) + delivery_fee;
+    const finalAmount = Math.max(0, subtotal - couponDiscount);
 
-    const orderData={
-        customer_name:name,customer_email:email,customer_phone:phone,shipping_address:address,
-        total_amount:subtotal,discount_applied:couponDiscount,final_amount:finalAmount,
-        items,coupon_code:appliedCoupon,notes:'',
-        payment_method,transaction_id,delivery_method,delivery_fee
+    const orderData = {
+        customer_name:name, customer_email:email, customer_phone:phone, shipping_address:address,
+        total_amount:subtotal, discount_applied:couponDiscount, final_amount:finalAmount,
+        items, coupon_code:appliedCoupon, notes:'',
+        payment_method, transaction_id, delivery_method, delivery_fee
     };
 
     try {
-        const headers={'Content-Type':'application/json'};
-        if (authToken) headers['Authorization']=`Bearer ${authToken}`;
-        const r=await fetch('/api/orders',{method:'POST',headers,body:JSON.stringify(orderData)});
-        const d=await r.json();
-        if (!r.ok) throw new Error(d.error||'Order failed');
+        const headers = { 'Content-Type':'application/json' };
+        if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+        const r = await fetch('/api/orders', { method:'POST', headers, body: JSON.stringify(orderData) });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Order failed');
 
         showToast('Order placed — thank you!');
-        cart=[]; couponDiscount=0; appliedCoupon=null; saveCart();
+        cart = []; couponDiscount = 0; appliedCoupon = null; saveCart();
         closeCheckout(); toggleCart();
 
-        // Reset form
-        ['customer-name','customer-phone','shipping-address','coupon-code','transaction-id'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
-        document.getElementById('coupon-feedback').innerHTML='';
-        document.querySelector('input[name="payment_method"][value="cash_on_delivery"]').checked=true;
-        document.querySelector('input[name="delivery_option"][value="inside"]').checked=true;
+        // Reset form fields
+        ['customer-name', 'customer-phone', 'shipping-address', 'coupon-code', 'transaction-id'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        const couponFeedback = document.getElementById('coupon-feedback');
+        if (couponFeedback) couponFeedback.innerHTML = '';
+        const codRadio = document.querySelector('input[name="payment_method"][value="cash_on_delivery"]');
+        if (codRadio) codRadio.checked = true;
+        const insideRadio = document.querySelector('input[name="delivery_option"][value="inside"]');
+        if (insideRadio) insideRadio.checked = true;
         updatePaymentInstruction();
     } catch(e) { showToast(e.message); }
 }
 </script>
+
 </body>
 </html>
