@@ -770,4 +770,4 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 COLONIAL server running on http://localhost:${PORT}`);
   console.log(`📊 Admin panel: http://localhost:${PORT}/admin.html`);
-}); server
+}); 
