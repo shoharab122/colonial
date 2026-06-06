@@ -761,6 +761,82 @@ app.get('/api/customer/orders', authenticateToken, async (req, res) => {
   }
 });
 
+// ------------------- ADMIN COUPONS CRUD -------------------
+app.get('/api/admin/coupons', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM coupons ORDER BY created_at DESC');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/admin/coupons', authenticateToken, requireAdmin, async (req, res) => {
+  const { code, discount_type, discount_value, min_order_amount, usage_limit, valid_from, valid_to, is_active } = req.body;
+  if (!code || !discount_type || discount_value === undefined) {
+    return res.status(400).json({ error: 'code, discount_type and discount_value are required' });
+  }
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO coupons (code, discount_type, discount_value, min_order_amount, usage_limit, valid_from, valid_to, is_active, used_count)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0) RETURNING *`,
+      [
+        code.toUpperCase().trim(),
+        discount_type,
+        parseFloat(discount_value),
+        parseFloat(min_order_amount) || 0,
+        usage_limit ? parseInt(usage_limit) : null,
+        valid_from || null,
+        valid_to || null,
+        is_active !== false
+      ]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ error: 'Coupon code already exists' });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/admin/coupons/:id', authenticateToken, requireAdmin, async (req, res) => {
+  const { code, discount_type, discount_value, min_order_amount, usage_limit, valid_from, valid_to, is_active } = req.body;
+  try {
+    const { rows } = await pool.query(
+      `UPDATE coupons SET
+         code = $1, discount_type = $2, discount_value = $3,
+         min_order_amount = $4, usage_limit = $5,
+         valid_from = $6, valid_to = $7, is_active = $8
+       WHERE id = $9 RETURNING *`,
+      [
+        code.toUpperCase().trim(),
+        discount_type,
+        parseFloat(discount_value),
+        parseFloat(min_order_amount) || 0,
+        usage_limit ? parseInt(usage_limit) : null,
+        valid_from || null,
+        valid_to || null,
+        is_active !== false,
+        req.params.id
+      ]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Coupon not found' });
+    res.json(rows[0]);
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ error: 'Coupon code already exists' });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/admin/coupons/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM coupons WHERE id = $1', [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Coupon not found' });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ------------------- CATCH-ALL -------------------
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
