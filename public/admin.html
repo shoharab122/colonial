@@ -1452,7 +1452,7 @@ function buildInvoice(o) {
     <div style="text-align:right;font-size:12px;line-height:1.9;">
       <div>Subtotal: ${fBDT(subtotal)}</div>
       <div>Delivery: ${fBDT(delivery)}</div>
-      ${discount>0 ? `<div>Coupon Discount: –${fBDT(discount)}${o.coupon_code?` (${esc(o.coupon_code)})`:''}` : ''}
+    ${discount>0 ? `<div>Coupon Discount: –${fBDT(discount)}${o.coupon_code?` (${esc(o.coupon_code)})`:''}` : ''}
       <div style="font-size:14px;font-weight:600;border-top:1px solid #E8E2D5;padding-top:8px;margin-top:6px;">Total: ${fBDT(total)}</div>
     </div>
     <div style="text-align:center;margin-top:28px;font-size:11px;color:#7A6E5D;border-top:1px solid #E8E2D5;padding-top:12px;">
