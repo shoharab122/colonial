@@ -723,11 +723,19 @@
 
     <!-- Footer -->
     <div class="cart-footer">
-        <div class="flex items-center justify-between mb-1">
+   <div class="flex items-center justify-between mb-1">
             <span class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)]">Subtotal</span>
+            <span id="cart-subtotal-price" class="text-sm font-light">BDT 0.00</span>
+        </div>
+        <div id="cart-discount-row" style="display:none;" class="flex items-center justify-between mb-1">
+            <span class="text-[.65rem] tracking-[.14em] uppercase text-green-700">Coupon</span>
+            <span id="cart-discount-price" class="text-sm font-medium text-green-700">–BDT 0.00</span>
+        </div>
+        <p class="text-[.68rem] text-[var(--muted)] mb-2">Delivery calculated at checkout</p>
+        <div class="flex items-center justify-between mb-3 border-t border-[var(--colonial-border)] pt-2">
+            <span class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)]">Total</span>
             <span id="cart-total-price" class="font-serif text-xl font-light">BDT 0.00</span>
         </div>
-        <p class="text-[.68rem] text-[var(--muted)] mb-4">Delivery calculated at checkout</p>
         <button onclick="openCheckout()" class="btn-primary w-full py-3.5 rounded-sm">Proceed to Checkout</button>
     </div>
 </div>
@@ -1580,9 +1588,30 @@ function saveCart() { localStorage.setItem('amoura_cart', JSON.stringify(cart));
 
 function updateCartUI() {
     const subtotal = cart.reduce((s,i) => s+(i.price*i.quantity), 0);
-    const total = subtotal - couponDiscount;
+    const discount = Math.min(couponDiscount, subtotal); // never exceed subtotal
+    const total    = Math.max(0, subtotal - discount);
+
+    // subtotal line
+    const tsub = document.getElementById('cart-subtotal-price');
+    if (tsub) tsub.textContent = `BDT ${subtotal.toFixed(2)}`;
+
+    // coupon discount row — show only when coupon is applied
+    const discRow = document.getElementById('cart-discount-row');
+    const discVal = document.getElementById('cart-discount-price');
+    if (discRow && discVal) {
+        if (discount > 0) {
+            discRow.style.display = 'flex';
+            discVal.textContent = `–BDT ${discount.toFixed(2)}`;
+        } else {
+            discRow.style.display = 'none';
+        }
+    }
+
+    // total line
     const ts = document.getElementById('cart-total-price');
-    if (ts) ts.textContent = `BDT ${Math.max(0,total).toFixed(2)}`;
+    if (ts) ts.textContent = `BDT ${total.toFixed(2)}`;
+
+    // cart count badge
     const ti = cart.reduce((s,i) => s+i.quantity, 0);
     const cs = document.getElementById('cart-count');
     if (cs) { cs.textContent = ti; cs.style.opacity = ti ? '1' : '0'; }
@@ -1864,35 +1893,32 @@ document.getElementById('submit-review-btn')?.addEventListener('click', async()=
 
 document.getElementById('modal-wishlist-btn')?.addEventListener('click',()=>{ if(currentProduct) toggleWishlist(currentProduct.id); });
 
-// ==================== PAYMENT INSTRUCTION (FIXED - WORKS WITH ANY ADVANCE PAYMENT VALUE) ====================
+// ==================== PAYMENT INSTRUCTION ====================
 function updatePaymentInstruction() {
     const pm = document.querySelector('input[name="payment_method"]:checked')?.value;
     const dr = document.querySelector('input[name="delivery_option"]:checked');
     const fee = dr ? parseInt(dr.dataset.fee) : 80;
     const productTotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-    const fullAmount = productTotal + fee;
+    const discountedTotal = Math.max(0, productTotal - Math.min(couponDiscount, productTotal));
+    const fullAmount = discountedTotal + fee;
 
     const heading = document.getElementById('payment-instruction-heading');
     const sub = document.getElementById('payment-instruction-sub');
     const amountSpan = document.getElementById('payable-amount');
 
-    // Check if payment method is advance (bKash/Nagad) – supports values: 'bkash', 'advance', 'bkash/nagad', etc.
     const isAdvance = pm && (pm.toLowerCase() === 'bkash' || pm.toLowerCase() === 'advance' || pm.toLowerCase().includes('bkash'));
 
     if (isAdvance) {
-        // Advance Payment – pay full amount (products + delivery)
         if (heading) heading.textContent = 'bKash / Nagad — Full Amount:';
         if (sub) sub.textContent = 'Pay the full amount (product price + delivery charge) via bKash/Nagad and enter the transaction ID below.';
         if (amountSpan) amountSpan.textContent = `BDT ${fullAmount.toFixed(2)}`;
     } else {
-        // Cash on Delivery – pay only delivery fee in advance
         if (heading) heading.textContent = 'Cash on Delivery — Advance Delivery Charge:';
         if (sub) sub.textContent = 'Pay only the delivery charge now. Product price is paid upon delivery.';
         if (amountSpan) amountSpan.textContent = `BDT ${fee.toFixed(2)}`;
     }
 }
 
-// Event listeners for delivery and payment method changes
 document.querySelectorAll('input[name="delivery_option"]').forEach(r => r.addEventListener('change', updatePaymentInstruction));
 document.querySelectorAll('input[name="payment_method"]').forEach(r => r.addEventListener('change', updatePaymentInstruction));
 const manualDiv = document.getElementById('manual-payment-details');
@@ -1911,8 +1937,9 @@ document.getElementById('apply-coupon-btn')?.addEventListener('click', async() =
         appliedCoupon = code;
         couponDiscount = d.discount;
         const fb = document.getElementById('coupon-feedback');
-        if (fb) fb.innerHTML = `<span class="text-green-700">✓ Coupon applied — you save BDT ${couponDiscount}</span>`;
+        if (fb) fb.innerHTML = `<span class="text-green-700">✓ Coupon applied — you save BDT ${couponDiscount.toFixed(2)}</span>`;
         updateCartUI();
+        updatePaymentInstruction(); // recalculate payable amount after coupon
     } catch(e) {
         const fb = document.getElementById('coupon-feedback');
         if (fb) fb.innerHTML = `<span class="text-red-600">${e.message}</span>`;
@@ -1947,12 +1974,18 @@ async function placeOrder() {
     document.getElementById('txn-error')?.classList.add('hidden');
 
     const items = cart.map(i => ({ id:i.id, name:i.name, price:i.price, quantity:i.quantity, size:i.size||'M', color:i.color||'Default', image_url:i.image_url||'' }));
-    const subtotal = cart.reduce((s,i) => s + (i.price * i.quantity), 0) + delivery_fee;
-    const finalAmount = Math.max(0, subtotal - couponDiscount);
+
+    // ── CORRECT CALCULATION ──────────────────────────────────────
+    // coupon discounts items only, delivery fee is never discounted
+    const itemsTotal  = cart.reduce((s,i) => s + (i.price * i.quantity), 0);
+    const discount    = Math.min(couponDiscount, itemsTotal);
+    const subtotal    = itemsTotal + delivery_fee;           // gross total
+    const finalAmount = Math.max(0, itemsTotal - discount) + delivery_fee; // net payable
+    // ────────────────────────────────────────────────────────────
 
     const orderData = {
         customer_name:name, customer_email:email, customer_phone:phone, shipping_address:address,
-        total_amount:subtotal, discount_applied:couponDiscount, final_amount:finalAmount,
+        total_amount:subtotal, discount_applied:discount, final_amount:finalAmount,
         items, coupon_code:appliedCoupon, notes:'',
         payment_method, transaction_id, delivery_method, delivery_fee
     };
@@ -1968,7 +2001,6 @@ async function placeOrder() {
         cart = []; couponDiscount = 0; appliedCoupon = null; saveCart();
         closeCheckout(); toggleCart();
 
-        // Reset form fields
         ['customer-name', 'customer-phone', 'shipping-address', 'coupon-code', 'transaction-id'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
