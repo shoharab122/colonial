@@ -1,1096 +1,1706 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COLONIAL - Admin Panel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .admin-card { transition: all 0.2s; }
-        .admin-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .tab-active { border-bottom: 2px solid black; color: black; font-weight: 500; }
-        .sse-status { font-size: 10px; padding: 2px 6px; border-radius: 20px; }
-        .sse-connected { background: #10b981; color: white; }
-        .sse-disconnected { background: #ef4444; color: white; }
-        .image-item {
-            position: relative;
-            width: 80px;
-            height: 100px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-            background: #f9fafb;
-            cursor: pointer;
-        }
-        .image-item img { width: 100%; height: 100%; object-fit: cover; }
-        .image-item .remove-btn {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            border-radius: 999px;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .image-item .remove-btn:hover { background: red; }
-        .image-item .main-badge {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            font-size: 10px;
-            text-align: center;
-            padding: 2px;
-        }
-        .gallery-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-        .order-items-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .order-items-table th, .order-items-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; vertical-align: middle; }
-        .order-items-table th { background: #f3f4f6; font-weight: 500; }
-        .order-items-table td img { width: 40px; height: 50px; object-fit: cover; border-radius: 4px; }
-        .debug-json { background: #f9fafb; padding: 8px; font-size: 11px; white-space: pre-wrap; font-family: monospace; border: 1px solid #e5e7eb; margin-top: 8px; }
-        .reviews-table, .wishlist-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .reviews-table th, .reviews-table td, .wishlist-table th, .wishlist-table td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
-        .reviews-table th, .wishlist-table th { background: #f3f4f6; font-weight: 500; }
-        .payment-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-        .payment-paid { background: #d1fae5; color: #065f46; }
-        .payment-pending { background: #fef3c7; color: #92400e; }
-        .payment-awaiting { background: #fed7aa; color: #9a3412; }
-        .payment-failed { background: #fee2e2; color: #991b1b; }
-        footer a { min-height: 44px; display: inline-flex; align-items: center; }
-        .upload-progress { font-size: 12px; margin-top: 8px; max-height: 120px; overflow-y: auto; }
-        .progress-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #e5e7eb; }
-
-        /* Invoice Modal Styles */
-        .invoice-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            font-family: 'Inter', sans-serif;
-        }
-        .invoice-header {
-            text-align: center;
-            border-bottom: 2px solid #000;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-        }
-        .invoice-header h1 {
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .invoice-header p {
-            color: #666;
-        }
-        .invoice-details {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            gap: 20px;
-        }
-        .invoice-details div {
-            flex: 1;
-        }
-        .invoice-items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .invoice-items-table th,
-        .invoice-items-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .invoice-items-table th {
-            background: #f3f4f6;
-        }
-        .totals {
-            text-align: right;
-            margin-top: 20px;
-        }
-        .totals p {
-            margin: 5px 0;
-        }
-        .invoice-footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COLONIAL — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+/* ── EXACT TOKENS FROM index.html ─────────────── */
+:root {
+  --bg:          #FEFDF9;
+  --card:        rgba(255,255,255,0.72);
+  --border:      rgba(200,190,170,0.45);
+  --hover:       rgba(240,232,218,0.55);
+  --accent:      #B89E82;
+  --accent-dk:   #7A6350;
+  --ink:         #4A4038;
+  --muted:       #9A8E7D;
+  --sidebar-bg:  rgba(36,28,22,0.92);
+  --sidebar-h:   rgba(58,46,35,0.80);
+  --sidebar-a:   #C4A882;
+  --green:       #2E8A5A;
+  --green-bg:    rgba(232,248,238,0.70);
+  --red:         #B83232;
+  --red-bg:      rgba(250,236,236,0.70);
+  --amber:       #9A7020;
+  --amber-bg:    rgba(251,243,226,0.70);
+  --shadow-sm:   0 1px 4px rgba(62,54,46,.04);
+  --shadow-md:   0 4px 16px rgba(62,54,46,.06);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Jost',sans-serif;
+  font-weight:300;
+  font-size:13px;
+  background:var(--bg);
+  background-image:radial-gradient(ellipse at 20% 10%, rgba(200,180,150,0.10) 0%, transparent 60%),
+                   radial-gradient(ellipse at 80% 80%, rgba(180,160,130,0.08) 0%, transparent 60%);
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+}
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--accent); border-radius:2px; }
+ 
+/* ── LOGIN ──────────────────────────────────── */
+#login-screen {
+  position:fixed; inset:0;
+  background:rgba(36,28,22,0.88);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:flex; align-items:center; justify-content:center;
+  z-index:9999;
+}
+.login-box {
+  background:rgba(255,255,255,0.82);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(200,185,162,0.45);
+  padding:52px 44px 44px;
+  width:360px;
+  box-shadow:0 40px 80px rgba(0,0,0,.18), 0 0 0 1px rgba(255,255,255,0.6) inset;
+}
+.login-logo {
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px; font-weight:500;
+  letter-spacing:.22em; text-align:center;
+  color:var(--ink); margin-bottom:4px;
+}
+.login-sub {
+  text-align:center; font-size:10px;
+  letter-spacing:.18em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:32px;
+}
+.login-field {
+  width:100%; border:1px solid rgba(200,185,162,0.50);
+  background:rgba(255,255,255,0.65);
+  backdrop-filter:blur(8px);
+  padding:11px 14px;
+  font-family:'Jost',sans-serif; font-size:13px;
+  color:var(--ink); outline:none;
+  transition:border-color .2s, background .2s;
+  margin-bottom:10px;
+}
+.login-field:focus { border-color:var(--accent); background:rgba(255,255,255,0.85); }
+.login-field::placeholder { color:var(--muted); }
+.login-btn {
+  width:100%; padding:12px;
+  background:rgba(74,64,56,0.88);
+  backdrop-filter:blur(8px);
+  color:#fff;
+  border:none; font-family:'Jost',sans-serif;
+  font-size:11px; font-weight:500;
+  letter-spacing:.18em; text-transform:uppercase;
+  cursor:pointer; transition:background .2s; margin-top:4px;
+}
+.login-btn:hover { background:var(--accent-dk); }
+ 
+/* ── MOBILE HEADER ──────────────────────────── */
+#mobile-header {
+  display:none; position:fixed; top:0; left:0; right:0;
+  height:50px;
+  background:rgba(36,28,22,0.80);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  z-index:151; align-items:center;
+  justify-content:space-between; padding:0 16px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.m-logo {
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px; letter-spacing:.2em;
+  color:rgba(255,255,255,.88);
+}
+#hamburger {
+  background:none; border:none; cursor:pointer;
+  color:rgba(255,255,255,.7);
+  display:flex; align-items:center;
+}
+#sidebar-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.35);
+  backdrop-filter:blur(2px);
+  z-index:149;
+}
+#sidebar-overlay.show { display:block; }
+ 
+/* ── SIDEBAR ────────────────────────────────── */
+#sidebar {
+  width:220px; min-width:220px;
+  background:rgba(36,28,22,0.88);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-right:1px solid rgba(255,255,255,0.07);
+  display:flex; flex-direction:column;
+  position:fixed; top:0; left:0; bottom:0;
+  z-index:150;
+  transition:transform .28s ease;
+}
+.sidebar-top {
+  padding:28px 22px 20px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.sidebar-brand {
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px; font-weight:500;
+  letter-spacing:.22em; color:rgba(255,255,255,0.92);
+}
+.sidebar-role {
+  font-size:9px; color:rgba(255,255,255,.28);
+  letter-spacing:.16em; text-transform:uppercase;
+  margin-top:4px;
+}
+.sidebar-nav { flex:1; padding:10px 0; overflow-y:auto; }
+.nav-group {
+  font-size:9px; font-weight:500;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.18);
+  padding:14px 22px 5px;
+}
+.nav-btn {
+  width:100%; display:flex; align-items:center; gap:10px;
+  padding:9px 22px; background:none; border:none;
+  cursor:pointer; color:rgba(255,255,255,.42);
+  font-family:'Jost',sans-serif;
+  font-size:12px; font-weight:400;
+  letter-spacing:.04em; text-align:left;
+  transition:all .15s; position:relative;
+}
+.nav-btn:hover { background:rgba(255,255,255,0.07); color:rgba(255,255,255,.82); }
+.nav-btn.active { color:var(--sidebar-a); background:rgba(196,168,130,.10); }
+.nav-btn.active::before {
+  content:''; position:absolute; left:0; top:8px; bottom:8px;
+  width:2.5px; background:var(--sidebar-a); border-radius:0 2px 2px 0;
+}
+.nav-btn svg { width:14px; height:14px; flex-shrink:0; }
+.nav-badge {
+  margin-left:auto; background:#ef4444; color:#fff;
+  font-size:9px; width:16px; height:16px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+}
+.sidebar-foot {
+  padding:16px 22px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.sse-pill {
+  display:flex; align-items:center; gap:6px;
+  font-size:10px; color:rgba(255,255,255,.28);
+  margin-bottom:10px;
+}
+.sse-dot {
+  width:5px; height:5px; border-radius:50%;
+  background:#ef4444; flex-shrink:0;
+  transition:background .3s;
+}
+.sse-dot.on { background:#4ade80; box-shadow:0 0 5px rgba(74,222,128,.5); }
+.logout-btn {
+  width:100%; padding:8px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.32);
+  font-family:'Jost',sans-serif;
+  font-size:10px; font-weight:400;
+  letter-spacing:.12em; text-transform:uppercase;
+  cursor:pointer; transition:all .15s;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+}
+.logout-btn:hover { background:rgba(255,255,255,.10); color:#fff; }
+ 
+/* ── MAIN ───────────────────────────────────── */
+#main-wrap { margin-left:220px; flex:1; min-height:100vh; display:flex; flex-direction:column; }
+ 
+/* ── TOPBAR ─────────────────────────────────── */
+.topbar {
+  background:rgba(255,255,255,0.72);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(200,190,170,0.38);
+  padding:0 28px; height:54px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:50;
+}
+.topbar-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px; font-weight:500;
+  letter-spacing:.08em; color:var(--ink);
+}
+.topbar-right { display:flex; align-items:center; gap:8px; }
+ 
+/* ── BUTTONS ────────────────────────────────── */
+.btn-solid {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 16px;
+  background:rgba(74,64,56,0.86);
+  backdrop-filter:blur(8px);
+  color:#fff;
+  border:none; font-family:'Jost',sans-serif;
+  font-size:11px; font-weight:500;
+  letter-spacing:.1em; text-transform:uppercase;
+  cursor:pointer; transition:background .2s;
+}
+.btn-solid:hover { background:var(--accent-dk); }
+.btn-solid svg { width:13px; height:13px; }
+.btn-outline {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:7px 14px;
+  border:1px solid rgba(200,190,170,0.50);
+  background:rgba(255,255,255,0.50);
+  backdrop-filter:blur(8px);
+  color:var(--muted);
+  font-family:'Jost',sans-serif;
+  font-size:11px; font-weight:400;
+  letter-spacing:.06em; cursor:pointer;
+  transition:all .15s;
+}
+.btn-outline:hover { border-color:var(--accent); color:var(--accent); background:rgba(255,255,255,0.72); }
+.btn-outline svg { width:12px; height:12px; }
+ 
+/* ── PAGES ──────────────────────────────────── */
+.page { padding:24px 28px; display:none; }
+.page.active { display:block; }
+ 
+/* ── STAT CARDS ─────────────────────────────── */
+.stats-row {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:12px; margin-bottom:24px;
+}
+.stat-card {
+  background:rgba(255,255,255,0.68);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(200,190,170,0.38);
+  padding:18px 20px;
+  display:flex; justify-content:space-between; align-items:flex-start;
+  transition:box-shadow .2s, background .2s;
+}
+.stat-card:hover { box-shadow:var(--shadow-md); background:rgba(255,255,255,0.82); }
+.stat-label {
+  font-size:9px; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:8px;
+}
+.stat-val { font-size:26px; font-weight:300; color:var(--ink); line-height:1; }
+.stat-ico {
+  width:30px; height:30px;
+  background:rgba(240,232,218,0.65);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.stat-ico svg { width:13px; height:13px; color:var(--muted); }
+ 
+/* ── SECTION HEADER ─────────────────────────── */
+.sec-head {
+  display:flex; align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px; flex-wrap:wrap; gap:10px;
+}
+.sec-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px; font-weight:500;
+  letter-spacing:.06em; color:var(--ink);
+}
+.search-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.inp {
+  border:1px solid rgba(200,190,170,0.48);
+  background:rgba(255,255,255,0.60);
+  backdrop-filter:blur(8px);
+  padding:7px 12px; font-family:'Jost',sans-serif;
+  font-size:12px; color:var(--ink); outline:none;
+  transition:border-color .2s, background .2s;
+}
+.inp:focus { border-color:var(--accent); background:rgba(255,255,255,0.82); }
+.inp::placeholder { color:var(--muted); }
+select.inp { cursor:pointer; }
+ 
+/* ── PRODUCT ROWS ───────────────────────────── */
+.product-row {
+  background:rgba(255,255,255,0.65);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(200,190,170,0.38);
+  padding:13px 16px;
+  display:flex; align-items:center; gap:13px; flex-wrap:wrap;
+  margin-bottom:8px; transition:box-shadow .15s, background .15s;
+}
+.product-row:hover { box-shadow:var(--shadow-md); background:rgba(255,255,255,0.82); }
+.product-row img { width:40px; height:52px; object-fit:cover; flex-shrink:0; }
+.pinfo { flex:1; min-width:160px; }
+.pname { font-size:13px; font-weight:400; color:var(--ink); margin-bottom:2px; }
+.pmeta { font-size:11px; color:var(--muted); }
+.pfinal { font-size:11px; color:var(--green); font-weight:500; margin-top:2px; }
+.pbadge {
+  display:inline-block; padding:1px 8px;
+  background:rgba(240,232,218,0.60);
+  border:1px solid rgba(200,190,170,0.42);
+  font-size:10px; letter-spacing:.06em;
+  color:var(--accent); margin-top:3px;
+}
+.pact { display:flex; gap:5px; flex-shrink:0; flex-wrap:wrap; }
+ 
+/* ── ORDER SECTION ──────────────────────────── */
+.order-card {
+  background:rgba(255,255,255,0.65);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(200,190,170,0.38);
+  margin-bottom:12px; overflow:hidden;
+}
+.order-head {
+  padding:12px 16px;
+  background:rgba(240,232,218,0.50);
+  border-bottom:1px solid rgba(200,190,170,0.38);
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:12px; align-items:start;
+}
+.order-id {
+  font-family:'Jost',sans-serif;
+  font-size:13px; font-weight:500;
+  letter-spacing:.04em; color:var(--ink);
+}
+::selection {
+  background:rgba(184,158,130,0.28);
+  color:var(--ink);
+}
+.order-meta { font-size:11px; color:var(--muted); margin-top:2px; line-height:1.6; }
+.order-act { display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
+.order-body { padding:14px 16px; }
+.order-info-bar {
+  display:flex; gap:16px; flex-wrap:wrap;
+  font-size:11px; color:var(--muted);
+  margin-bottom:12px; padding-bottom:10px;
+  border-bottom:1px solid rgba(200,190,170,0.35);
+}
+.order-info-bar strong { color:var(--ink); font-weight:500; }
+.status-select {
+  border:1px solid rgba(200,190,170,0.48);
+  background:rgba(255,255,255,0.60);
+  backdrop-filter:blur(8px);
+  padding:6px 10px; font-family:'Jost',sans-serif;
+  font-size:11px; color:var(--ink); cursor:pointer; outline:none;
+  transition:border-color .15s;
+}
+.status-select:focus { border-color:var(--accent); }
+ 
+/* ── PAYMENT BADGES ─────────────────────────── */
+.pbadge-tag {
+  display:inline-block; padding:2px 9px;
+  font-size:10px; font-weight:500;
+  letter-spacing:.06em; text-transform:uppercase;
+}
+.pbadge-paid      { background:rgba(232,248,238,0.72); color:var(--green); }
+.pbadge-pending   { background:rgba(251,243,226,0.72); color:var(--amber); }
+.pbadge-awaiting  { background:rgba(254,243,199,0.72); color:#92400E; }
+.pbadge-failed    { background:rgba(250,236,236,0.72); color:var(--red); }
+ 
+/* ── ITEMS TABLE ────────────────────────────── */
+.items-wrap { overflow-x:auto; }
+.items-table { width:100%; border-collapse:collapse; font-size:11.5px; }
+.items-table th {
+  background:rgba(240,232,218,0.50); padding:7px 10px;
+  font-size:9.5px; font-weight:500;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted); border-bottom:1px solid rgba(200,190,170,0.38);
+  text-align:left;
+}
+.items-table td {
+  padding:9px 10px; border-bottom:1px solid rgba(200,190,170,0.30);
+  vertical-align:middle;
+}
+.items-table tr:last-child td { border-bottom:none; }
+.items-table img { width:30px; height:38px; object-fit:cover; }
+ 
+/* ── ACTION BUTTONS ─────────────────────────── */
+.act-btn {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:5px 10px;
+  border:1px solid rgba(200,190,170,0.48);
+  background:rgba(255,255,255,0.48);
+  color:var(--muted);
+  font-family:'Jost',sans-serif;
+  font-size:11px; font-weight:400;
+  letter-spacing:.04em; cursor:pointer;
+  transition:all .15s; white-space:nowrap;
+}
+.act-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(240,232,218,0.65); }
+.act-btn.danger:hover { border-color:var(--red); color:var(--red); background:rgba(250,236,236,0.72); }
+.act-btn.ok:hover { border-color:var(--green); color:var(--green); background:rgba(232,248,238,0.72); }
+.act-btn svg { width:11px; height:11px; }
+ 
+/* ── DATA TABLE ─────────────────────────────── */
+.tbl-wrap {
+  border:1px solid rgba(200,190,170,0.38);
+  background:rgba(255,255,255,0.62);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  overflow-x:auto;
+}
+.dtable { width:100%; border-collapse:collapse; font-size:12px; }
+.dtable th {
+  background:rgba(240,232,218,0.52); padding:9px 14px; text-align:left;
+  font-size:9.5px; font-weight:500;
+  letter-spacing:.12em; text-transform:uppercase;
+  color:var(--muted); border-bottom:1px solid rgba(200,190,170,0.38);
+  white-space:nowrap;
+}
+.dtable td {
+  padding:11px 14px; border-bottom:1px solid rgba(200,190,170,0.28);
+  color:var(--ink); vertical-align:middle;
+}
+.dtable tr:last-child td { border-bottom:none; }
+.dtable tr:hover td { background:rgba(240,232,218,0.45); }
+.dtable img { width:32px; height:40px; object-fit:cover; }
+ 
+/* ── EMPTY STATE ────────────────────────────── */
+.empty {
+  background:rgba(255,255,255,0.58);
+  border:1px solid rgba(200,190,170,0.38);
+  padding:52px 24px; text-align:center;
+  color:var(--muted); font-size:12px; letter-spacing:.04em;
+}
+ 
+/* ── COUPON CARDS ───────────────────────────── */
+.coupon-card {
+  background:rgba(255,255,255,0.65);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(200,190,170,0.38);
+  padding:16px 20px; margin-bottom:9px;
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  transition:box-shadow .15s, background .15s;
+}
+.coupon-card:hover { box-shadow:var(--shadow-md); background:rgba(255,255,255,0.82); }
+.coupon-code {
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px; font-weight:500;
+  letter-spacing:.14em; color:var(--ink);
+  background:rgba(240,232,218,0.58);
+  border:1px dashed rgba(200,190,170,0.50);
+  padding:6px 14px; min-width:110px; text-align:center;
+}
+.coupon-info { flex:1; min-width:140px; font-size:11px; color:var(--muted); line-height:1.7; }
+.coupon-val { font-size:18px; font-weight:500; color:var(--accent); min-width:80px; text-align:right; }
+.c-status {
+  font-size:10px; font-weight:500;
+  padding:3px 10px; letter-spacing:.07em; text-transform:uppercase;
+}
+.c-active   { background:rgba(232,248,238,0.72); color:var(--green); }
+.c-inactive { background:rgba(250,236,236,0.72); color:var(--red); }
+ 
+/* ── MODAL ──────────────────────────────────── */
+.modal-overlay {
+  position:fixed; inset:0;
+  background:rgba(42,33,26,.40);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  display:none; align-items:center; justify-content:center;
+  z-index:200; padding:16px;
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(200,190,170,0.40);
+  width:640px; max-width:100%;
+  max-height:90vh; overflow-y:auto;
+  box-shadow:0 32px 64px rgba(0,0,0,.12), 0 0 0 1px rgba(255,255,255,0.7) inset;
+}
+.modal-hd {
+  padding:18px 22px; border-bottom:1px solid rgba(200,190,170,0.35);
+  display:flex; justify-content:space-between; align-items:center;
+  position:sticky; top:0;
+  background:rgba(255,255,255,0.90);
+  backdrop-filter:blur(20px);
+  z-index:1;
+}
+.modal-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px; font-weight:500; letter-spacing:.06em;
+}
+.modal-x {
+  background:rgba(240,232,218,0.60); border:none; cursor:pointer;
+  color:var(--muted); padding:5px;
+  display:flex; align-items:center;
+  transition:all .15s;
+}
+.modal-x:hover { color:var(--ink); background:rgba(200,190,170,0.50); }
+.modal-bd { padding:20px 22px; }
+.modal-ft {
+  padding:14px 22px;
+  border-top:1px solid rgba(200,190,170,0.35);
+  display:flex; gap:8px;
+  background:rgba(250,248,244,0.72);
+}
+ 
+/* ── FORM ───────────────────────────────────── */
+.fg { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+.fg .full { grid-column:1/-1; }
+.fgrp { display:flex; flex-direction:column; gap:5px; }
+.flabel {
+  font-size:10px; font-weight:500;
+  letter-spacing:.13em; text-transform:uppercase;
+  color:var(--muted);
+}
+.finp {
+  border:1px solid rgba(200,190,170,0.50);
+  background:rgba(255,255,255,0.60);
+  backdrop-filter:blur(8px);
+  padding:9px 12px; font-family:'Jost',sans-serif;
+  font-size:13px; color:var(--ink); outline:none;
+  transition:border-color .2s, background .2s; width:100%;
+}
+.finp:focus { border-color:var(--accent); background:rgba(255,255,255,0.85); }
+.finp::placeholder { color:var(--muted); }
+textarea.finp { resize:vertical; }
+ 
+/* ── IMAGE GALLERY ──────────────────────────── */
+.img-gallery { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.img-item {
+  position:relative; width:68px; height:86px;
+  border:1px solid rgba(200,190,170,0.42); overflow:hidden;
+  cursor:pointer; flex-shrink:0;
+}
+.img-item img { width:100%; height:100%; object-fit:cover; }
+.img-item.main-img { border:2px solid var(--accent); }
+.img-item .img-rm {
+  position:absolute; top:3px; right:3px;
+  background:rgba(42,33,26,.65); color:#fff;
+  width:17px; height:17px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; cursor:pointer; border:none;
+}
+.img-item .img-rm:hover { background:var(--red); }
+.img-item .main-tag {
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(196,168,130,.80); color:#fff;
+  font-size:9px; text-align:center; padding:2px;
+}
+.img-item.selected { outline:2px solid #6b9de8; outline-offset:1px; }
+.img-mv { display:flex; gap:6px; margin-top:8px; }
+.up-prog { margin-top:8px; max-height:90px; overflow-y:auto; }
+.prog-row {
+  display:flex; justify-content:space-between;
+  font-size:11px; padding:3px 0;
+  border-bottom:1px solid rgba(200,190,170,0.30); color:var(--muted);
+}
+ 
+/* ── PREVIEW ────────────────────────────────── */
+.prev-wrap {
+  background:rgba(255,255,255,0.62);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(200,190,170,0.38); overflow:hidden;
+}
+.prev-bar {
+  padding:10px 16px;
+  background:rgba(240,232,218,0.52);
+  border-bottom:1px solid rgba(200,190,170,0.38);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.prev-label {
+  font-size:10px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+}
+ 
+/* ── FOOTER ─────────────────────────────────── */
+footer {
+  background:rgba(36,28,22,0.82);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  color:rgba(255,255,255,.24);
+  padding:16px 28px; font-size:11px; letter-spacing:.03em;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:10px; margin-top:auto;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+footer a { color:rgba(255,255,255,.24); text-decoration:none; transition:color .15s; }
+footer a:hover { color:var(--sidebar-a); }
+.foot-links { display:flex; flex-wrap:wrap; gap:14px; }
+ 
+/* ── RESPONSIVE ─────────────────────────────── */
+@media (max-width:768px) {
+  #mobile-header { display:flex; }
+  #sidebar { transform:translateX(-100%); }
+  #sidebar.open { transform:translateX(0); }
+  #main-wrap { margin-left:0; padding-top:50px; }
+  .page { padding:16px 14px; }
+  .topbar { display:none; }
+  .stats-row { grid-template-columns:1fr 1fr; gap:10px; }
+  .stat-card { padding:14px; }
+  .stat-val { font-size:22px; }
+  .fg { grid-template-columns:1fr; }
+  .fg .full { grid-column:1; }
+  .product-row { padding:11px 12px; }
+  .order-head { grid-template-columns:1fr; }
+  .order-act { justify-content:flex-start; }
+  .coupon-card { flex-direction:column; align-items:flex-start; gap:10px; }
+  .coupon-val { text-align:left; }
+  footer { padding:14px; font-size:10px; }
+}
+@media (max-width:480px) {
+  .stats-row { grid-template-columns:1fr; }
+  .sec-head { flex-direction:column; align-items:flex-start; }
+  .search-bar { width:100%; }
+  .inp { width:100%; }
+  .order-info-bar { gap:8px; }
+  .act-btn { padding:5px 8px; font-size:10.5px; }
+  .items-table th, .items-table td { padding:6px 8px; }
+}
+</style>
 </head>
-<body class="bg-gray-50">
-
-<!-- Login Screen -->
-<div id="login-screen" class="flex items-center justify-center min-h-screen bg-black">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-96">
-        <h2 class="text-3xl font-serif mb-6 text-center">COLONIAL Admin</h2>
-        <input type="email" id="admin-email" placeholder="Email" class="w-full border border-gray-300 rounded-lg p-3 mb-3">
-        <input type="password" id="admin-password" placeholder="Password" class="w-full border border-gray-300 rounded-lg p-3 mb-4">
-        <button id="login-btn" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition">Login</button>
-    </div>
+<body>
+ 
+<!-- ═══════ LOGIN ═══════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">COLONIAL</div>
+    <div class="login-sub">Admin Console</div>
+    <input type="email" id="admin-email" placeholder="Email address" class="login-field">
+    <input type="password" id="admin-password" placeholder="Password" class="login-field">
+    <button id="login-btn" class="login-btn">Sign In</button>
+  </div>
 </div>
-
-<!-- Admin Dashboard -->
-<div id="admin-panel" class="hidden">
-    <div class="container mx-auto px-4 py-6">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-serif font-bold">COLONIAL Admin</h1>
-            <div class="flex gap-3 items-center">
-                <span id="sse-status" class="sse-status sse-disconnected">🔌 Offline</span>
-                <button id="preview-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition flex items-center gap-2">
-                    <i data-lucide="eye" class="w-4 h-4"></i> Live Preview
-                </button>
-                <button id="logout-btn" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 transition">Logout</button>
-            </div>
+ 
+<!-- ═══════ DASHBOARD ═══════ -->
+<div id="admin-panel" style="display:none; width:100%; min-height:100vh;">
+ 
+  <!-- MOBILE HEADER -->
+  <div id="mobile-header">
+    <button id="hamburger" aria-label="Menu">
+      <i data-lucide="menu" style="width:20px;height:20px;"></i>
+    </button>
+    <span class="m-logo">COLONIAL</span>
+    <button class="btn-outline" onclick="window.open('/','_blank')" style="font-size:10px;padding:5px 9px;color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.18);">
+      <i data-lucide="external-link"></i>
+    </button>
+  </div>
+  <div id="sidebar-overlay"></div>
+ 
+  <div style="display:flex;min-height:100vh;">
+    <!-- SIDEBAR -->
+    <nav id="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-brand">COLONIAL</div>
+        <div class="sidebar-role">Admin Console</div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="nav-group">Manage</div>
+        <button class="nav-btn active" id="nav-products" onclick="showPage('products')">
+          <i data-lucide="package"></i> Products
+        </button>
+        <button class="nav-btn" id="nav-orders" onclick="showPage('orders')">
+          <i data-lucide="shopping-bag"></i> Orders
+          <span class="nav-badge" id="orders-badge" style="display:none;">!</span>
+        </button>
+        <button class="nav-btn" id="nav-coupons" onclick="showPage('coupons')">
+          <i data-lucide="tag"></i> Coupons
+        </button>
+        <div class="nav-group">Insights</div>
+        <button class="nav-btn" id="nav-reviews" onclick="showPage('reviews')">
+          <i data-lucide="star"></i> Reviews
+        </button>
+        <button class="nav-btn" id="nav-wishlists" onclick="showPage('wishlists')">
+          <i data-lucide="heart"></i> Wishlists
+        </button>
+        <div class="nav-group">Store</div>
+        <button class="nav-btn" id="nav-preview" onclick="showPage('preview')">
+          <i data-lucide="monitor"></i> Live Preview
+        </button>
+      </div>
+      <div class="sidebar-foot">
+        <div class="sse-pill">
+          <span class="sse-dot" id="sse-dot"></span>
+          <span id="sse-label">Offline</span>
         </div>
-
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm admin-card"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-sm">Total Products</p><p id="total-products" class="text-3xl font-bold">-</p></div><i data-lucide="package" class="w-8 h-8 text-gray-400"></i></div></div>
-            <div class="bg-white p-6 rounded-xl shadow-sm admin-card"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-sm">Total Orders</p><p id="total-orders" class="text-3xl font-bold">-</p></div><i data-lucide="shopping-bag" class="w-8 h-8 text-gray-400"></i></div></div>
-            <div class="bg-white p-6 rounded-xl shadow-sm admin-card"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-sm">Revenue</p><p id="revenue" class="text-3xl font-bold text-green-600">-</p></div><i data-lucide="dollar-sign" class="w-8 h-8 text-gray-400"></i></div></div>
-            <div class="bg-white p-6 rounded-xl shadow-sm admin-card"><div class="flex items-center justify-between"><div><p class="text-gray-500 text-sm">Low Stock (<5)</p><p id="low-stock" class="text-3xl font-bold text-red-600">-</p></div><i data-lucide="alert-triangle" class="w-8 h-8 text-red-400"></i></div></div>
+        <button class="logout-btn" id="logout-btn">
+          <i data-lucide="log-out" style="width:11px;height:11px;"></i> Sign Out
+        </button>
+      </div>
+    </nav>
+ 
+    <!-- MAIN CONTENT -->
+    <div id="main-wrap">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="topbar-title" id="topbar-title">Products</div>
+        <div class="topbar-right">
+          <button class="btn-outline" onclick="window.open('/','_blank')">
+            <i data-lucide="external-link"></i> View Store
+          </button>
         </div>
-
-        <!-- Tabs -->
-        <div class="flex gap-6 border-b mb-6 overflow-x-auto">
-            <button id="tab-products-btn" class="py-2 px-1 text-gray-600 tab-active">Products</button>
-            <button id="tab-orders-btn" class="py-2 px-1 text-gray-600">Orders</button>
-            <button id="tab-reviews-btn" class="py-2 px-1 text-gray-600">Reviews</button>
-            <button id="tab-wishlists-btn" class="py-2 px-1 text-gray-600">Wishlists</button>
-            <button id="tab-preview-btn" class="py-2 px-1 text-gray-600">Store Preview</button>
+      </div>
+ 
+      <!-- ── PRODUCTS PAGE ── -->
+      <div class="page active" id="page-products">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div><div class="stat-label">Products</div><div class="stat-val" id="total-products">—</div></div>
+            <div class="stat-ico"><i data-lucide="package"></i></div>
+          </div>
+          <div class="stat-card">
+            <div><div class="stat-label">Orders</div><div class="stat-val" id="total-orders">—</div></div>
+            <div class="stat-ico"><i data-lucide="shopping-bag"></i></div>
+          </div>
+          <div class="stat-card">
+            <div><div class="stat-label">Revenue</div><div class="stat-val" id="revenue" style="font-size:18px;color:var(--green);">—</div></div>
+            <div class="stat-ico"><i data-lucide="banknote"></i></div>
+          </div>
+          <div class="stat-card">
+            <div><div class="stat-label">Low Stock</div><div class="stat-val" id="low-stock" style="color:var(--red);">—</div></div>
+            <div class="stat-ico"><i data-lucide="alert-triangle"></i></div>
+          </div>
         </div>
-
-        <!-- Products Tab -->
-        <div id="products-tab">
-            <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
-                <div class="flex gap-2">
-                    <input type="text" id="product-search" placeholder="Search products..." class="border border-gray-300 rounded-lg px-4 py-2 w-64">
-                    <select id="category-filter" class="border border-gray-300 rounded-lg px-4 py-2">
-                        <option value="all">All Categories</option>
-                        <option value="Women">Women</option>
-                        <option value="Men">Men</option>
-                        <option value="Children">Children</option>
-                    </select>
-                </div>
-                <button id="add-product-btn" class="bg-black text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Add Product</button>
-            </div>
-            <div id="products-list" class="space-y-3"></div>
+        <div class="sec-head">
+          <div class="search-bar">
+            <input type="text" id="product-search" placeholder="Search products…" class="inp" style="width:180px;">
+            <select id="category-filter" class="inp">
+              <option value="all">All Categories</option>
+              <option value="Women">Women</option>
+              <option value="Men">Men</option>
+              <option value="Children">Children</option>
+            </select>
+          </div>
+          <button class="btn-solid" id="add-product-btn"><i data-lucide="plus"></i> Add Product</button>
         </div>
-
-        <!-- Orders Tab -->
-        <div id="orders-tab" class="hidden">
-            <div id="orders-list" class="space-y-4"></div>
+        <div id="products-list"></div>
+      </div>
+ 
+      <!-- ── ORDERS PAGE ── -->
+      <div class="page" id="page-orders">
+        <div class="sec-head">
+          <div class="sec-title">Orders</div>
+          <div class="search-bar">
+            <input type="text" id="order-search" placeholder="Search orders…" class="inp" style="width:180px;">
+            <select id="order-status-filter" class="inp">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="payment-filter" class="inp">
+              <option value="all">All Payments</option>
+              <option value="pending">Pay Pending</option>
+              <option value="awaiting_verification">Awaiting Verify</option>
+              <option value="paid">Paid</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
         </div>
-
-        <!-- Reviews Tab -->
-        <div id="reviews-tab" class="hidden">
-            <div class="mb-4 flex justify-between items-center">
-                <input type="text" id="review-search" placeholder="Search by product or user..." class="border border-gray-300 rounded-lg px-4 py-2 w-64">
-            </div>
-            <div id="reviews-list" class="overflow-x-auto"></div>
+        <div id="orders-list"></div>
+      </div>
+ 
+      <!-- ── COUPONS PAGE ── -->
+      <div class="page" id="page-coupons">
+        <div class="sec-head">
+          <div class="sec-title">Coupons</div>
+          <button class="btn-solid" id="add-coupon-btn"><i data-lucide="plus"></i> New Coupon</button>
         </div>
-
-        <!-- Wishlists Tab -->
-        <div id="wishlists-tab" class="hidden">
-            <div class="mb-4 flex justify-between items-center">
-                <input type="text" id="wishlist-search" placeholder="Search by product or user..." class="border border-gray-300 rounded-lg px-4 py-2 w-64">
-            </div>
-            <div id="wishlists-list" class="overflow-x-auto"></div>
+        <div id="coupons-list"></div>
+      </div>
+ 
+      <!-- ── REVIEWS PAGE ── -->
+      <div class="page" id="page-reviews">
+        <div class="sec-head">
+          <div class="sec-title">Customer Reviews</div>
+          <input type="text" id="review-search" placeholder="Search…" class="inp" style="width:180px;">
         </div>
-
-        <!-- Store Preview Tab -->
-        <div id="preview-tab" class="hidden">
-            <div class="bg-white rounded-xl p-4 shadow-sm">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-semibold">Live Store Preview</h2>
-                    <button id="open-full-preview" class="text-blue-600 text-sm">Open in new tab</button>
-                </div>
-                <iframe src="/" class="w-full h-[80vh] border rounded-lg" title="Store Preview"></iframe>
-            </div>
+        <div class="tbl-wrap" id="reviews-list"></div>
+      </div>
+ 
+      <!-- ── WISHLISTS PAGE ── -->
+      <div class="page" id="page-wishlists">
+        <div class="sec-head">
+          <div class="sec-title">Wishlists</div>
+          <input type="text" id="wishlist-search" placeholder="Search…" class="inp" style="width:180px;">
         </div>
+        <div class="tbl-wrap" id="wishlists-list"></div>
+      </div>
+ 
+      <!-- ── PREVIEW PAGE ── -->
+      <div class="page" id="page-preview">
+        <div class="prev-wrap">
+          <div class="prev-bar">
+            <span class="prev-label">Live Store</span>
+            <button class="btn-outline" onclick="window.open('/','_blank')">
+              <i data-lucide="external-link"></i> Full View
+            </button>
+          </div>
+          <iframe src="/" style="width:100%;height:80vh;border:none;" title="Store Preview"></iframe>
+        </div>
+      </div>
+ 
+      <footer>
+        <span>&copy; 2026 COLONIAL. All rights reserved.</span>
+        <div class="foot-links">
+          <a href="#">Size Guide</a>
+          <a href="#">Delivery &amp; Return</a>
+          <a href="#">Contact</a>
+          <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank">Facebook</a>
+          <a href="https://www.instagram.com/colonial_ltd" target="_blank">Instagram</a>
+        </div>
+      </footer>
     </div>
+  </div>
 </div>
-
-<!-- Product Modal -->
-<div id="product-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-xl max-w-2xl w-full mx-4 p-6 max-h-[90vh] overflow-auto">
-        <div class="flex justify-between items-center mb-4">
-            <h2 id="modal-title" class="text-xl font-bold">Add Product</h2>
-            <button class="close-modal-btn"><i data-lucide="x" class="w-5 h-5"></i></button>
-        </div>
-        <form id="product-form">
-            <input type="hidden" id="product-id">
-            <div class="grid grid-cols-2 gap-3">
-                <input id="name" placeholder="Product name" class="border p-2 rounded" required>
-                <input id="price" type="number" step="0.01" placeholder="Price (BDT)" class="border p-2 rounded" required>
-                <input id="discount_amount" type="number" step="0.01" placeholder="Discount (BDT)" class="border p-2 rounded">
-                <input id="category" placeholder="Category" class="border p-2 rounded" required>
-                <div class="col-span-2">
-                    <label class="block text-sm font-medium mb-1">Product Images (max 10)</label>
-                    <div class="mb-3">
-                        <input type="file" id="image-uploads" accept="image/*" multiple class="border p-2 rounded w-full">
-                        <button type="button" id="upload-multiple-btn" class="mt-2 bg-gray-800 text-white px-3 py-1 rounded text-sm">Upload Selected</button>
-                    </div>
-                    <div id="image-gallery" class="gallery-container"></div>
-                    <div id="upload-progress" class="upload-progress"></div>
-                    <input type="hidden" id="images-hidden" name="images" value="">
-                    <p class="text-xs text-gray-500 mt-1">Hold Ctrl (Windows) or Cmd (Mac) to select multiple images.</p>
-                    <div class="mt-2 flex gap-2 text-xs">
-                        <button type="button" id="move-up-btn" class="border px-2 py-1 rounded">↑ Move Up</button>
-                        <button type="button" id="move-down-btn" class="border px-2 py-1 rounded">↓ Move Down</button>
-                    </div>
-                </div>
-                <input id="badge" placeholder="Badge (e.g., New, -30%)" class="border p-2 rounded">
-                <textarea id="description" placeholder="Description" rows="2" class="border p-2 rounded col-span-2"></textarea>
-                <input id="materials" placeholder="Materials (comma separated)" class="border p-2 rounded">
-                <input id="colors" placeholder="Colors (comma hex)" class="border p-2 rounded">
-                <input id="care" placeholder="Care instructions" class="border p-2 rounded">
-                <input id="stock" type="number" placeholder="Stock" class="border p-2 rounded" value="10">
-            </div>
-            <div class="flex gap-3 mt-6">
-                <button type="submit" class="bg-black text-white px-6 py-2 rounded-lg">Save</button>
-                <button type="button" class="close-modal-btn border px-6 py-2 rounded-lg">Cancel</button>
-            </div>
-        </form>
+ 
+<!-- ═══════ PRODUCT MODAL ═══════ -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div class="modal-title" id="modal-title">Add Product</div>
+      <button class="modal-x close-product-modal"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
     </div>
+    <div class="modal-bd">
+      <form id="product-form">
+        <input type="hidden" id="product-id">
+        <div class="fg">
+          <div class="fgrp">
+            <label class="flabel">Product Name</label>
+            <input id="name" class="finp" placeholder="e.g. Linen Kurta" required>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Price (BDT)</label>
+            <input id="price" type="number" step="0.01" class="finp" placeholder="1200" required>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Discount (BDT)</label>
+            <input id="discount_amount" type="number" step="0.01" class="finp" placeholder="0">
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Category</label>
+            <input id="category" class="finp" placeholder="Women / Men / Children" required>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Badge</label>
+            <input id="badge" class="finp" placeholder="New / -30% / Sale">
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Stock</label>
+            <input id="stock" type="number" class="finp" value="10">
+          </div>
+          <div class="fgrp full">
+            <label class="flabel">Description</label>
+            <textarea id="description" class="finp" rows="3" placeholder="Product description…"></textarea>
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Materials</label>
+            <input id="materials" class="finp" placeholder="Cotton, Linen">
+          </div>
+          <div class="fgrp">
+            <label class="flabel">Colours (hex, comma-separated)</label>
+            <input id="colors" class="finp" placeholder="#fff, #000">
+          </div>
+          <div class="fgrp full">
+            <label class="flabel">Care Instructions</label>
+            <input id="care" class="finp" placeholder="Dry clean only">
+          </div>
+          <div class="fgrp full">
+            <label class="flabel">Product Images (max 10)</label>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <input type="file" id="image-uploads" accept="image/*" multiple class="finp" style="flex:1;min-width:140px;">
+              <button type="button" id="upload-multiple-btn" class="btn-solid">Upload</button>
+            </div>
+            <div id="image-gallery" class="img-gallery"></div>
+            <div class="img-mv">
+              <button type="button" id="move-up-btn" class="act-btn"><i data-lucide="arrow-up"></i> Up</button>
+              <button type="button" id="move-down-btn" class="act-btn"><i data-lucide="arrow-down"></i> Down</button>
+            </div>
+            <div id="upload-progress" class="up-prog"></div>
+            <input type="hidden" id="images-hidden" value="">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-ft">
+      <button type="submit" form="product-form" class="btn-solid">Save Product</button>
+      <button class="btn-outline close-product-modal">Cancel</button>
+    </div>
+  </div>
 </div>
-
-<!-- Invoice Modal -->
-<div id="invoice-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-auto">
-        <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
-            <h2 class="text-xl font-bold">Invoice</h2>
-            <div class="flex gap-2">
-                <button id="print-invoice-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">🖨️ Print / Save PDF</button>
-                <button class="close-invoice-modal bg-gray-200 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition">Close</button>
-            </div>
-        </div>
-        <div id="invoice-content" class="p-6"></div>
+ 
+<!-- ═══════ COUPON MODAL ═══════ -->
+<div class="modal-overlay" id="coupon-modal">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-hd">
+      <div class="modal-title" id="coupon-modal-title">New Coupon</div>
+      <button class="modal-x close-coupon-modal"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
     </div>
+    <div class="modal-bd">
+      <div class="fg">
+        <div class="fgrp">
+          <label class="flabel">Coupon Code</label>
+          <input id="coupon-code" class="finp" placeholder="SUMMER25" style="text-transform:uppercase;font-weight:500;letter-spacing:.08em;">
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Discount Type</label>
+          <select id="coupon-type" class="finp">
+            <option value="percentage">Percentage (%)</option>
+            <option value="fixed">Fixed Amount (BDT)</option>
+          </select>
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Discount Value</label>
+          <input id="coupon-value" type="number" step="0.01" class="finp" placeholder="20">
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Min Order Amount (BDT)</label>
+          <input id="coupon-min" type="number" step="0.01" class="finp" placeholder="0">
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Usage Limit (0 = unlimited)</label>
+          <input id="coupon-usage-limit" type="number" class="finp" value="0" min="0">
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Status</label>
+          <select id="coupon-active" class="finp">
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Valid From</label>
+          <input id="coupon-valid-from" type="date" class="finp">
+        </div>
+        <div class="fgrp">
+          <label class="flabel">Valid To (Expiry)</label>
+          <input id="coupon-valid-to" type="date" class="finp">
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-solid" id="save-coupon-btn">Save Coupon</button>
+      <button class="btn-outline close-coupon-modal">Cancel</button>
+    </div>
+  </div>
 </div>
-
-<!-- Footer -->
-<footer class="bg-black text-white/80 mt-16 py-8 px-4 md:px-6 lg:px-12 border-t border-gray-800">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-center">
-            <a href="#" class="hover:underline inline-block">Size Guide</a>
-            <a href="#" class="hover:underline inline-block">Fabric Care</a>
-            <a href="#" class="hover:underline inline-block">Delivery & Return</a>
-            <a href="#" class="hover:underline inline-block">Billing</a>
-            <a href="#" class="hover:underline inline-block">Terms</a>
-            <a href="#" class="hover:underline inline-block">Showrooms</a>
-            <a href="#" class="hover:underline inline-block">Contact</a>
-            <a href="#" class="hover:underline inline-block">About Us</a>
-            <a href="#" class="hover:underline inline-block">Lifestyle Card</a>
-            <a href="#" class="hover:underline inline-block">Offers</a>
-        </div>
-        <div class="flex justify-center gap-6 mt-6">
-            <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-white transition-colors">
-                <i data-lucide="facebook" class="w-5 h-5"></i>
-            </a>
-            <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer" class="text-white/80 hover:text-white transition-colors">
-                <i data-lucide="instagram" class="w-5 h-5"></i>
-            </a>
-        </div>
-        <div class="text-center text-xs text-white/50 mt-6 pt-6 border-t border-gray-800">
-            &copy; 2026 COLONIAL. All rights reserved.
-        </div>
+ 
+<!-- ═══════ INVOICE MODAL ═══════ -->
+<div class="modal-overlay" id="invoice-modal">
+  <div class="modal-box" style="max-width:860px;">
+    <div class="modal-hd">
+      <div class="modal-title">Invoice</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="print-invoice-btn" class="btn-solid"><i data-lucide="download"></i> Download PDF</button>
+        <button class="modal-x close-invoice-modal"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+      </div>
     </div>
-</footer>
+    <div id="invoice-content" style="padding:22px;"></div>
+  </div>
+</div>
 
 <script>
-    lucide.createIcons();
-    let products = [];
-    let authToken = localStorage.getItem('amoura_admin_token');
-    let eventSource = null;
-    let reconnectTimeout = null;
-    let productImages = [];
-    let allReviews = [];
-    let allWishlists = [];
+lucide.createIcons();
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : m);
-    }
+// ── STATE ─────────────────────────────────────
+let products    = [];
+let allReviews  = [];
+let allWishlists= [];
+let allCoupons  = [];
+let allOrders   = [];
+let productImages = [];
+let authToken   = localStorage.getItem('amoura_admin_token');
+let eventSource = null;
+let reconnectTO = null;
+let editingCouponId = null;
 
-    function formatDate(dateString) {
-        if (!dateString) return '';
-        return new Date(dateString).toLocaleString();
-    }
+// ── MOBILE SIDEBAR ─────────────────────────────
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('show');
+});
+document.getElementById('sidebar-overlay').addEventListener('click', closeMobile);
+function closeMobile() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+}
 
-    function getPaymentStatusBadge(status) {
-        const statusMap = {
-            'paid': 'payment-paid',
-            'pending': 'payment-pending',
-            'awaiting_verification': 'payment-awaiting',
-            'failed': 'payment-failed'
-        };
-        const className = statusMap[status] || 'payment-pending';
-        const displayText = status ? status.replace('_', ' ') : 'pending';
-        return `<span class="payment-badge ${className}">${escapeHtml(displayText)}</span>`;
-    }
+// ── UTILS ──────────────────────────────────────
+const esc = s => !s ? '' : String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const fmtDate = d => !d ? '—' : new Date(d).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const fBDT = a => `BDT ${parseFloat(a||0).toFixed(2)}`;
 
-    async function authFetch(url, options = {}) {
-        const headers = { 'Authorization': `Bearer ${authToken}` };
-        if (options.body && !(options.body instanceof FormData)) {
-            headers['Content-Type'] = 'application/json';
-        }
-        if (options.headers) Object.assign(headers, options.headers);
-        const res = await fetch(url, { ...options, headers });
-        if (res.status === 401 || res.status === 403) {
-            localStorage.removeItem('amoura_admin_token');
-            location.reload();
-            throw new Error('Unauthorized');
-        }
-        return res;
-    }
+function payBadge(status) {
+  const map = { paid:'pbadge-paid', pending:'pbadge-pending', awaiting_verification:'pbadge-awaiting', failed:'pbadge-failed' };
+  const cls = map[status] || 'pbadge-pending';
+  const txt = (status||'pending').replace(/_/g,' ');
+  return `<span class="pbadge-tag ${cls}">${esc(txt)}</span>`;
+}
 
-    function renderImageGallery() {
-        const container = document.getElementById('image-gallery');
-        if (!container) return;
-        if (!productImages.length) {
-            container.innerHTML = '<div class="text-gray-400 text-sm p-2">No images uploaded.</div>';
-            document.getElementById('images-hidden').value = '';
-            return;
-        }
-        container.innerHTML = productImages.map((url, idx) => `
-            <div class="image-item ${idx === 0 ? 'ring-2 ring-black' : ''}" data-index="${idx}">
-                <img src="${url}">
-                <button type="button" class="remove-btn" onclick="removeImage(${idx})">✕</button>
-                ${idx === 0 ? '<div class="main-badge">Main</div>' : ''}
-            </div>
-        `).join('');
-        document.getElementById('images-hidden').value = JSON.stringify(productImages);
-        console.log('🖼️ Gallery rendered. Total images:', productImages.length);
-    }
+// ── AUTH FETCH ─────────────────────────────────
+async function authFetch(url, opts={}) {
+  const headers = { 'Authorization': `Bearer ${authToken}` };
+  if (opts.body && !(opts.body instanceof FormData)) headers['Content-Type'] = 'application/json';
+  if (opts.headers) Object.assign(headers, opts.headers);
+  const res = await fetch(url, { ...opts, headers });
+  if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem('amoura_admin_token'); location.reload();
+    throw new Error('Unauthorized');
+  }
+  return res;
+}
 
-    window.removeImage = function(index) {
-        productImages.splice(index, 1);
-        renderImageGallery();
-    };
+// ── NAVIGATION ─────────────────────────────────
+const pageTitles = { products:'Products', orders:'Orders', coupons:'Coupons', reviews:'Reviews', wishlists:'Wishlists', preview:'Live Preview' };
 
-    function findSelectedImageIndex() {
-        const selected = document.querySelector('.image-item.selected');
-        return selected ? parseInt(selected.dataset.index) : -1;
-    }
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  document.getElementById('topbar-title').textContent = pageTitles[name] || name;
+  closeMobile();
+  if (name === 'orders')    loadOrders();
+  if (name === 'reviews')   loadReviews();
+  if (name === 'wishlists') loadWishlists();
+  if (name === 'coupons')   loadCoupons();
+}
 
-    function highlightImage(idx) {
-        document.querySelectorAll('.image-item').forEach((el, i) => {
-            if (i === idx) el.classList.add('selected', 'ring-2', 'ring-blue-500');
-            else el.classList.remove('selected', 'ring-2', 'ring-blue-500');
-        });
-    }
+// ── SSE ────────────────────────────────────────
+function setSSE(on) {
+  document.getElementById('sse-dot').classList.toggle('on', on);
+  document.getElementById('sse-label').textContent = on ? 'Live' : 'Offline';
+}
+function initSSE() {
+  if (eventSource) eventSource.close();
+  if (!authToken) return;
+  eventSource = new EventSource(`/api/admin/order-events?token=${authToken}`);
+  eventSource.onopen = () => setSSE(true);
+  eventSource.onmessage = () => {
+    loadOrders(); loadStats();
+    const b = document.getElementById('orders-badge');
+    b.style.display = 'flex';
+    setTimeout(() => b.style.display = 'none', 6000);
+  };
+  eventSource.onerror = () => {
+    setSSE(false); eventSource.close();
+    if (reconnectTO) clearTimeout(reconnectTO);
+    reconnectTO = setTimeout(initSSE, 5000);
+  };
+}
 
-    function moveUp() {
-        const idx = findSelectedImageIndex();
-        if (idx > 0) {
-            [productImages[idx-1], productImages[idx]] = [productImages[idx], productImages[idx-1]];
-            renderImageGallery();
-            highlightImage(idx-1);
-        } else alert('Select an image or cannot move up.');
-    }
+// ── STATS ──────────────────────────────────────
+async function loadStats() {
+  try {
+    const res = await authFetch('/api/admin/stats');
+    if (!res.ok) return;
+    const s = await res.json();
+    document.getElementById('total-products').textContent = s.totalProducts ?? '—';
+    document.getElementById('total-orders').textContent   = s.totalOrders   ?? '—';
+    const rev = parseFloat(s.revenue);
+    document.getElementById('revenue').textContent = `BDT ${isNaN(rev) ? '0.00' : rev.toFixed(2)}`;
+    document.getElementById('low-stock').textContent = s.lowStock ?? '0';
+  } catch(e) { console.error(e); }
+}
 
-    function moveDown() {
-        const idx = findSelectedImageIndex();
-        if (idx !== -1 && idx < productImages.length-1) {
-            [productImages[idx], productImages[idx+1]] = [productImages[idx+1], productImages[idx]];
-            renderImageGallery();
-            highlightImage(idx+1);
-        } else alert('Select an image or cannot move down.');
-    }
+// ── PRODUCTS ───────────────────────────────────
+async function loadProducts() {
+  try {
+    const res = await authFetch('/api/products');
+    products = await res.json();
+    renderProducts();
+  } catch(e) {
+    document.getElementById('products-list').innerHTML = '<div class="empty">Failed to load products.</div>';
+  }
+}
 
-    async function uploadMultipleImages(files) {
-        if (!files.length) {
-            alert('Select at least one image.');
-            return;
-        }
+function renderProducts() {
+  const q   = document.getElementById('product-search').value.toLowerCase();
+  const cat = document.getElementById('category-filter').value;
+  let list  = products.filter(p => p.name.toLowerCase().includes(q));
+  if (cat !== 'all') list = list.filter(p => p.category === cat);
+  const el = document.getElementById('products-list');
+  if (!list.length) { el.innerHTML = '<div class="empty">No products found.</div>'; return; }
+  el.innerHTML = list.map(p => {
+    const img   = (p.images?.length) ? p.images[0] : (p.image_url || 'https://placehold.co/40x52/e8e2d5/7a6e5d?text=C');
+    const final = (p.price - (p.discount_amount||0)).toFixed(2);
+    return `<div class="product-row">
+      <img src="${esc(img)}" onerror="this.src='https://placehold.co/40x52/e8e2d5/7a6e5d?text=C'" alt="${esc(p.name)}">
+      <div class="pinfo">
+        <div class="pname">${esc(p.name)}</div>
+        <div class="pmeta">BDT ${p.price} &nbsp;·&nbsp; Discount: BDT ${p.discount_amount||0} &nbsp;·&nbsp; Stock: ${p.stock} &nbsp;·&nbsp; ${esc(p.category)}</div>
+        <div class="pfinal">Final: BDT ${final}</div>
+        ${p.badge ? `<span class="pbadge">${esc(p.badge)}</span>` : ''}
+      </div>
+      <div class="pact">
+        <button class="act-btn" onclick="editProduct(${p.id})"><i data-lucide="pencil"></i> Edit</button>
+        <button class="act-btn danger" onclick="deleteProduct(${p.id})"><i data-lucide="trash-2"></i> Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
 
-        const uploadBtn = document.getElementById('upload-multiple-btn');
-        const originalText = uploadBtn.innerText;
-        uploadBtn.disabled = true;
-        const progressDiv = document.getElementById('upload-progress');
-        progressDiv.innerHTML = '';
+document.getElementById('add-product-btn').addEventListener('click', () => openProductModal());
+document.getElementById('product-search').addEventListener('input', renderProducts);
+document.getElementById('category-filter').addEventListener('change', renderProducts);
 
-        let successCount = 0;
-        let failedFiles = [];
-        let newUrls = [];
+document.querySelectorAll('.close-product-modal').forEach(b => b.addEventListener('click', () => document.getElementById('product-modal').classList.remove('open')));
+document.getElementById('product-modal').addEventListener('click', e => { if (e.target === document.getElementById('product-modal')) document.getElementById('product-modal').classList.remove('open'); });
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const progressItem = document.createElement('div');
-            progressItem.className = 'progress-item';
-            progressItem.innerHTML = `<span>${escapeHtml(file.name)}</span><span class="text-gray-500">⏳ uploading...</span>`;
-            progressDiv.appendChild(progressItem);
+function openProductModal(p = null) {
+  document.getElementById('modal-title').textContent   = p ? 'Edit Product' : 'Add Product';
+  document.getElementById('product-id').value          = p ? p.id : '';
+  document.getElementById('name').value                = p ? p.name : '';
+  document.getElementById('price').value               = p ? p.price : '';
+  document.getElementById('discount_amount').value     = p ? (p.discount_amount||0) : 0;
+  document.getElementById('category').value            = p ? p.category : '';
+  document.getElementById('badge').value               = p ? (p.badge||'') : '';
+  document.getElementById('description').value         = p ? (p.description||'') : '';
+  document.getElementById('materials').value           = p ? (p.materials||[]).join(',') : '';
+  document.getElementById('colors').value              = p ? (p.colors||[]).join(',') : '';
+  document.getElementById('care').value                = p ? (p.care||'') : '';
+  document.getElementById('stock').value               = p ? (p.stock||10) : 10;
+  productImages = p ? (p.images?.length ? [...p.images] : (p.image_url ? [p.image_url] : [])) : [];
+  if (!p) document.getElementById('product-form').reset(), document.getElementById('stock').value=10, document.getElementById('discount_amount').value=0;
+  renderImageGallery();
+  document.getElementById('product-modal').classList.add('open');
+  lucide.createIcons();
+}
 
-            const formData = new FormData();
-            formData.append('image', file);
+window.editProduct   = id => { const p = products.find(x=>x.id==id); if(p) openProductModal(p); };
+window.deleteProduct = async id => {
+  if (!confirm('Delete this product permanently?')) return;
+  try { await authFetch(`/api/products/${id}`, {method:'DELETE'}); loadProducts(); loadStats(); }
+  catch(e) { alert('Delete failed: ' + e.message); }
+};
 
-            try {
-                const res = await fetch('/api/upload', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${authToken}` },
-                    body: formData
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Upload failed');
-
-                newUrls.push(data.imageUrl);
-                successCount++;
-                progressItem.innerHTML = `<span>${escapeHtml(file.name)}</span><span class="text-green-600">✓ uploaded</span>`;
-                uploadBtn.innerText = `⬆️ Uploaded ${successCount}/${files.length}`;
-                setTimeout(() => progressItem.remove(), 2000);
-            } catch (err) {
-                console.error(`Failed: ${file.name}`, err);
-                failedFiles.push(`${file.name}: ${err.message}`);
-                progressItem.innerHTML = `<span>${escapeHtml(file.name)}</span><span class="text-red-600">✗ failed</span>`;
-            }
-        }
-
-        if (newUrls.length) {
-            productImages.push(...newUrls);
-            renderImageGallery();
-        }
-
-        uploadBtn.disabled = false;
-        uploadBtn.innerText = originalText;
-        document.getElementById('image-uploads').value = '';
-
-        if (failedFiles.length) {
-            alert(`❌ ${failedFiles.length} file(s) failed:\n${failedFiles.join('\n')}`);
-        } else if (successCount) {
-            alert(`✅ ${successCount} image(s) uploaded successfully! Gallery now has ${productImages.length} images.`);
-        }
-    }
-
-    const uploadBtn = document.getElementById('upload-multiple-btn');
-    if (uploadBtn) {
-        const newBtn = uploadBtn.cloneNode(true);
-        uploadBtn.parentNode.replaceChild(newBtn, uploadBtn);
-        newBtn.addEventListener('click', () => {
-            const files = document.getElementById('image-uploads').files;
-            uploadMultipleImages(Array.from(files));
-        });
-    }
-
-    document.getElementById('move-up-btn')?.addEventListener('click', moveUp);
-    document.getElementById('move-down-btn')?.addEventListener('click', moveDown);
-    document.addEventListener('click', (e) => {
-        const target = e.target.closest('.image-item');
-        if (target && target.closest('#image-gallery')) {
-            document.querySelectorAll('.image-item').forEach(el => el.classList.remove('selected', 'ring-2', 'ring-blue-500'));
-            target.classList.add('selected', 'ring-2', 'ring-blue-500');
-        }
+document.getElementById('product-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = document.getElementById('product-id').value;
+  const payload = {
+    name:            document.getElementById('name').value,
+    price:           parseFloat(document.getElementById('price').value),
+    discount_amount: parseFloat(document.getElementById('discount_amount').value)||0,
+    category:        document.getElementById('category').value,
+    image_url:       productImages[0]||'',
+    images:          productImages,
+    badge:           document.getElementById('badge').value,
+    description:     document.getElementById('description').value,
+    materials:       document.getElementById('materials').value.split(',').map(s=>s.trim()).filter(Boolean),
+    colors:          document.getElementById('colors').value.split(',').map(s=>s.trim()).filter(Boolean),
+    care:            document.getElementById('care').value,
+    stock:           parseInt(document.getElementById('stock').value)||0
+  };
+  try {
+    const res = await authFetch(id ? `/api/products/${id}` : '/api/products', {
+      method: id ? 'PUT' : 'POST', body: JSON.stringify(payload)
     });
+    if (!res.ok) { const d=await res.json(); throw new Error(d.error||`HTTP ${res.status}`); }
+    document.getElementById('product-modal').classList.remove('open');
+    await loadProducts(); await loadStats();
+    alert('✅ Product saved!');
+  } catch(err) { alert('❌ ' + err.message); }
+});
 
-    function setSSEStatus(connected) {
-        const span = document.getElementById('sse-status');
-        if (connected) {
-            span.className = 'sse-status sse-connected';
-            span.innerText = '● Live';
-        } else {
-            span.className = 'sse-status sse-disconnected';
-            span.innerText = '○ Offline';
-        }
+// ── IMAGE GALLERY ──────────────────────────────
+function renderImageGallery() {
+  const el = document.getElementById('image-gallery');
+  if (!el) return;
+  if (!productImages.length) {
+    el.innerHTML = '<span style="font-size:11px;color:var(--muted);">No images yet.</span>';
+    document.getElementById('images-hidden').value = '';
+    return;
+  }
+  el.innerHTML = productImages.map((url,i) => `
+    <div class="img-item ${i===0?'main-img':''}" data-index="${i}">
+      <img src="${url}" onerror="this.src='https://placehold.co/68x86/e8e2d5/7a6e5d?text=C'">
+      <button type="button" class="img-rm" onclick="removeImage(${i})">✕</button>
+      ${i===0?'<div class="main-tag">Main</div>':''}
+    </div>`).join('');
+  document.getElementById('images-hidden').value = JSON.stringify(productImages);
+}
+window.removeImage = i => { productImages.splice(i,1); renderImageGallery(); };
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('.img-item');
+  if (t && t.closest('#image-gallery')) {
+    document.querySelectorAll('.img-item').forEach(el=>el.classList.remove('selected'));
+    t.classList.add('selected');
+  }
+});
+document.getElementById('move-up-btn').addEventListener('click', () => {
+  const i = parseInt(document.querySelector('.img-item.selected')?.dataset.index ?? -1);
+  if (i > 0) { [productImages[i-1],productImages[i]]=[productImages[i],productImages[i-1]]; renderImageGallery(); document.querySelectorAll('.img-item')[i-1]?.classList.add('selected'); }
+  else alert('Already at top or select an image.');
+});
+document.getElementById('move-down-btn').addEventListener('click', () => {
+  const i = parseInt(document.querySelector('.img-item.selected')?.dataset.index ?? -1);
+  if (i !== -1 && i < productImages.length-1) { [productImages[i],productImages[i+1]]=[productImages[i+1],productImages[i]]; renderImageGallery(); document.querySelectorAll('.img-item')[i+1]?.classList.add('selected'); }
+  else alert('Already at bottom or select an image.');
+});
+
+// Replace upload button to avoid duplicate listeners
+(function(){
+  const old = document.getElementById('upload-multiple-btn');
+  const nb  = old.cloneNode(true);
+  old.parentNode.replaceChild(nb, old);
+  nb.addEventListener('click', () => uploadImages(Array.from(document.getElementById('image-uploads').files)));
+})();
+
+async function uploadImages(files) {
+  if (!files.length) { alert('Select at least one image.'); return; }
+  const btn  = document.getElementById('upload-multiple-btn');
+  const orig = btn.textContent;
+  btn.disabled = true;
+  const prog = document.getElementById('upload-progress');
+  prog.innerHTML = '';
+  let ok = 0, fails = [], newUrls = [];
+  for (const file of files) {
+    const row = document.createElement('div');
+    row.className = 'prog-row';
+    row.innerHTML = `<span>${esc(file.name)}</span><span>uploading…</span>`;
+    prog.appendChild(row);
+    const fd = new FormData();
+    fd.append('image', file);
+    try {
+      const res  = await fetch('/api/upload', {method:'POST', headers:{'Authorization':`Bearer ${authToken}`}, body:fd});
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error||'Upload failed');
+      newUrls.push(data.imageUrl); ok++;
+      row.innerHTML = `<span>${esc(file.name)}</span><span style="color:var(--green);">✓ done</span>`;
+      btn.textContent = `${ok}/${files.length} uploaded`;
+      setTimeout(()=>row.remove(), 2000);
+    } catch(err) {
+      fails.push(`${file.name}: ${err.message}`);
+      row.innerHTML = `<span>${esc(file.name)}</span><span style="color:var(--red);">✗ failed</span>`;
     }
+  }
+  if (newUrls.length) { productImages.push(...newUrls); renderImageGallery(); }
+  btn.disabled = false; btn.textContent = orig;
+  document.getElementById('image-uploads').value = '';
+  if (fails.length) alert(`❌ ${fails.length} failed:\n${fails.join('\n')}`);
+  lucide.createIcons();
+}
 
-    function initSSE() {
-        if (eventSource) eventSource.close();
-        if (!authToken) return;
-        const url = `/api/admin/order-events?token=${authToken}`;
-        eventSource = new EventSource(url);
-        eventSource.onopen = () => setSSEStatus(true);
-        eventSource.onmessage = (event) => {
-            try {
-                const newOrder = JSON.parse(event.data);
-                console.log('🔔 New order:', newOrder);
-                loadOrders();
-                loadStats();
-                const ordersTab = document.getElementById('orders-tab');
-                if (ordersTab.classList.contains('hidden')) {
-                    const ordersBtn = document.getElementById('tab-orders-btn');
-                    let badge = ordersBtn.querySelector('.order-badge');
-                    if (!badge) {
-                        badge = document.createElement('span');
-                        badge.className = 'order-badge absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center';
-                        ordersBtn.style.position = 'relative';
-                        ordersBtn.appendChild(badge);
-                    }
-                    badge.innerText = '!';
-                    setTimeout(() => badge && badge.remove(), 5000);
-                }
-            } catch(err) { console.error('SSE parse error', err); }
-        };
-        eventSource.onerror = (err) => {
-            console.error('SSE error:', err);
-            setSSEStatus(false);
-            eventSource.close();
-            if (reconnectTimeout) clearTimeout(reconnectTimeout);
-            reconnectTimeout = setTimeout(initSSE, 5000);
-        };
-    }
+// ── ORDERS ─────────────────────────────────────
+async function loadOrders() {
+  try {
+    const res  = await authFetch('/api/admin/orders');
+    allOrders  = await res.json();
+    renderOrders();
+  } catch(e) {
+    document.getElementById('orders-list').innerHTML = '<div class="empty">Error loading orders.</div>';
+  }
+}
 
-    async function loadStats() {
-        try {
-            const res = await authFetch('/api/admin/stats');
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const stats = await res.json();
-            document.getElementById('total-products').innerText = stats.totalProducts;
-            document.getElementById('total-orders').innerText = stats.totalOrders;
-            const revenue = parseFloat(stats.revenue);
-            document.getElementById('revenue').innerText = `BDT ${isNaN(revenue) ? '0.00' : revenue.toFixed(2)}`;
-            document.getElementById('low-stock').innerText = stats.lowStock !== undefined ? stats.lowStock : '0';
-        } catch(err) {
-            console.error('Stats error:', err);
-            document.getElementById('revenue').innerText = 'BDT 0.00';
-            document.getElementById('low-stock').innerText = '0';
-        }
-    }
+function renderOrders() {
+  const q       = document.getElementById('order-search').value.toLowerCase();
+  const stFilter= document.getElementById('order-status-filter').value;
+  const pyFilter= document.getElementById('payment-filter').value;
+  let list      = allOrders;
+  if (q)              list = list.filter(o => (o.customer_name||'').toLowerCase().includes(q) || (o.order_number||'').toLowerCase().includes(q) || (o.customer_email||'').toLowerCase().includes(q));
+  if (stFilter!=='all') list = list.filter(o => o.order_status === stFilter);
+  if (pyFilter!=='all') list = list.filter(o => o.payment_status === pyFilter);
+  const el = document.getElementById('orders-list');
+  if (!list.length) { el.innerHTML = '<div class="empty">No orders found.</div>'; return; }
+  el.innerHTML = list.map(o => {
+    let itemsHtml = '';
+    let items = [];
+    try {
+      items = JSON.parse(o.items||'[]');
+      if (items.length) {
+        itemsHtml = `<div class="items-wrap"><table class="items-table">
+          <thead><tr><th>Image</th><th>Product</th><th>Size</th><th>Colour</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+          <tbody>
+            ${items.map(i=>`<tr>
+              <td><img src="${esc(i.image_url||'https://placehold.co/30x38/e8e2d5/7a6e5d?text=C')}" onerror="this.src='https://placehold.co/30x38/e8e2d5/7a6e5d?text=C'" alt=""></td>
+              <td>${esc(i.name)}</td>
+              <td>${esc(i.size||'—')}</td>
+              <td>${esc(i.color||'—')}</td>
+              <td>${i.quantity}</td>
+              <td>BDT ${i.price}</td>
+              <td>BDT ${(i.price*i.quantity).toFixed(2)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table></div>`;
+      } else itemsHtml = '<p style="font-size:11px;color:var(--amber);">No items in order.</p>';
+    } catch { itemsHtml = '<p style="font-size:11px;color:var(--red);">Error parsing items.</p>'; }
 
-    // Load products from API and apply search + category filter
-    async function loadProducts() {
-        try {
-            const res = await authFetch('/api/products');
-            products = await res.json();
-            renderProducts(); // initial render
-        } catch(err) {
-            console.error('Load products error:', err);
-            document.getElementById('products-list').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-red-500">Failed to load products. Check console.</div>';
-        }
-    }
+    const payStatus  = o.payment_status||'pending';
+    const verifyBtn  = payStatus==='awaiting_verification'
+      ? `<button onclick="markOrderPaid(${o.id})" class="act-btn ok"><i data-lucide="check-circle"></i> Verify Paid</button>` : '';
 
-    function renderProducts() {
-        const searchTerm = document.getElementById('product-search').value.toLowerCase();
-        const categoryFilter = document.getElementById('category-filter').value;
-        let filtered = products.filter(p => p.name.toLowerCase().includes(searchTerm));
-        if (categoryFilter !== 'all') {
-            filtered = filtered.filter(p => p.category === categoryFilter);
-        }
-        const container = document.getElementById('products-list');
-        if (filtered.length === 0) {
-            container.innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-500">No products found</div>';
-            return;
-        }
-        container.innerHTML = filtered.map(p => {
-            let mainImage = 'https://placehold.co/60x80/e2e2e2/black?text=COLONIAL';
-            if (p.images && p.images.length) mainImage = p.images[0];
-            else if (p.image_url) mainImage = p.image_url;
-            return `
-                <div class="bg-white rounded-xl p-4 shadow-sm flex flex-wrap justify-between items-center gap-4">
-                    <div class="flex gap-4 items-center">
-                        <img src="${mainImage}" class="w-12 h-16 object-cover rounded bg-gray-100">
-                        <div>
-                            <h3 class="font-semibold">${escapeHtml(p.name)}</h3>
-                            <p class="text-sm text-gray-600">Price: BDT ${p.price} | Discount: BDT ${p.discount_amount||0} | Stock: ${p.stock} | ${p.category}</p>
-                            <p class="text-sm text-green-600">Final: BDT ${(p.price - (p.discount_amount||0)).toFixed(2)}</p>
-                            ${p.badge ? `<span class="inline-block text-xs bg-gray-200 px-2 py-0.5 rounded mt-1">${escapeHtml(p.badge)}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="editProduct(${p.id})" class="text-blue-600 mr-2">Edit</button>
-                        <button onclick="deleteProduct(${p.id})" class="text-red-600">Delete</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        lucide.createIcons();
-    }
+    return `<div class="order-card">
+      <div class="order-head">
+        <div>
+          <div class="order-id">Order #${esc(o.order_number||String(o.id))}</div>
+          <div class="order-meta">
+            ${esc(o.customer_name)} &nbsp;·&nbsp; ${esc(o.customer_email)}<br>
+            📞 ${esc(o.customer_phone||'—')} &nbsp;·&nbsp; 📍 ${esc(o.shipping_address||'—')}<br>
+            <strong>Total: BDT ${parseFloat(o.final_amount||o.total_amount||0).toFixed(2)}</strong> &nbsp;·&nbsp; ${fmtDate(o.created_at)}
+          </div>
+        </div>
+        <div class="order-act">
+          <select data-oid="${o.id}" class="order-status-sel status-select">
+            ${['pending','confirmed','shipped','delivered','cancelled'].map(s=>`<option value="${s}" ${o.order_status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+          </select>
+          <button onclick="showInvoice(${o.id})" class="act-btn"><i data-lucide="download"></i> Invoice</button>
+          ${verifyBtn}
+          <button onclick="deleteOrder(${o.id})" class="act-btn danger"><i data-lucide="trash-2"></i></button>
+        </div>
+      </div>
+      <div class="order-body">
+        <div class="order-info-bar">
+          <span>Payment: <strong>${esc(o.payment_method||'—')}</strong></span>
+          <span>Status: ${payBadge(payStatus)}</span>
+          <span>Transaction: <strong>${esc(o.transaction_id||'—')}</strong></span>
+          ${o.coupon_code ? `<span>Coupon: <strong>${esc(o.coupon_code)}</strong> — Saved: <strong>BDT ${parseFloat(o.discount_applied||0).toFixed(2)}</strong></span>` : ''}
+          ${o.delivery_method ? `<span>Delivery: <strong>${esc(o.delivery_method)}</strong> (BDT ${parseFloat(o.delivery_fee||0).toFixed(2)})</span>` : ''}
+        </div>
+        ${itemsHtml}
+      </div>
+    </div>`;
+  }).join('');
 
-    function openProductModal(product = null) {
-        if (product) {
-            document.getElementById('modal-title').innerText = 'Edit Product';
-            document.getElementById('product-id').value = product.id;
-            document.getElementById('name').value = product.name;
-            document.getElementById('price').value = product.price;
-            document.getElementById('discount_amount').value = product.discount_amount || 0;
-            document.getElementById('category').value = product.category;
-            document.getElementById('badge').value = product.badge || '';
-            document.getElementById('description').value = product.description || '';
-            document.getElementById('materials').value = (product.materials || []).join(',');
-            document.getElementById('colors').value = (product.colors || []).join(',');
-            document.getElementById('care').value = product.care || '';
-            document.getElementById('stock').value = product.stock || 10;
-            productImages = (product.images && product.images.length) ? [...product.images] : (product.image_url ? [product.image_url] : []);
-        } else {
-            document.getElementById('modal-title').innerText = 'Add Product';
-            document.getElementById('product-form').reset();
-            document.getElementById('product-id').value = '';
-            document.getElementById('discount_amount').value = 0;
-            document.getElementById('stock').value = 10;
-            productImages = [];
-        }
-        renderImageGallery();
-        document.getElementById('product-modal').classList.remove('hidden');
-        document.getElementById('product-modal').style.display = 'flex';
-        lucide.createIcons();
-    }
-
-    function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
-    window.editProduct = (id) => { const p = products.find(p => p.id == id); if(p) openProductModal(p); };
-    window.deleteProduct = async (id) => {
-        if (confirm('Delete permanently?')) {
-            await authFetch(`/api/products/${id}`, { method: 'DELETE' });
-            loadProducts(); loadStats();
-        }
-    };
-
-    document.getElementById('product-form')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const id = document.getElementById('product-id').value;
-        const payload = {
-            name: document.getElementById('name').value,
-            price: parseFloat(document.getElementById('price').value),
-            discount_amount: parseFloat(document.getElementById('discount_amount').value) || 0,
-            category: document.getElementById('category').value,
-            image_url: productImages.length ? productImages[0] : '',
-            images: productImages,
-            badge: document.getElementById('badge').value,
-            description: document.getElementById('description').value,
-            materials: document.getElementById('materials').value.split(',').map(s=>s.trim()).filter(s=>s),
-            colors: document.getElementById('colors').value.split(',').map(s=>s.trim()).filter(s=>s),
-            care: document.getElementById('care').value,
-            stock: parseInt(document.getElementById('stock').value)
-        };
-        const url = id ? `/api/products/${id}` : '/api/products';
-        const method = id ? 'PUT' : 'POST';
-
-        try {
-            const res = await authFetch(url, { method, body: JSON.stringify(payload) });
-            if (!res.ok) {
-                let errorMsg = `HTTP ${res.status}`;
-                try {
-                    const data = await res.json();
-                    errorMsg = data.error || errorMsg;
-                } catch (err) {}
-                throw new Error(errorMsg);
-            }
-            closeProductModal();
-            await loadProducts();
-            await loadStats();
-            alert('✅ Product saved successfully!');
-        } catch (err) {
-            alert('❌ Failed to save product:\n' + err.message);
-            console.error(err);
-        }
+  document.querySelectorAll('.order-status-sel').forEach(sel => {
+    sel.addEventListener('change', async () => {
+      await authFetch(`/api/admin/orders/${sel.dataset.oid}/status`, {method:'PUT', body:JSON.stringify({status:sel.value})});
+      loadOrders(); loadStats();
     });
+  });
+  lucide.createIcons();
+}
 
-    document.getElementById('product-search')?.addEventListener('input', () => renderProducts());
-    document.getElementById('category-filter')?.addEventListener('change', () => renderProducts());
-    document.getElementById('add-product-btn')?.addEventListener('click', () => openProductModal());
+// Order filter listeners
+document.getElementById('order-search').addEventListener('input', renderOrders);
+document.getElementById('order-status-filter').addEventListener('change', renderOrders);
+document.getElementById('payment-filter').addEventListener('change', renderOrders);
 
-    // ========== INVOICE FUNCTIONS ==========
-    function generateInvoiceHTML(order) {
-        let items = [];
-        try {
-            items = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
-        } catch(e) { items = []; }
+window.deleteOrder = async id => {
+  if (!confirm('Delete this order permanently?')) return;
+  try { await authFetch(`/api/admin/orders/${id}`, {method:'DELETE'}); loadOrders(); loadStats(); }
+  catch(e) { alert('Delete failed'); }
+};
+window.markOrderPaid = async id => {
+  if (!confirm('Confirm payment received?')) return;
+  try {
+    const res = await authFetch(`/api/admin/orders/${id}/payment-status`, {method:'PUT', body:JSON.stringify({payment_status:'paid'})});
+    if (res.ok) { loadOrders(); alert('✅ Payment verified!'); }
+    else { const d=await res.json(); alert('Failed: '+(d.error||'Unknown error')); }
+  } catch(e) { alert('Error: '+e.message); }
+};
 
-        const formatBDT = (amount) => `BDT ${parseFloat(amount || 0).toFixed(2)}`;
+// ── INVOICE ────────────────────────────────────
+window.showInvoice = id => {
+  const o = allOrders.find(x=>x.id==id);
+  if (!o) { alert('Order not found.'); return; }
+  document.getElementById('invoice-content').innerHTML = buildInvoice(o);
+  document.getElementById('invoice-modal').classList.add('open');
+};
 
-        let itemsHtml = '';
-        items.forEach(item => {
-            itemsHtml += `
-                <tr>
-                    <td><img src="${item.image_url || 'https://placehold.co/40x50?text=No+Img'}" style="width:40px; height:50px; object-fit:cover; border-radius:4px;"></td>
-                    <td>${escapeHtml(item.name)}</td>
-                    <td>${escapeHtml(item.size || '—')}</td>
-                    <td>${escapeHtml(item.color || '—')}</td>
-                    <td>${item.quantity}</td>
-                    <td>${formatBDT(item.price)}</td>
-                    <td>${formatBDT(item.price * item.quantity)}</td>
-                </tr>
-            `;
-        });
+function buildInvoice(o) {
+  let items = [];
+  try { items = typeof o.items==='string' ? JSON.parse(o.items) : (o.items||[]); } catch{}
+  const subtotal = items.reduce((s,i)=>s+i.price*i.quantity, 0);
+  const delivery = parseFloat(o.delivery_fee||0);
+  const discount = parseFloat(o.discount_applied||0);
+  const total    = parseFloat(o.final_amount||o.total_amount||0);
+  return `<div style="max-width:720px;margin:0 auto;font-family:'Jost',sans-serif;font-size:13px;color:#3E362E;">
+    <div style="text-align:center;border-bottom:1.5px solid #3E362E;padding-bottom:16px;margin-bottom:22px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:.22em;">COLONIAL</div>
+      <div style="font-size:11px;color:#7A6E5D;margin-top:4px;letter-spacing:.06em;">Timeless Elegance &nbsp;·&nbsp; Chittagong, Bangladesh</div>
+    </div>
+    <div style="display:flex;gap:24px;margin-bottom:22px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;font-size:12px;line-height:1.7;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#7A6E5D;margin-bottom:7px;">Order Details</div>
+        <div><strong>Order #:</strong> ${esc(o.order_number||String(o.id))}</div>
+        <div><strong>Date:</strong> ${fmtDate(o.created_at)}</div>
+        <div><strong>Payment:</strong> ${esc(o.payment_method||'—')}</div>
+        <div><strong>Transaction ID:</strong> ${esc(o.transaction_id||'—')}</div>
+        <div><strong>Pay Status:</strong> ${payBadge(o.payment_status)}</div>
+      </div>
+      <div style="flex:1;min-width:200px;font-size:12px;line-height:1.7;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#7A6E5D;margin-bottom:7px;">Customer</div>
+        <div><strong>${esc(o.customer_name)}</strong></div>
+        <div>${esc(o.customer_email)}</div>
+        <div>${esc(o.customer_phone||'')}</div>
+        <div>${esc(o.shipping_address||'')}</div>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin:18px 0;">
+      <thead>
+        <tr style="background:#F5EFE6;">
+          <th style="padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7A6E5D;border:1px solid #E8E2D5;">Image</th>
+          <th style="padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7A6E5D;border:1px solid #E8E2D5;">Product</th>
+          <th style="padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7A6E5D;border:1px solid #E8E2D5;">Size</th>
+          <th style="padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7A6E5D;border:1px solid #E8E2D5;">Colour</th>
+          <th style="padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7A6E5D;border:1px solid #E8E2D5;">Qty</th>
+          <th style="padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7A6E5D;border:1px solid #E8E2D5;">Unit</th>
+          <th style="padding:8px 10px;text-align:left;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7A6E5D;border:1px solid #E8E2D5;">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map(i=>`<tr>
+          <td style="padding:8px 10px;border:1px solid #E8E2D5;"><img src="${esc(i.image_url||'')}" onerror="this.src='https://placehold.co/36x46?text=C'" style="width:36px;height:46px;object-fit:cover;"></td>
+          <td style="padding:8px 10px;border:1px solid #E8E2D5;">${esc(i.name)}</td>
+          <td style="padding:8px 10px;border:1px solid #E8E2D5;">${esc(i.size||'—')}</td>
+          <td style="padding:8px 10px;border:1px solid #E8E2D5;">${esc(i.color||'—')}</td>
+          <td style="padding:8px 10px;border:1px solid #E8E2D5;">${i.quantity}</td>
+          <td style="padding:8px 10px;border:1px solid #E8E2D5;">${fBDT(i.price)}</td>
+          <td style="padding:8px 10px;border:1px solid #E8E2D5;">${fBDT(i.price*i.quantity)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="text-align:right;font-size:12px;line-height:1.9;">
+      <div>Subtotal: ${fBDT(subtotal)}</div>
+      <div>Delivery: ${fBDT(delivery)}</div>
+      ${discount>0 ? `<div>Coupon Discount: –${fBDT(discount)}${o.coupon_code?` (${esc(o.coupon_code)})`:''}` : ''}
+      <div style="font-size:14px;font-weight:600;border-top:1px solid #E8E2D5;padding-top:8px;margin-top:6px;">Total: ${fBDT(total)}</div>
+    </div>
+    <div style="text-align:center;margin-top:28px;font-size:11px;color:#7A6E5D;border-top:1px solid #E8E2D5;padding-top:12px;">
+      Thank you for shopping with COLONIAL &nbsp;·&nbsp; Chittagong, Bangladesh
+    </div>
+  </div>`;
+}
 
-        const subtotal = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-        const deliveryFee = parseFloat(order.delivery_fee || 0);
-        const discount = parseFloat(order.discount_applied || 0);
-        const total = parseFloat(order.final_amount || order.total_amount || 0);
-        const paymentStatusBadge = getPaymentStatusBadge(order.payment_status);
+// ── INVOICE DOWNLOAD (proper PDF via print dialog) ──
+document.getElementById('print-invoice-btn').addEventListener('click', () => {
+  const o = allOrders.find(x => x.id == window._invoiceOrderId);
+  const content = document.getElementById('invoice-content').innerHTML;
+  const w = window.open('', '_blank', 'width=860,height=700');
+  w.document.write(`<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <title>Invoice — COLONIAL #${esc(o?.order_number||'')}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing:border-box; margin:0; padding:0; }
+      body { font-family:'Jost',sans-serif; font-size:13px; padding:32px; color:#3E362E; background:#fff; }
+      @media print {
+        body { padding:20px; }
+        button { display:none !important; }
+        @page { margin:15mm; size:A4; }
+      }
+    </style>
+  </head><body>
+    <div style="text-align:right;margin-bottom:16px;">
+      <button onclick="window.print();window.close();" style="background:#3E362E;color:#fff;border:none;padding:8px 18px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;">
+        Print / Save as PDF
+      </button>
+    </div>
+    ${content}
+  </body></html>`);
+  w.document.close();
+  w.onload = () => { w.focus(); };
+});
 
-        return `
-            <div class="invoice-container">
-                <div class="invoice-header">
-                    <h1>COLONIAL</h1>
-                    <p>Timeless Elegance</p>
-                    <p>Chittagong, Bangladesh | https://colonial-ltd-eu.onrender.com/</p>
-                </div>
+// Track which order is open for invoice
+const origShowInvoice = window.showInvoice;
+window.showInvoice = id => {
+  window._invoiceOrderId = id;
+  origShowInvoice(id);
+};
 
-                <div class="invoice-details">
-                    <div>
-                        <h3>Order Details</h3>
-                        <p><strong>Order #:</strong> ${escapeHtml(order.order_number || order.id)}</p>
-                        <p><strong>Date:</strong> ${formatDate(order.created_at)}</p>
-                        <p><strong>Status:</strong> ${escapeHtml(order.order_status || 'pending')}</p>
-                        <p><strong>Payment Status:</strong> ${paymentStatusBadge}</p>
-                    </div>
-                    <div>
-                        <h3>Customer Details</h3>
-                        <p><strong>Name:</strong> ${escapeHtml(order.customer_name)}</p>
-                        <p><strong>Email:</strong> ${escapeHtml(order.customer_email)}</p>
-                        <p><strong>Phone:</strong> ${escapeHtml(order.customer_phone || '—')}</p>
-                        <p><strong>Address:</strong> ${escapeHtml(order.shipping_address || '—')}</p>
-                    </div>
-                </div>
+document.querySelectorAll('.close-invoice-modal').forEach(b=>b.addEventListener('click', ()=>document.getElementById('invoice-modal').classList.remove('open')));
+document.getElementById('invoice-modal').addEventListener('click', e=>{ if(e.target===document.getElementById('invoice-modal')) document.getElementById('invoice-modal').classList.remove('open'); });
 
-                <h3>Items Ordered</h3>
-                <table class="invoice-items-table">
-                    <thead>
-                        <tr><th>Image</th><th>Product</th><th>Size</th><th>Colour</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
-                    </thead>
-                    <tbody>
-                        ${itemsHtml}
-                    </tbody>
-                </table>
-
-                <div class="totals">
-                    <p><strong>Subtotal:</strong> ${formatBDT(subtotal)}</p>
-                    <p><strong>Delivery Fee:</strong> ${formatBDT(deliveryFee)}</p>
-                    ${discount > 0 ? `<p><strong>Discount:</strong> - ${formatBDT(discount)}</p>` : ''}
-                    <p><strong>Total Amount:</strong> ${formatBDT(total)}</p>
-                </div>
-
-                <div class="invoice-footer">
-                    <p>Thank you for shopping with COLONIAL!</p>
-                    <p>For any inquiries, contact colonialbusinessltd@gmail.com | +8801643425517</p>
-                </div>
-            </div>
-        `;
+// ── COUPONS ────────────────────────────────────
+async function loadCoupons() {
+  try {
+    const res = await authFetch('/api/admin/coupons');
+    if (!res.ok) {
+      document.getElementById('coupons-list').innerHTML = '<div class="empty">Coupon API error. Make sure server.js is deployed with admin coupon routes.</div>';
+      return;
     }
+    allCoupons = await res.json();
+    renderCoupons();
+  } catch(e) {
+    document.getElementById('coupons-list').innerHTML = '<div class="empty">Could not load coupons.</div>';
+  }
+}
 
-    function showInvoice(orderId) {
-        const order = window.allOrders.find(o => o.id == orderId);
-        if (!order) return;
-        const invoiceHtml = generateInvoiceHTML(order);
-        document.getElementById('invoice-content').innerHTML = invoiceHtml;
-        document.getElementById('invoice-modal').classList.remove('hidden');
-        document.getElementById('invoice-modal').style.display = 'flex';
-    }
+function renderCoupons() {
+  const el = document.getElementById('coupons-list');
+  if (!allCoupons.length) { el.innerHTML='<div class="empty">No coupons yet. Click New Coupon to create one.</div>'; return; }
+  el.innerHTML = allCoupons.map(c => {
+    const active   = c.is_active !== false;
+    const valLabel = c.discount_type==='percentage' ? `${c.discount_value}% OFF` : `BDT ${c.discount_value} OFF`;
+    const expiry   = c.valid_to ? `Expires ${new Date(c.valid_to).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}` : 'No expiry';
+    const used     = c.used_count||0;
+    const limit    = c.usage_limit||0;
+    return `<div class="coupon-card">
+      <div class="coupon-code">${esc(c.code)}</div>
+      <div class="coupon-info">
+        <div>${esc(c.discount_type==='percentage'?'Percentage Discount':'Fixed Discount')} &nbsp;·&nbsp; Min. BDT ${c.min_order_amount||0}</div>
+        <div>${expiry} &nbsp;·&nbsp; Used: ${used}${limit?' / '+limit:''}</div>
+      </div>
+      <div class="coupon-val">${valLabel}</div>
+      <span class="c-status ${active?'c-active':'c-inactive'}">${active?'Active':'Inactive'}</span>
+      <div style="display:flex;gap:6px;">
+        <button class="act-btn" onclick="editCoupon(${c.id})"><i data-lucide="pencil"></i> Edit</button>
+        <button class="act-btn danger" onclick="deleteCoupon(${c.id})"><i data-lucide="trash-2"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
 
-    // Close invoice modal
-    document.querySelector('.close-invoice-modal')?.addEventListener('click', () => {
-        document.getElementById('invoice-modal').classList.add('hidden');
-        document.getElementById('invoice-modal').style.display = 'none';
-    });
-    document.getElementById('invoice-modal')?.addEventListener('click', (e) => {
-        if (e.target === document.getElementById('invoice-modal')) {
-            document.getElementById('invoice-modal').classList.add('hidden');
-            document.getElementById('invoice-modal').style.display = 'none';
-        }
-    });
+function openCouponModal(c=null) {
+  editingCouponId = c ? c.id : null;
+  document.getElementById('coupon-modal-title').textContent  = c ? 'Edit Coupon' : 'New Coupon';
+  document.getElementById('coupon-code').value               = c ? c.code : '';
+  document.getElementById('coupon-type').value               = c ? (c.discount_type||'percentage') : 'percentage';
+  document.getElementById('coupon-value').value              = c ? c.discount_value : '';
+  document.getElementById('coupon-min').value                = c ? (c.min_order_amount||'') : '';
+  document.getElementById('coupon-usage-limit').value        = c ? (c.usage_limit||0) : 0;
+  document.getElementById('coupon-active').value             = c ? String(c.is_active!==false) : 'true';
+  document.getElementById('coupon-valid-from').value         = (c&&c.valid_from) ? new Date(c.valid_from).toISOString().split('T')[0] : '';
+  document.getElementById('coupon-valid-to').value           = (c&&c.valid_to)   ? new Date(c.valid_to).toISOString().split('T')[0]   : '';
+  document.getElementById('coupon-modal').classList.add('open');
+}
 
-    // Print invoice
-    document.getElementById('print-invoice-btn')?.addEventListener('click', () => {
-        const printContent = document.getElementById('invoice-content').innerHTML;
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Invoice</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-                    <style>
-                        body { font-family: 'Inter', sans-serif; padding: 20px; }
-                        ${Array.from(document.styleSheets).map(sheet => {
-                            try {
-                                return Array.from(sheet.cssRules || []).map(rule => rule.cssText).join('');
-                            } catch(e) { return ''; }
-                        }).join('')}
-                        .invoice-container { max-width: 800px; margin: 0 auto; }
-                        .invoice-items-table { width: 100%; border-collapse: collapse; }
-                        .invoice-items-table th, .invoice-items-table td { border: 1px solid #ddd; padding: 8px; }
-                    </style>
-                </head>
-                <body>${printContent}</body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-        printWindow.close();
-    });
+document.getElementById('add-coupon-btn').addEventListener('click', ()=>openCouponModal());
+document.querySelectorAll('.close-coupon-modal').forEach(b=>b.addEventListener('click',()=>document.getElementById('coupon-modal').classList.remove('open')));
+document.getElementById('coupon-modal').addEventListener('click', e=>{ if(e.target===document.getElementById('coupon-modal')) document.getElementById('coupon-modal').classList.remove('open'); });
 
-    // Orders, Reviews, Wishlists (same as before, but with Invoice button added)
-    async function loadOrders() {
-        try {
-            const res = await authFetch('/api/admin/orders');
-            const orders = await res.json();
-            window.allOrders = orders; // store globally for invoice
-            const container = document.getElementById('orders-list');
-            if (!orders.length) { container.innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-500">No orders yet</div>'; return; }
-            container.innerHTML = orders.map(o => {
-                let itemsHtml = '';
-                let debugHtml = '';
-                let items = [];
-                try {
-                    items = JSON.parse(o.items || '[]');
-                    if (items.length) {
-                        itemsHtml = `
-                            <table class="order-items-table">
-                                <thead><tr><th>Image</th><th>Product</th><th>Size</th><th>Colour</th><th>Qty</th><th>Price</th></tr></thead>
-                                <tbody>
-                                    ${items.map(i => `
-                                        <tr>
-                                            <td><img src="${i.image_url || 'https://via.placeholder.com/40x50?text=No+Image'}" class="w-10 h-12 object-cover rounded" onerror="this.src='https://via.placeholder.com/40x50?text=No+Image'"></td>
-                                            <td>${escapeHtml(i.name)}</td>
-                                            <td>${escapeHtml(i.size || '—')}</td>
-                                            <td>${escapeHtml(i.color || '—')}</td>
-                                            <td>${i.quantity}</td>
-                                            <td>BDT ${i.price}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        `;
-                    } else {
-                        itemsHtml = '<p class="text-yellow-600 text-sm">⚠️ No items in this order.</p>';
-                    }
-                    debugHtml = `<details class="mt-2"><summary class="text-xs cursor-pointer text-gray-400">Show raw JSON</summary><pre class="debug-json">${escapeHtml(JSON.stringify(items, null, 2))}</pre></details>`;
-                } catch(e) {
-                    itemsHtml = '<p class="text-red-600 text-sm">❌ Error parsing items</p>';
-                    debugHtml = `<details class="mt-2"><summary class="text-xs cursor-pointer text-gray-400">Show raw JSON</summary><pre class="debug-json">${escapeHtml(o.items || 'null')}</pre></details>`;
-                }
+window.editCoupon   = id => { const c=allCoupons.find(x=>x.id==id); if(c) openCouponModal(c); };
+window.deleteCoupon = async id => {
+  if (!confirm('Delete this coupon permanently?')) return;
+  try { await authFetch(`/api/admin/coupons/${id}`,{method:'DELETE'}); loadCoupons(); }
+  catch(e) { alert('Delete failed'); }
+};
 
-                const paymentMethod = o.payment_method || 'cash_on_delivery';
-                const transactionId = o.transaction_id || '—';
-                const paymentStatus = o.payment_status || 'pending';
-                const paymentStatusHtml = getPaymentStatusBadge(paymentStatus);
-                let verifyButton = '';
-                if (paymentStatus === 'awaiting_verification') {
-                    verifyButton = `<button onclick="markOrderPaid(${o.id})" class="ml-2 bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 transition">✓ Verify & Mark Paid</button>`;
-                }
+document.getElementById('save-coupon-btn').addEventListener('click', async () => {
+  const code          = document.getElementById('coupon-code').value.trim().toUpperCase();
+  const discount_type = document.getElementById('coupon-type').value;
+  const discount_value= parseFloat(document.getElementById('coupon-value').value);
+  const min_order_amount = parseFloat(document.getElementById('coupon-min').value)||0;
+  const ul_raw        = parseInt(document.getElementById('coupon-usage-limit').value);
+  const usage_limit   = (!isNaN(ul_raw) && ul_raw>0) ? ul_raw : null;
+  const valid_from    = document.getElementById('coupon-valid-from').value || null;
+  const valid_to      = document.getElementById('coupon-valid-to').value   || null;
+  const is_active     = document.getElementById('coupon-active').value === 'true';
 
-                return `
-                    <div class="bg-white rounded-xl p-4 shadow-sm">
-                        <div class="flex flex-wrap justify-between items-start gap-4">
-                            <div>
-                                <p class="font-semibold">Order #${escapeHtml(o.order_number || o.id)}</p>
-                                <p class="text-sm text-gray-600">${escapeHtml(o.customer_name)} (${escapeHtml(o.customer_email)})</p>
-                                <p class="text-sm text-gray-600">📞 Phone: ${escapeHtml(o.customer_phone || '—')}</p>
-                                <p class="text-sm text-gray-600">📍 Address: ${escapeHtml(o.shipping_address || '—')}</p>
-                                <p class="text-sm text-gray-600">Total: BDT ${parseFloat(o.final_amount || o.total_amount || 0).toFixed(2)}</p>
-                                <p class="text-xs text-gray-400">${formatDate(o.created_at)}</p>
-                            </div>
-                            <div class="flex gap-2 items-center flex-wrap">
-                                <select data-order-id="${o.id}" class="order-status-select border border-gray-300 rounded-lg px-2 py-1 text-sm">
-                                    <option value="pending" ${o.order_status === 'pending' ? 'selected' : ''}>Pending</option>
-                                    <option value="confirmed" ${o.order_status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                                    <option value="shipped" ${o.order_status === 'shipped' ? 'selected' : ''}>Shipped</option>
-                                    <option value="delivered" ${o.order_status === 'delivered' ? 'selected' : ''}>Delivered</option>
-                                    <option value="cancelled" ${o.order_status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                                </select>
-                                <button onclick="deleteOrder(${o.id})" class="text-red-600 hover:text-red-800 text-sm border border-red-300 px-2 py-1 rounded">Delete</button>
-                                <button onclick="showInvoice(${o.id})" class="text-blue-600 hover:text-blue-800 text-sm border border-blue-300 px-2 py-1 rounded">Invoice</button>
-                                ${verifyButton}
-                            </div>
-                        </div>
-                        <div class="mt-2 text-sm border-t pt-2">
-                            <div class="flex flex-wrap gap-x-4 gap-y-1">
-                                <span><strong>Payment:</strong> ${escapeHtml(paymentMethod)}</span>
-                                <span><strong>Transaction ID:</strong> ${escapeHtml(transactionId)}</span>
-                                <span><strong>Status:</strong> ${paymentStatusHtml}</span>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <strong class="text-sm">Items:</strong>
-                            ${itemsHtml}
-                            ${debugHtml}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.querySelectorAll('.order-status-select').forEach(select => {
-                select.addEventListener('change', async (e) => {
-                    const orderId = select.getAttribute('data-order-id');
-                    const newStatus = select.value;
-                    await authFetch(`/api/admin/orders/${orderId}/status`, { method: 'PUT', body: JSON.stringify({ status: newStatus }) });
-                    loadOrders(); loadStats();
-                });
-            });
-        } catch(err) { console.error(err); document.getElementById('orders-list').innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-red-500">Error loading orders.</div>'; }
-    }
+  if (!code) { alert('Please enter a coupon code.'); return; }
+  if (isNaN(discount_value)||discount_value<=0) { alert('Please enter a valid discount value > 0.'); return; }
+  if (discount_type==='percentage'&&discount_value>100) { alert('Percentage cannot exceed 100%.'); return; }
 
-    window.deleteOrder = async (orderId) => {
-        if (!confirm('Delete order permanently?')) return;
-        try { await authFetch(`/api/admin/orders/${orderId}`, { method: 'DELETE' }); loadOrders(); loadStats(); } 
-        catch(err) { alert('Delete failed'); }
-    };
+  const payload = { code, discount_type, discount_value, min_order_amount, usage_limit, valid_from, valid_to, is_active };
+  const url     = editingCouponId ? `/api/admin/coupons/${editingCouponId}` : '/api/admin/coupons';
+  const method  = editingCouponId ? 'PUT' : 'POST';
 
-    window.markOrderPaid = async (orderId) => {
-        if (!confirm('Confirm payment received? This will mark the order as PAID.')) return;
-        try {
-            const res = await authFetch(`/api/admin/orders/${orderId}/payment-status`, {
-                method: 'PUT',
-                body: JSON.stringify({ payment_status: 'paid' })
-            });
-            if (res.ok) {
-                loadOrders();
-                alert('Payment verified and order marked as paid.');
-            } else {
-                const error = await res.json();
-                alert('Failed: ' + (error.error || 'Unknown error'));
-            }
-        } catch(err) {
-            alert('Error: ' + err.message);
-        }
-    };
+  const btn  = document.getElementById('save-coupon-btn');
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const res = await authFetch(url, {method, body:JSON.stringify(payload)});
+    if (!res.ok) { const d=await res.json(); throw new Error(d.error||`HTTP ${res.status}`); }
+    document.getElementById('coupon-modal').classList.remove('open');
+    loadCoupons();
+    alert('✅ Coupon saved!');
+  } catch(e) { alert('❌ '+e.message); }
+  finally { btn.disabled=false; btn.textContent=orig; }
+});
 
-    async function loadReviews() {
-        try {
-            const res = await authFetch('/api/admin/reviews');
-            allReviews = await res.json();
-            renderReviews();
-        } catch(err) { console.error(err); }
-    }
+// ── REVIEWS ────────────────────────────────────
+async function loadReviews() {
+  try { const res=await authFetch('/api/admin/reviews'); allReviews=await res.json(); renderReviews(); }
+  catch(e) { console.error(e); }
+}
+function renderReviews() {
+  const q  = document.getElementById('review-search').value.toLowerCase();
+  const list = allReviews.filter(r=>(r.product_name||'').toLowerCase().includes(q)||(r.user_email||'').toLowerCase().includes(q));
+  const el = document.getElementById('reviews-list');
+  if (!list.length) { el.innerHTML='<div class="empty">No reviews found.</div>'; return; }
+  el.innerHTML = `<table class="dtable">
+    <thead><tr><th>Product</th><th>User</th><th>Rating</th><th>Comment</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+      ${list.map(r=>`<tr>
+        <td>${esc(r.product_name)}</td>
+        <td>${esc(r.user_email)}</td>
+        <td style="color:var(--accent);letter-spacing:2px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</td>
+        <td style="max-width:200px;">${esc(r.comment)}</td>
+        <td style="white-space:nowrap;">${fmtDate(r.created_at)}</td>
+        <td><button onclick="deleteReview(${r.id})" class="act-btn danger"><i data-lucide="trash-2"></i></button></td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+  lucide.createIcons();
+}
+window.deleteReview = async id => {
+  if (!confirm('Delete this review?')) return;
+  try { await authFetch(`/api/admin/reviews/${id}`,{method:'DELETE'}); loadReviews(); }
+  catch(e) { alert('Failed'); }
+};
+document.getElementById('review-search').addEventListener('input', renderReviews);
 
-    function renderReviews() {
-        const search = document.getElementById('review-search').value.toLowerCase();
-        const filtered = allReviews.filter(r => (r.product_name && r.product_name.toLowerCase().includes(search)) || (r.user_email && r.user_email.toLowerCase().includes(search)));
-        const container = document.getElementById('reviews-list');
-        if (!filtered.length) {
-            container.innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-500">No reviews found</div>';
-            return;
-        }
-        container.innerHTML = `
-            <table class="reviews-table w-full bg-white rounded-xl overflow-hidden">
-                <thead><tr><th>Product</th><th>User</th><th>Rating</th><th>Comment</th><th>Date</th><th>Actions</th></tr></thead>
-                <tbody>
-                    ${filtered.map(r => `
-                        <tr>
-                            <td>${escapeHtml(r.product_name)}</td>
-                            <td>${escapeHtml(r.user_email)}</td>
-                            <td>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</td>
-                            <td>${escapeHtml(r.comment)}</td>
-                            <td>${formatDate(r.created_at)}</td>
-                            <td><button onclick="deleteReview(${r.id})" class="text-red-600 text-sm">Delete</button></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
+// ── WISHLISTS ──────────────────────────────────
+async function loadWishlists() {
+  try { const res=await authFetch('/api/admin/wishlists'); allWishlists=await res.json(); renderWishlists(); }
+  catch(e) { console.error(e); }
+}
+function renderWishlists() {
+  const q  = document.getElementById('wishlist-search').value.toLowerCase();
+  const list = allWishlists.filter(w=>(w.product_name||'').toLowerCase().includes(q)||(w.user_email||'').toLowerCase().includes(w));
+  const el = document.getElementById('wishlists-list');
+  if (!list.length) { el.innerHTML='<div class="empty">No wishlist items found.</div>'; return; }
+  el.innerHTML = `<table class="dtable">
+    <thead><tr><th>Image</th><th>Product</th><th>User</th><th>Price (BDT)</th><th>Date Added</th><th></th></tr></thead>
+    <tbody>
+      ${list.map(w=>`<tr>
+        <td><img src="${esc(w.image_url||'https://placehold.co/32x40/e8e2d5/7a6e5d?text=C')}" onerror="this.src='https://placehold.co/32x40/e8e2d5/7a6e5d?text=C'" alt=""></td>
+        <td>${esc(w.product_name)}</td>
+        <td>${esc(w.user_email)} (${esc(w.user_name||'')})</td>
+        <td>${w.product_price}</td>
+        <td style="white-space:nowrap;">${fmtDate(w.created_at)}</td>
+        <td><button onclick="deleteWishlistItem(${w.id})" class="act-btn danger"><i data-lucide="trash-2"></i></button></td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+  lucide.createIcons();
+}
+window.deleteWishlistItem = async id => {
+  if (!confirm('Remove from wishlist?')) return;
+  try { await authFetch(`/api/admin/wishlist/${id}`,{method:'DELETE'}); loadWishlists(); }
+  catch(e) { alert('Failed'); }
+};
+document.getElementById('wishlist-search').addEventListener('input', renderWishlists);
 
-    async function deleteReview(id) {
-        if (!confirm('Delete this review permanently?')) return;
-        try {
-            await authFetch(`/api/admin/reviews/${id}`, { method: 'DELETE' });
-            loadReviews();
-        } catch(err) { alert('Delete failed'); }
-    }
+// ── AUTH INIT ──────────────────────────────────
+function initDashboard() {
+  document.getElementById('login-screen').style.display  = 'none';
+  document.getElementById('admin-panel').style.display   = '';
+  loadStats(); loadProducts(); loadOrders(); initSSE();
+  lucide.createIcons();
+}
 
-    document.getElementById('review-search')?.addEventListener('input', () => renderReviews());
+if (authToken) {
+  fetch('/api/auth/me', {headers:{'Authorization':`Bearer ${authToken}`}})
+    .then(r => { if(r.ok) initDashboard(); else localStorage.removeItem('amoura_admin_token'); })
+    .catch(()=> localStorage.removeItem('amoura_admin_token'));
+}
 
-    async function loadWishlists() {
-        try {
-            const res = await authFetch('/api/admin/wishlists');
-            allWishlists = await res.json();
-            renderWishlists();
-        } catch(err) { console.error(err); }
-    }
+document.getElementById('login-btn').addEventListener('click', async () => {
+  const email    = document.getElementById('admin-email').value.trim();
+  const password = document.getElementById('admin-password').value;
+  if (!email||!password) { alert('Enter email and password.'); return; }
+  try {
+    const res  = await fetch('/api/auth/login', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password})});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error||'Login failed');
+    if (data.user.role !== 'admin') throw new Error('Not an admin account.');
+    authToken = data.token;
+    localStorage.setItem('amoura_admin_token', authToken);
+    initDashboard();
+  } catch(e) { alert('❌ '+e.message); }
+});
 
-    function renderWishlists() {
-        const search = document.getElementById('wishlist-search').value.toLowerCase();
-        const filtered = allWishlists.filter(w => (w.product_name && w.product_name.toLowerCase().includes(search)) || (w.user_email && w.user_email.toLowerCase().includes(search)));
-        const container = document.getElementById('wishlists-list');
-        if (!filtered.length) {
-            container.innerHTML = '<div class="bg-white rounded-xl p-8 text-center text-gray-500">No wishlist items found</div>';
-            return;
-        }
-        container.innerHTML = `
-            <table class="wishlist-table w-full bg-white rounded-xl overflow-hidden">
-                <thead><tr><th>Image</th><th>Product</th><th>User</th><th>Price (BDT)</th><th>Date Added</th><th>Actions</th></tr></thead>
-                <tbody>
-                    ${filtered.map(w => `
-                        <tr>
-                            <td><img src="${w.image_url || 'https://via.placeholder.com/40x50?text=No+Image'}" class="w-10 h-12 object-cover rounded" onerror="this.src='https://via.placeholder.com/40x50?text=No+Image'"></td>
-                            <td>${escapeHtml(w.product_name)}</td>
-                            <td>${escapeHtml(w.user_email)} (${escapeHtml(w.user_name || '')})</td>
-                            <td>${w.product_price}</td>
-                            <td>${formatDate(w.created_at)}</td>
-                            <td><button onclick="deleteWishlistItem(${w.id})" class="text-red-600 text-sm">Remove</button></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
-    }
+document.getElementById('logout-btn').addEventListener('click', () => {
+  if (eventSource) eventSource.close();
+  localStorage.removeItem('amoura_admin_token');
+  location.reload();
+});
 
-    async function deleteWishlistItem(id) {
-        if (!confirm('Remove this item from customer wishlist?')) return;
-        try {
-            await authFetch(`/api/admin/wishlist/${id}`, { method: 'DELETE' });
-            loadWishlists();
-        } catch(err) { alert('Remove failed'); }
-    }
-
-    document.getElementById('wishlist-search')?.addEventListener('input', () => renderWishlists());
-
-    function showTab(tab) {
-        const tabs = ['products', 'orders', 'reviews', 'wishlists', 'preview'];
-        tabs.forEach(t => {
-            const el = document.getElementById(`${t}-tab`);
-            if (el) el.classList.add('hidden');
-            const btn = document.getElementById(`tab-${t}-btn`);
-            if (btn) btn.classList.remove('tab-active');
-        });
-        document.getElementById(`${tab}-tab`).classList.remove('hidden');
-        const activeBtn = document.getElementById(`tab-${tab}-btn`);
-        activeBtn.classList.add('tab-active');
-        if (tab === 'reviews') loadReviews();
-        if (tab === 'wishlists') loadWishlists();
-        if (tab === 'orders') loadOrders();
-    }
-
-    document.getElementById('tab-products-btn').addEventListener('click', () => showTab('products'));
-    document.getElementById('tab-orders-btn').addEventListener('click', () => showTab('orders'));
-    document.getElementById('tab-reviews-btn').addEventListener('click', () => showTab('reviews'));
-    document.getElementById('tab-wishlists-btn').addEventListener('click', () => showTab('wishlists'));
-    document.getElementById('tab-preview-btn').addEventListener('click', () => showTab('preview'));
-    document.getElementById('preview-btn').addEventListener('click', () => window.open('/', '_blank'));
-    document.getElementById('open-full-preview').addEventListener('click', () => window.open('/', '_blank'));
-    document.getElementById('logout-btn').addEventListener('click', () => { if(eventSource) eventSource.close(); localStorage.removeItem('amoura_admin_token'); location.reload(); });
-
-    if (authToken) {
-        fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${authToken}` } })
-            .then(res => { if(res.ok) { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('admin-panel').classList.remove('hidden'); loadStats(); loadProducts(); loadOrders(); initSSE(); } else { localStorage.removeItem('amoura_admin_token'); document.getElementById('login-screen').classList.remove('hidden'); } })
-            .catch(() => { localStorage.removeItem('amoura_admin_token'); document.getElementById('login-screen').classList.remove('hidden'); });
-    }
-
-    document.getElementById('login-btn').addEventListener('click', async () => {
-        const email = document.getElementById('admin-email').value, password = document.getElementById('admin-password').value;
-        try {
-            const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error);
-            if (data.user.role !== 'admin') throw new Error('Not admin');
-            authToken = data.token;
-            localStorage.setItem('amoura_admin_token', authToken);
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('admin-panel').classList.remove('hidden');
-            loadStats(); loadProducts(); loadOrders(); initSSE();
-        } catch(err) { alert(err.message); }
-    });
-
-    document.querySelectorAll('.close-modal-btn').forEach(btn => btn.addEventListener('click', closeProductModal));
-    window.addEventListener('click', (e) => { if (e.target === document.getElementById('product-modal')) closeProductModal(); });
-
-    function openTermsModal() { alert('Terms & Conditions modal would open here.'); }
-    function openPrivacyModal() { alert('Privacy Policy modal would open here.'); }
-    document.getElementById('footer-terms-link')?.addEventListener('click', (e) => { e.preventDefault(); openTermsModal(); });
-    document.getElementById('footer-privacy-link')?.addEventListener('click', (e) => { e.preventDefault(); openPrivacyModal(); });
+document.getElementById('admin-password').addEventListener('keydown', e => {
+  if (e.key==='Enter') document.getElementById('login-btn').click();
+});
 </script>
 </body>
 </html>
-```
