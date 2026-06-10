@@ -34,19 +34,15 @@
             font-weight: 300;
         }
 
-        /* ── TYPOGRAPHY ── */
         .font-serif { font-family: 'Cormorant Garamond', Georgia, serif; }
 
-        /* ── SCROLLBAR ── */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: var(--colonial-bg); }
         ::-webkit-scrollbar-thumb { background: var(--colonial-accent); border-radius: 2px; }
 
-        /* ── CAROUSEL ── */
         .carousel-container { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         .carousel-container::-webkit-scrollbar { display: none; }
 
-        /* ── BUTTONS / LINKS MIN-HEIGHT ── */
         button, a, .size-btn, .quantity-btn {
             min-height: 44px;
             display: inline-flex;
@@ -64,11 +60,15 @@
             font-size: .72rem;
             text-transform: uppercase;
             border: 1.5px solid var(--colonial-text);
-            transition: background .25s, color .25s, border-color .25s;
+            transition: background .25s, color .25s, border-color .25s, transform .2s, box-shadow .2s;
         }
-        .btn-primary:hover { background: transparent; color: var(--colonial-text); }
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--colonial-text);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(62,54,46,.15);
+        }
 
-        /* ── GHOST BUTTON ── */
         .btn-ghost {
             background: transparent;
             color: var(--colonial-text);
@@ -78,11 +78,10 @@
             font-size: .72rem;
             text-transform: uppercase;
             border: 1.5px solid rgba(62,54,46,.25);
-            transition: border-color .25s, background .25s;
+            transition: border-color .25s, background .25s, transform .2s;
         }
-        .btn-ghost:hover { border-color: var(--colonial-text); background: var(--colonial-hover); }
+        .btn-ghost:hover { border-color: var(--colonial-text); background: var(--colonial-hover); transform: translateY(-1px); }
 
-        /* ── GOLD ACCENT BUTTON ── */
         .btn-gold {
             background: var(--colonial-accent);
             color: #fff;
@@ -92,11 +91,10 @@
             font-size: .72rem;
             text-transform: uppercase;
             border: 1.5px solid var(--colonial-accent);
-            transition: background .25s, color .25s;
+            transition: background .25s, color .25s, transform .2s, box-shadow .2s;
         }
-        .btn-gold:hover { background: var(--colonial-accent-dark); border-color: var(--colonial-accent-dark); }
+        .btn-gold:hover { background: var(--colonial-accent-dark); border-color: var(--colonial-accent-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(162,139,111,.35); }
 
-        /* ── INPUT ── */
         .inp {
             width: 100%;
             border: 1.5px solid var(--colonial-border);
@@ -107,17 +105,25 @@
             font-size: .85rem;
             color: var(--colonial-text);
             border-radius: 3px;
-            transition: border-color .2s;
+            transition: border-color .2s, box-shadow .2s;
             outline: none;
         }
-        .inp:focus { border-color: var(--colonial-accent); }
+        .inp:focus { border-color: var(--colonial-accent); box-shadow: 0 0 0 3px rgba(162,139,111,.12); }
         .inp::placeholder { color: var(--colonial-text-muted); opacity: .7; }
 
-        /* ── HEADER ── */
+        /* ══════════════════════════════════════
+           HEADER — glass morphism enhanced
+        ══════════════════════════════════════ */
         #site-header {
-            background: rgba(253,251,247,.92);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--colonial-border);
+            background: rgba(253,251,247,.88);
+            backdrop-filter: blur(20px) saturate(1.4);
+            -webkit-backdrop-filter: blur(20px) saturate(1.4);
+            border-bottom: 1px solid rgba(232,226,213,.6);
+            transition: background .3s, box-shadow .3s;
+        }
+        #site-header.scrolled {
+            background: rgba(253,251,247,.97);
+            box-shadow: 0 4px 24px rgba(62,54,46,.07);
         }
 
         /* ── MOBILE MENU ── */
@@ -134,9 +140,9 @@
             padding: .55rem 0;
             display: block;
             border-bottom: 1px solid var(--colonial-border);
-            transition: color .2s;
+            transition: color .2s, padding-left .2s;
         }
-        .menu-link:hover { color: var(--colonial-accent); }
+        .menu-link:hover { color: var(--colonial-accent); padding-left: .4rem; }
         .menu-link.sale { color: #b94040; }
 
         /* ── ACCOUNT DROPDOWN ── */
@@ -208,17 +214,296 @@
             padding: 1.25rem 1.5rem 1.75rem;
         }
 
-        /* ── PRODUCT CARD ── */
+        /* ══════════════════════════════════════════════════════
+           HERO — immersive full-viewport redesign
+        ══════════════════════════════════════════════════════ */
+        #hero-section {
+            position: relative;
+            overflow: hidden;
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 72px;
+        }
+
+        /* Atmospheric grain overlay */
+        #hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
+            opacity: .6;
+        }
+
+        /* Warm gradient bg */
+        #hero-bg-gradient {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% -10%, rgba(210,188,162,.45) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 50% at 100% 80%, rgba(193,167,133,.18) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 70% at 0% 50%, rgba(240,232,218,.3) 0%, transparent 55%),
+                linear-gradient(175deg, #f5efe8 0%, #fdfbf7 45%, #f9f5ef 100%);
+        }
+
+        /* Floating orbs */
+        .hero-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            pointer-events: none;
+            will-change: transform;
+        }
+        .hero-orb-1 {
+            width: min(480px, 80vw);
+            height: min(480px, 80vw);
+            background: radial-gradient(circle, rgba(197,172,143,.32) 0%, transparent 70%);
+            top: -10%;
+            right: -5%;
+            animation: orbFloat1 18s ease-in-out infinite;
+        }
+        .hero-orb-2 {
+            width: min(360px, 70vw);
+            height: min(360px, 70vw);
+            background: radial-gradient(circle, rgba(162,139,111,.18) 0%, transparent 70%);
+            bottom: 10%;
+            left: -8%;
+            animation: orbFloat2 22s ease-in-out infinite;
+        }
+        .hero-orb-3 {
+            width: min(220px, 50vw);
+            height: min(220px, 50vw);
+            background: radial-gradient(circle, rgba(217,196,168,.22) 0%, transparent 70%);
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: orbFloat3 14s ease-in-out infinite;
+        }
+
+        @keyframes orbFloat1 {
+            0%,100% { transform: translate(0, 0) scale(1); }
+            33%      { transform: translate(-30px, 20px) scale(1.05); }
+            66%      { transform: translate(20px, -15px) scale(.97); }
+        }
+        @keyframes orbFloat2 {
+            0%,100% { transform: translate(0, 0) scale(1); }
+            40%      { transform: translate(25px, -30px) scale(1.08); }
+            70%      { transform: translate(-15px, 20px) scale(.95); }
+        }
+        @keyframes orbFloat3 {
+            0%,100% { transform: translateX(-50%) translateY(0) scale(1); }
+            50%      { transform: translateX(-50%) translateY(-20px) scale(1.1); }
+        }
+
+        /* Thin horizontal rule decoration */
+        .hero-rule {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--colonial-accent);
+        }
+        .hero-rule::before, .hero-rule::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #D9C4A8 40%, #D9C4A8 60%, transparent);
+        }
+
+        /* Season badge */
+        .hero-season-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .35rem 1.1rem;
+            border: 1px solid rgba(162,139,111,.35);
+            border-radius: 40px;
+            background: rgba(162,139,111,.06);
+            backdrop-filter: blur(12px);
+            font-size: .62rem;
+            letter-spacing: .24em;
+            text-transform: uppercase;
+            color: var(--colonial-accent);
+            font-weight: 500;
+        }
+        .hero-season-badge::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--colonial-accent);
+            animation: pulseDot 2.5s ease-in-out infinite;
+        }
+        @keyframes pulseDot {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50%      { opacity: .4; transform: scale(.7); }
+        }
+
+        /* Main headline — staggered characters */
+        .hero-headline {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 300;
+            font-size: clamp(3rem, 10vw, 7.5rem);
+            line-height: .92;
+            letter-spacing: -.01em;
+            color: var(--colonial-text);
+            text-align: center;
+        }
+        .hero-headline .line-wrap {
+            display: block;
+            overflow: hidden;
+            padding-bottom: .05em;
+        }
+        .hero-headline .line-inner {
+            display: block;
+            transform: translateY(110%);
+            transition: transform .9s cubic-bezier(.16,1,.3,1);
+        }
+        .hero-headline .line-inner.visible { transform: translateY(0); }
+
+        /* Italic accent word */
+        .hero-headline em {
+            font-style: italic;
+            color: var(--colonial-accent);
+        }
+
+        /* Subline fade-up */
+        .hero-subline {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity .8s ease .5s, transform .8s cubic-bezier(.16,1,.3,1) .5s;
+            font-size: .88rem;
+            color: var(--colonial-text-muted);
+            max-width: 380px;
+            text-align: center;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+        .hero-subline.visible { opacity: 1; transform: translateY(0); }
+
+        /* CTA row fade */
+        .hero-cta-row {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity .7s ease .75s, transform .7s cubic-bezier(.16,1,.3,1) .75s;
+        }
+        .hero-cta-row.visible { opacity: 1; transform: translateY(0); }
+
+        /* Stats row */
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity .7s ease .95s, transform .7s ease .95s;
+        }
+        .hero-stats.visible { opacity: 1; transform: translateY(0); }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: var(--colonial-text);
+            line-height: 1;
+            display: block;
+        }
+        .hero-stat-label {
+            font-size: .6rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--colonial-text-muted);
+            margin-top: .25rem;
+            display: block;
+        }
+        .hero-stat-divider {
+            width: 1px;
+            height: 32px;
+            background: var(--colonial-border);
+            align-self: center;
+        }
+
+        /* ── CAROUSEL WRAPPER in hero ── */
+        #hero-carousel-wrap {
+            position: relative;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity .8s ease 1.1s, transform .8s ease 1.1s;
+        }
+        #hero-carousel-wrap.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── SCROLL INDICATOR ── */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .5rem;
+            opacity: 0;
+            animation: fadeInScroll 1s ease 1.8s forwards;
+            z-index: 2;
+        }
+        .scroll-indicator span {
+            font-size: .58rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--colonial-text-muted);
+        }
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--colonial-accent), transparent);
+            animation: scrollLineAnim 1.8s ease-in-out 2s infinite;
+        }
+        @keyframes fadeInScroll {
+            to { opacity: 1; }
+        }
+        @keyframes scrollLineAnim {
+            0%,100% { transform: scaleY(1) translateY(0); opacity: 1; }
+            50% { transform: scaleY(.6) translateY(5px); opacity: .5; }
+        }
+
+        /* ══════════════════════════════════════════
+           ENHANCED PRODUCT CARD WITH 3D EFFECT
+        ══════════════════════════════════════════ */
         .product-card {
             background: var(--colonial-card);
-            border-radius: 3px;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--colonial-border);
+            box-shadow:
+                0 2px 4px rgba(62,54,46,.06),
+                0 8px 16px rgba(62,54,46,.04),
+                0 0 0 1px var(--colonial-border);
             cursor: pointer;
-            transition: box-shadow .3s, transform .3s;
+            transition:
+                box-shadow .4s cubic-bezier(.23,1,.32,1),
+                transform .4s cubic-bezier(.23,1,.32,1);
+            transform-style: preserve-3d;
+            perspective: 800px;
+            opacity: 0;
+            transform: translateY(24px);
+            animation: cardReveal .5s cubic-bezier(.16,1,.3,1) forwards;
         }
-        .product-card:hover { box-shadow: 0 8px 32px rgba(62,54,46,.10); transform: translateY(-2px); }
+        @keyframes cardReveal {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .product-card:hover {
+            box-shadow:
+                0 20px 60px rgba(62,54,46,.16),
+                0 8px 24px rgba(162,139,111,.12),
+                0 0 0 1px rgba(162,139,111,.3);
+            transform: translateY(-6px) rotateX(2deg);
+        }
         .product-card .badge {
             position: absolute;
             top: .75rem;
@@ -231,42 +516,111 @@
             padding: .25rem .65rem;
             border-radius: 2px;
             border: 1px solid var(--colonial-border);
+            backdrop-filter: blur(8px);
         }
 
         /* ── SIZE BUTTONS ── */
         .size-btn {
-            width: 40px;
-            height: 40px;
-            min-height: 40px;
+            width: 44px;
+            height: 44px;
+            min-height: 44px;
             border: 1.5px solid var(--colonial-border);
-            border-radius: 50%;
+            border-radius: 4px;
             font-family: 'Jost', sans-serif;
             font-size: .72rem;
             letter-spacing: .06em;
             font-weight: 400;
-            transition: background .15s, border-color .15s;
+            transition: background .2s, border-color .2s, transform .15s, box-shadow .2s;
             background: var(--colonial-card);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
-        .size-btn:hover, .size-btn.active {
+        .size-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,.2) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity .2s;
+        }
+        .size-btn:hover {
+            background: var(--colonial-hover);
+            border-color: var(--colonial-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(162,139,111,.2);
+        }
+        .size-btn:hover::after { opacity: 1; }
+        .size-btn.active {
             background: var(--colonial-text);
             color: #fff;
             border-color: var(--colonial-text);
+            box-shadow: 0 4px 16px rgba(62,54,46,.25), inset 0 1px 0 rgba(255,255,255,.1);
         }
+        .size-btn.active::after { opacity: 1; }
 
-        /* ── COLOR SWATCH ── */
+        /* ══════════════════════════════════════════
+           BEAUTIFUL COLOUR SWATCHES
+        ══════════════════════════════════════════ */
         .color-swatch {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid var(--colonial-border);
-            transition: transform .15s, box-shadow .15s;
+            border: 2.5px solid rgba(255,255,255,.8);
+            outline: 2px solid transparent;
+            transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s, outline-color .2s;
             display: inline-block;
-            margin: 0 3px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.4);
         }
-        .color-swatch:hover { transform: scale(1.12); }
-        .color-swatch.selected { box-shadow: 0 0 0 2px var(--colonial-bg), 0 0 0 4px var(--colonial-text); }
+        .color-swatch::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,.35) 0%, transparent 55%);
+            pointer-events: none;
+        }
+        .color-swatch:hover {
+            transform: scale(1.2) translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.4);
+        }
+        .color-swatch.selected {
+            outline-color: var(--colonial-accent);
+            outline-offset: 3px;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,.2), 0 0 0 4px rgba(162,139,111,.2);
+        }
+
+        .color-swatch-track {
+            display: flex;
+            gap: .6rem;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: .5rem 0;
+        }
+
+        .color-label-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: var(--colonial-hover);
+            border: 1px solid var(--colonial-border);
+            border-radius: 20px;
+            padding: .25rem .75rem .25rem .5rem;
+            font-size: .72rem;
+            letter-spacing: .06em;
+            margin-top: .5rem;
+            transition: all .2s;
+        }
+        .color-label-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,255,255,.8);
+            box-shadow: 0 1px 4px rgba(0,0,0,.2);
+        }
 
         /* ── STARS ── */
         .star { font-size: 18px; cursor: pointer; color: #ddd; transition: color .1s; }
@@ -282,15 +636,16 @@
         /* ── MODAL PANEL ── */
         .modal-panel {
             background: var(--colonial-bg);
-            border-radius: 4px;
-            box-shadow: 0 30px 90px rgba(62,54,46,.18);
+            border-radius: 6px;
+            box-shadow:
+                0 30px 90px rgba(62,54,46,.18),
+                0 0 0 1px rgba(232,226,213,.5);
             max-height: 92vh;
             overflow-y: auto;
         }
         .modal-panel::-webkit-scrollbar { width: 3px; }
         .modal-panel::-webkit-scrollbar-thumb { background: #D9C4A8; }
 
-        /* ── MODAL HEADER ── */
         .modal-hd {
             display: flex;
             justify-content: space-between;
@@ -316,11 +671,10 @@
             border: 1px solid var(--colonial-border);
             background: transparent;
             cursor: pointer;
-            transition: background .15s;
+            transition: background .15s, transform .15s;
         }
-        .modal-close:hover { background: var(--colonial-hover); }
+        .modal-close:hover { background: var(--colonial-hover); transform: rotate(90deg); }
 
-        /* ── CHECKOUT MODAL SPECIFICS ── */
         .checkout-section-title {
             font-family: 'Jost', sans-serif;
             font-size: .65rem;
@@ -337,23 +691,24 @@
             gap: .75rem;
             padding: .75rem 1rem;
             border: 1.5px solid var(--colonial-border);
-            border-radius: 3px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: border-color .2s, background .2s;
+            transition: border-color .2s, background .2s, box-shadow .2s;
             font-size: .82rem;
             background: var(--colonial-card);
         }
+        .radio-card:hover { border-color: rgba(162,139,111,.5); box-shadow: 0 2px 8px rgba(162,139,111,.1); }
         .radio-card:has(input:checked) {
             border-color: var(--colonial-accent);
             background: rgba(162,139,111,.06);
+            box-shadow: 0 0 0 3px rgba(162,139,111,.1);
         }
         .radio-card input[type=radio] { accent-color: var(--colonial-accent); }
 
-        /* ── PAYMENT BOX ── */
         .payment-box {
             background: var(--colonial-card);
             border: 1.5px solid var(--colonial-border);
-            border-radius: 3px;
+            border-radius: 4px;
             padding: 1.1rem 1.2rem;
         }
         .payment-number {
@@ -376,20 +731,117 @@
             margin-top: .5rem;
         }
 
-        /* ── PAYMENT BADGES ── */
-        .payment-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; letter-spacing: .06em; }
+        .payment-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; letter-spacing: .06em; }
         .payment-paid { background: #d1fae5; color: #065f46; }
         .payment-pending { background: #fef3c7; color: #92400e; }
         .payment-awaiting { background: #fed7aa; color: #9a3412; }
         .payment-failed { background: #fee2e2; color: #991b1b; }
+
+        /* ══════════════════════════════════════════
+           REDESIGNED ORDER CARD
+        ══════════════════════════════════════════ */
+        .order-card {
+            background: var(--colonial-card);
+            border: 1px solid var(--colonial-border);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: box-shadow .25s;
+        }
+        .order-card:hover { box-shadow: 0 6px 24px rgba(62,54,46,.09); }
+        .order-card-header {
+            background: linear-gradient(135deg, var(--colonial-text) 0%, #2a1f16 100%);
+            padding: .85rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+        }
+        .order-card-header .order-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #fff;
+            letter-spacing: .04em;
+        }
+        .order-card-header .order-date {
+            font-size: .65rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.5);
+            margin-top: 1px;
+        }
+        .order-card-header .order-total {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .order-badges {
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .order-status-chip {
+            display: inline-block;
+            font-size: .62rem;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: .28rem .75rem;
+            border-radius: 20px;
+            background: rgba(255,255,255,.15);
+            color: rgba(255,255,255,.9);
+            border: 1px solid rgba(255,255,255,.2);
+            backdrop-filter: blur(4px);
+        }
+        .order-card-body { padding: 0; }
+        .order-item-row {
+            display: flex;
+            align-items: center;
+            gap: .875rem;
+            padding: .875rem 1.25rem;
+            border-bottom: 1px solid var(--colonial-border);
+            transition: background .15s;
+        }
+        .order-item-row:last-child { border-bottom: none; }
+        .order-item-row:hover { background: var(--colonial-hover); }
+        .order-item-img {
+            width: 44px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 3px;
+            flex-shrink: 0;
+            background: var(--colonial-hover);
+        }
+        .order-item-name {
+            font-size: .84rem;
+            font-weight: 400;
+            color: var(--colonial-text);
+            line-height: 1.3;
+        }
+        .order-item-meta {
+            font-size: .72rem;
+            color: var(--colonial-text-muted);
+            margin-top: .2rem;
+        }
+        .order-item-price {
+            margin-left: auto;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 400;
+            white-space: nowrap;
+            padding-left: .5rem;
+        }
 
         /* ── AUTH MODAL ── */
         .auth-panel {
             background: var(--colonial-bg);
             max-width: 420px;
             width: 100%;
-            border-radius: 4px;
+            border-radius: 6px;
             overflow: hidden;
+            box-shadow: 0 40px 100px rgba(62,54,46,.25);
         }
         .auth-top {
             background: var(--colonial-accent-dark);
@@ -412,7 +864,7 @@
         }
         .auth-body { padding: 2rem; }
 
-        /* ── TOAST ── */
+        /* ── TOAST — enhanced ── */
         #toast {
             position: fixed;
             bottom: 1.5rem;
@@ -424,17 +876,16 @@
             font-size: .78rem;
             letter-spacing: .08em;
             text-transform: uppercase;
-            padding: .7rem 1.5rem;
-            border-radius: 2px;
+            padding: .8rem 1.75rem;
+            border-radius: 3px;
             z-index: 9999;
-            transition: opacity .3s;
+            transition: opacity .3s, transform .3s;
             opacity: 0;
             pointer-events: none;
             white-space: nowrap;
-            box-shadow: 0 8px 30px rgba(62,54,46,.18);
+            box-shadow: 0 8px 30px rgba(62,54,46,.25), 0 0 0 1px rgba(255,255,255,.06) inset;
         }
 
-        /* ── SEARCH BAR ── */
         #search-input {
             font-family: 'Jost', sans-serif;
             font-weight: 300;
@@ -445,11 +896,10 @@
             font-size: .88rem;
             color: var(--colonial-text);
             outline: none;
-            transition: border-color .2s;
+            transition: border-color .2s, box-shadow .2s;
         }
-        #search-input:focus { border-color: var(--colonial-accent); }
+        #search-input:focus { border-color: var(--colonial-accent); box-shadow: 0 0 0 3px rgba(162,139,111,.12); }
 
-        /* ── FILTER SELECT ── */
         #category-filter, #sort-select {
             font-family: 'Jost', sans-serif;
             font-weight: 300;
@@ -463,42 +913,35 @@
             cursor: pointer;
         }
 
-        /* ── ORDER CARD ── */
-        .order-card {
-            background: var(--colonial-card);
-            border: 1px solid var(--colonial-border);
-            border-radius: 3px;
-            padding: 1.25rem 1.5rem;
-        }
-        .order-status-chip {
-            display: inline-block;
-            font-size: .65rem;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            padding: .25rem .75rem;
-            border-radius: 2px;
-            background: var(--colonial-hover);
-            color: var(--colonial-text-muted);
-        }
-
-        /* ── CAROUSEL CARDS ── */
+        /* ══════════════════════════════════════════
+           CAROUSEL CARD — enhanced
+        ══════════════════════════════════════════ */
         .carousel-card {
             background: var(--colonial-card);
-            border-radius: 3px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(62,54,46,.07);
-            transition: transform .3s;
+            box-shadow:
+                0 4px 6px rgba(62,54,46,.06),
+                0 10px 30px rgba(62,54,46,.07),
+                0 0 0 1px var(--colonial-border);
+            transition:
+                transform .4s cubic-bezier(.23,1,.32,1),
+                box-shadow .4s cubic-bezier(.23,1,.32,1);
         }
-        .carousel-card:hover { transform: translateY(-3px); }
+        .carousel-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow:
+                0 24px 60px rgba(62,54,46,.18),
+                0 0 0 1px rgba(162,139,111,.3);
+        }
 
-        /* ── DIVIDER ── */
         .divider {
             border: none;
             border-top: 1px solid var(--colonial-border);
             margin: 1.25rem 0;
         }
 
-        /* ── SLIDE ANIMATIONS ── */
+        /* ── ANIMATIONS ── */
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-8px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -506,12 +949,30 @@
         .animate-slideDown { animation: slideDown .22s ease forwards; }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px) scale(.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .animate-fadeUp { animation: fadeUp .35s ease forwards; }
+        .animate-fadeUp { animation: fadeUp .35s cubic-bezier(.23,1,.32,1) forwards; }
 
-        /* ── DECORATIVE RULE ── */
+        @keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .shimmer-line {
+            background: linear-gradient(90deg, var(--colonial-hover) 25%, var(--colonial-border) 50%, var(--colonial-hover) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 3px;
+        }
+
+        /* Scroll-triggered section reveal */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
+        }
+        .section-reveal.revealed { opacity: 1; transform: translateY(0); }
+
         .ornament {
             display: flex;
             align-items: center;
@@ -528,28 +989,159 @@
             background: #D9C4A8;
         }
 
-        /* ── WISHLIST CARD ── */
         .wishlist-card {
             background: var(--colonial-card);
             border: 1px solid var(--colonial-border);
-            border-radius: 3px;
+            border-radius: 4px;
             overflow: hidden;
-            transition: box-shadow .2s;
+            transition: box-shadow .25s, transform .25s;
         }
-        .wishlist-card:hover { box-shadow: 0 6px 24px rgba(62,54,46,.09); }
+        .wishlist-card:hover {
+            box-shadow: 0 8px 30px rgba(62,54,46,.12);
+            transform: translateY(-3px);
+        }
 
-        /* Thumbnail active */
         .thumbnail-img.active { border-color: var(--colonial-accent) !important; }
 
-        /* coupon input */
         .coupon-row { display: flex; gap: .5rem; }
         .coupon-row input { flex: 1; }
         .coupon-row button { white-space: nowrap; padding: 0 1rem; min-height: 42px; }
 
+        /* ── MOBILE ── */
         @media (max-width: 640px) {
             .auth-body { padding: 1.5rem; }
             .modal-hd { padding: 1.2rem 1.25rem .9rem; }
             input, select, textarea { font-size: 16px !important; }
+            .order-card-header { flex-wrap: wrap; gap: .5rem; }
+            .modal-panel { border-radius: 4px; }
+            .hero-stats { gap: 1rem; }
+            .scroll-indicator { display: none; }
+        }
+
+        /* ── PRODUCT QUICK VIEW ── */
+        .product-modal-img-wrap {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            background: var(--colonial-hover);
+        }
+        .product-modal-img-wrap img {
+            transition: transform .6s cubic-bezier(.23,1,.32,1);
+        }
+        .product-modal-img-wrap:hover img { transform: scale(1.04); }
+
+        .thumb-strip {
+            display: flex;
+            gap: .5rem;
+            overflow-x: auto;
+            padding: .4rem 0;
+            scrollbar-width: none;
+        }
+        .thumb-strip::-webkit-scrollbar { display: none; }
+        .thumb-item {
+            flex-shrink: 0;
+            width: 58px;
+            height: 72px;
+            border-radius: 3px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color .2s, transform .2s;
+        }
+        .thumb-item:hover { transform: translateY(-2px); border-color: rgba(162,139,111,.5); }
+        .thumb-item.active { border-color: var(--colonial-accent); }
+        .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        .section-label {
+            font-size: .62rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--colonial-text-muted);
+            font-weight: 500;
+            margin-bottom: .6rem;
+        }
+
+        .quick-add-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(44,36,32,.75) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity .3s;
+            display: flex;
+            align-items: flex-end;
+            padding: 1rem;
+        }
+        .product-card:hover .quick-add-overlay { opacity: 1; }
+
+        /* ── PRODUCT SECTION HEADER ── */
+        .products-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .products-section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: .02em;
+        }
+        .products-count-badge {
+            font-size: .62rem;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: var(--colonial-text-muted);
+            background: var(--colonial-hover);
+            border: 1px solid var(--colonial-border);
+            border-radius: 20px;
+            padding: .3rem .9rem;
+        }
+
+        /* Marquee ticker for trust signals */
+        .marquee-wrap {
+            overflow: hidden;
+            border-top: 1px solid var(--colonial-border);
+            border-bottom: 1px solid var(--colonial-border);
+            padding: .85rem 0;
+            background: var(--colonial-hover);
+        }
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marquee 28s linear infinite;
+            gap: 0;
+        }
+        .marquee-track:hover { animation-play-state: paused; }
+        .marquee-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: 0 3rem;
+            font-size: .65rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--colonial-text-muted);
+            white-space: nowrap;
+        }
+        .marquee-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--colonial-accent);
+            flex-shrink: 0;
+        }
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
         }
     </style>
 
@@ -558,8 +1150,6 @@
 <!-- ════════════════════════ HEADER ════════════════════════ -->
 <header id="site-header" class="fixed top-0 left-0 w-full z-40">
     <div class="flex items-center justify-between px-5 py-3 md:px-8 lg:px-14">
-
-        <!-- LEFT: menu + search -->
         <div class="flex items-center gap-4">
             <button onclick="toggleMenu()" class="hover:opacity-60 transition-opacity" aria-label="Menu">
                 <i data-lucide="menu" class="w-5 h-5"></i>
@@ -569,24 +1159,24 @@
             </button>
         </div>
 
-        <!-- CENTER: brand -->
-           <h1 onclick="window.scrollTo({top:0,behavior:'smooth'})"
-    class="font-serif text-xl md:text-2xl lg:text-3xl tracking-[0.12em] leading-none m-0 p-0 font-medium cursor-pointer select-none">
-    COLONIAL
-</h1>        <!-- RIGHT: wishlist + account + cart -->
+        <h1 onclick="window.scrollTo({top:0,behavior:'smooth'})"
+            class="font-serif text-xl md:text-2xl lg:text-3xl tracking-[0.12em] leading-none m-0 p-0 font-medium cursor-pointer select-none">
+            COLONIAL
+        </h1>
+
         <div class="flex items-center gap-4">
             <button id="wishlist-btn" class="relative hover:opacity-60 transition-opacity" aria-label="Wishlist">
                 <i data-lucide="heart" class="w-5 h-5"></i>
                 <span id="wishlist-count"
-                      class="absolute -top-2 -right-2 bg-[var(--gold)] text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0 transition-opacity">0</span>
+                      class="absolute -top-2 -right-2 bg-[var(--colonial-accent)] text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0 transition-opacity">0</span>
             </button>
 
             <div class="relative" id="account-container">
                 <button id="account-btn" class="hover:opacity-60 transition-opacity" aria-label="Account">
                     <i data-lucide="user" class="w-5 h-5"></i>
                 </button>
-                <div id="account-dropdown" class="absolute right-0 mt-3 hidden z-50 animate-slideDown" style="min-width:200px;">
-                    <div id="user-info" class="px-5 py-3 border-b border-[var(--border)] text-sm"></div>
+                <div id="account-dropdown" class="absolute right-0 mt-3 hidden z-50 animate-slideDown">
+                    <div id="user-info" class="px-5 py-3 border-b border-[var(--colonial-border)] text-sm"></div>
                     <a href="#" id="my-orders-link">My Orders</a>
                     <a href="#" id="wishlist-dropdown-link">Wishlist</a>
                     <a href="#" id="logout-link" class="danger">Sign Out</a>
@@ -596,23 +1186,19 @@
             <button onclick="toggleCart()" class="relative hover:opacity-60 transition-opacity" aria-label="Cart">
                 <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                 <span id="cart-count"
-                      class="absolute -top-2 -right-2 bg-[var(--ink)] text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0 transition-opacity">0</span>
+                      class="absolute -top-2 -right-2 bg-[var(--colonial-text)] text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0 transition-opacity">0</span>
             </button>
         </div>
-
     </div>
 </header>
 
 
 <!-- ════════════════════════ MOBILE MENU ════════════════════════ -->
 <div id="mobile-menu" class="fixed top-0 left-0 w-72 h-full z-50 transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
-    <!-- Top -->
-    <div class="px-7 py-6 border-b border-[var(--border)] flex items-center justify-between">
+    <div class="px-7 py-6 border-b border-[var(--colonial-border)] flex items-center justify-between">
         <span class="font-serif text-xl tracking-[.15em]">COLONIAL</span>
         <button onclick="toggleMenu()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
     </div>
-
-    <!-- Nav -->
     <nav class="flex-1 px-7 py-8 overflow-y-auto">
         <ul class="space-y-0">
             <li><a href="#" class="menu-link" onclick="filterByCategory('Women'); toggleMenu(); return false;">Women</a></li>
@@ -622,59 +1208,132 @@
             <li><a href="#" id="mobile-wishlist-link" class="menu-link">Wishlist</a></li>
         </ul>
     </nav>
-
-    <!-- Auth button -->
-    <div class="px-7 py-6 border-t border-[var(--border)]">
-        <button id="mobile-auth-btn"
-                class="btn-primary w-full py-3 rounded-sm">Login</button>
+    <div class="px-7 py-6 border-t border-[var(--colonial-border)]">
+        <button id="mobile-auth-btn" class="btn-primary w-full py-3 rounded-sm">Login</button>
     </div>
 </div>
 <div id="menu-overlay" class="fixed inset-0 bg-black/30 z-40 opacity-0 invisible transition-all duration-300" onclick="toggleMenu()"></div>
 
 
+
 <!-- ════════════════════════ HERO ════════════════════════ -->
-<section class="pt-20 md:pt-28 pb-16" style="background: linear-gradient(160deg, #f0ece6 0%, var(--bone) 60%);">
-    <div class="max-w-7xl mx-auto px-5 text-center">
-        <p class="text-[.65rem] tracking-[.28em] uppercase text-[var(--muted)] mb-3">Spring — Summer 2026</p>
-        <h2 class="font-serif text-4xl md:text-6xl lg:text-7xl font-light leading-none mb-4">Timeless Elegance</h2>
-        <p class="text-[var(--muted)] max-w-md mx-auto mb-10 text-sm leading-relaxed">
+<section id="hero-section">
+    <!-- Background layers -->
+    <div id="hero-bg-gradient"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-5 flex flex-col items-center gap-8 py-16">
+
+        <!-- Season badge -->
+        <div class="hero-season-badge">Spring — Summer 2026</div>
+
+        <!-- Main headline — lines animate in from below -->
+        <h2 class="hero-headline" id="hero-headline">
+            <span class="line-wrap"><span class="line-inner">Timeless</span></span>
+            <span class="line-wrap"><span class="line-inner" style="transition-delay:.12s"><em>Elegance</em></span></span>
+        </h2>
+
+        <!-- Subline -->
+        <p class="hero-subline" id="hero-subline">
             Where minimalism meets sophistication — each piece crafted for the discerning few.
         </p>
 
-        <!-- Carousel -->
-        <div class="relative max-w-7xl mx-auto px-12">
-            <div class="carousel-container overflow-x-auto">
-                <div id="product-carousel" class="flex transition-transform duration-500" style="will-change:transform;"></div>
-            </div>
-            <button id="prev-btn"
-                    class="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 min-h-0 bg-[var(--bone)] border border-[var(--border)] rounded-full shadow-md hover:bg-[var(--warm)] transition">
-                <i data-lucide="chevron-left" class="w-4 h-4 mx-auto"></i>
+        <!-- CTA row -->
+        <div class="hero-cta-row flex flex-wrap items-center justify-center gap-4" id="hero-cta">
+            <button onclick="document.getElementById('products-container').scrollIntoView({behavior:'smooth'});"
+                    class="btn-primary px-10 py-3.5 rounded-sm">
+                Explore Collection
             </button>
-            <button id="next-btn"
-                    class="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 min-h-0 bg-[var(--bone)] border border-[var(--border)] rounded-full shadow-md hover:bg-[var(--warm)] transition">
-                <i data-lucide="chevron-right" class="w-4 h-4 mx-auto"></i>
+            <button onclick="filterByCategory('Women'); document.getElementById('products-container').scrollIntoView({behavior:'smooth'});"
+                    class="btn-ghost px-8 py-3.5 rounded-sm">
+                Women
+            </button>
+            <button onclick="filterByCategory('Men'); document.getElementById('products-container').scrollIntoView({behavior:'smooth'});"
+                    class="btn-ghost px-8 py-3.5 rounded-sm">
+                Men
             </button>
         </div>
 
-        <button onclick="document.getElementById('products-container').scrollIntoView({behavior:'smooth'});"
-                class="btn-primary mt-10 px-10 py-3 rounded-sm">
-            Explore the Collection
-        </button>
+        <!-- Stats -->
+        <div class="hero-stats" id="hero-stats">
+            <div class="hero-stat">
+                <span class="hero-stat-number">2026</span>
+                <span class="hero-stat-label">Est. Chittagong</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-number">100%</span>
+                <span class="hero-stat-label">Premium Quality</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+                <span class="hero-stat-number">2–5</span>
+                <span class="hero-stat-label">Day Delivery</span>
+            </div>
+        </div>
+
+        <!-- Carousel -->
+        <div id="hero-carousel-wrap" class="w-full mt-4">
+            <div class="hero-rule mb-6">
+                <span class="font-sans text-[.6rem] tracking-[.2em] uppercase">New Arrivals</span>
+            </div>
+            <div class="relative max-w-7xl mx-auto px-10 md:px-12">
+                <div class="carousel-container overflow-x-auto">
+                    <div id="product-carousel" class="flex transition-transform duration-500" style="will-change:transform;"></div>
+                </div>
+                <button id="prev-btn"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 min-h-0 bg-white/80 backdrop-blur-sm border border-[var(--colonial-border)] rounded-full shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200">
+                    <i data-lucide="chevron-left" class="w-4 h-4 mx-auto"></i>
+                </button>
+                <button id="next-btn"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 min-h-0 bg-white/80 backdrop-blur-sm border border-[var(--colonial-border)] rounded-full shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200">
+                    <i data-lucide="chevron-right" class="w-4 h-4 mx-auto"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
     </div>
 </section>
 
+<!-- ════════════ MARQUEE TRUST BAR ════════════ -->
+<div class="marquee-wrap">
+    <div class="marquee-track" aria-hidden="true">
+        <!-- repeated twice for seamless loop -->
+        <span class="marquee-item"><span class="marquee-dot"></span>Free Exchange Within 10 Days</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Premium Quality Fabric</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Inside Chittagong Delivery BDT 80</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>BKash &amp; Nagad Accepted</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>New Arrivals Every Week</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Cash on Delivery Available</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Exclusive Members Offers</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Free Exchange Within 10 Days</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Premium Quality Fabric</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Inside Chittagong Delivery BDT 80</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>BKash &amp; Nagad Accepted</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>New Arrivals Every Week</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Cash on Delivery Available</span>
+        <span class="marquee-item"><span class="marquee-dot"></span>Exclusive Members Offers</span>
+    </div>
+</div>
+
+
 
 <!-- ════════════════════════ SEARCH / FILTER BAR ════════════════════════ -->
-<section class="sticky top-[57px] md:top-[65px] z-30 bg-[var(--bone)]/95 backdrop-blur-sm border-b border-[var(--border)] py-3 px-5 md:px-8 lg:px-14">
+<section class="sticky top-[57px] md:top-[65px] z-30 bg-[var(--colonial-bg)]/95 backdrop-blur-sm border-b border-[var(--colonial-border)] py-3 px-5 md:px-8 lg:px-14">
     <div class="max-w-7xl mx-auto">
         <div class="flex items-center gap-3">
             <div class="relative flex-1">
-                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)]"></i>
-                <input type="text" id="search-input" placeholder="Search the collection…"
-                       class="w-full pl-10 pr-4 py-2.5">
+                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--colonial-text-muted)]"></i>
+                <input type="text" id="search-input" placeholder="Search the collection…" class="w-full pl-10 pr-4 py-2.5">
             </div>
-            <button id="filter-toggle-btn"
-                    class="btn-ghost flex items-center gap-2 px-4 py-2.5 rounded-sm whitespace-nowrap text-xs">
+            <button id="filter-toggle-btn" class="btn-ghost flex items-center gap-2 px-4 py-2.5 rounded-sm whitespace-nowrap text-xs">
                 <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
                 <span class="hidden sm:inline">Filter</span>
             </button>
@@ -694,11 +1353,17 @@
 <!-- ════════════════════════ PRODUCT GRID ════════════════════════ -->
 <section class="px-5 md:px-8 lg:px-14 py-14">
     <div class="max-w-7xl mx-auto">
+        <div class="products-section-header section-reveal">
+            <div>
+                <p class="text-[.6rem] tracking-[.2em] uppercase text-[var(--colonial-text-muted)] mb-1">The Collection</p>
+                <h2 class="products-section-title">All Pieces</h2>
+            </div>
+            <span id="products-count-badge" class="products-count-badge"></span>
+        </div>
         <div id="products-container"
-             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"></div>
+             class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8"></div>
         <div class="text-center mt-14">
-            <button id="load-more"
-                    class="btn-ghost px-10 py-3 rounded-sm hidden">Load More</button>
+            <button id="load-more" class="btn-ghost px-10 py-3 rounded-sm hidden">Load More</button>
         </div>
     </div>
 </section>
@@ -707,33 +1372,27 @@
 <!-- ════════════════════════ CART DRAWER ════════════════════════ -->
 <div id="cart-drawer"
      class="fixed top-0 right-0 w-full max-w-[420px] h-full z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
-    <!-- Header -->
     <div class="cart-header flex items-center justify-between">
         <div>
-            
             <h2 class="font-serif text-2xl font-light text-white">Shopping Bag</h2>
         </div>
         <button onclick="toggleCart()" class="w-9 h-9 min-h-0 rounded-full border border-white/20 hover:border-white/60 transition text-white">
             <i data-lucide="x" class="w-4 h-4 mx-auto"></i>
         </button>
     </div>
-
-    <!-- Items -->
     <div id="cart-items-list" class="flex-1 overflow-auto px-5 py-2"></div>
-
-    <!-- Footer -->
     <div class="cart-footer">
-   <div class="flex items-center justify-between mb-1">
-            <span class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)]">Subtotal</span>
+        <div class="flex items-center justify-between mb-1">
+            <span class="text-[.65rem] tracking-[.14em] uppercase text-[var(--colonial-text-muted)]">Subtotal</span>
             <span id="cart-subtotal-price" class="text-sm font-light">BDT 0.00</span>
         </div>
         <div id="cart-discount-row" style="display:none;" class="flex items-center justify-between mb-1">
             <span class="text-[.65rem] tracking-[.14em] uppercase text-green-700">Coupon</span>
             <span id="cart-discount-price" class="text-sm font-medium text-green-700">–BDT 0.00</span>
         </div>
-        <p class="text-[.68rem] text-[var(--muted)] mb-2">Delivery calculated at checkout</p>
+        <p class="text-[.68rem] text-[var(--colonial-text-muted)] mb-2">Delivery calculated at checkout</p>
         <div class="flex items-center justify-between mb-3 border-t border-[var(--colonial-border)] pt-2">
-            <span class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)]">Total</span>
+            <span class="text-[.65rem] tracking-[.14em] uppercase text-[var(--colonial-text-muted)]">Total</span>
             <span id="cart-total-price" class="font-serif text-xl font-light">BDT 0.00</span>
         </div>
         <button onclick="openCheckout()" class="btn-primary w-full py-3.5 rounded-sm">Proceed to Checkout</button>
@@ -748,14 +1407,11 @@
 <div id="checkout-modal"
      class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-lg animate-fadeUp">
-
         <div class="modal-hd">
             <h3>Checkout</h3>
             <button onclick="closeCheckout()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
-
         <div class="px-7 pb-8">
-            <!-- Contact -->
             <p class="checkout-section-title">Contact Information</p>
             <div class="space-y-3">
                 <input type="text" id="customer-name" placeholder="Full Name *" class="inp" required>
@@ -764,56 +1420,53 @@
                 <textarea id="shipping-address" placeholder="Shipping Address" class="inp" rows="2" style="resize:vertical;min-height:72px;"></textarea>
             </div>
 
-            <!-- Delivery -->
             <p class="checkout-section-title">Delivery Option *</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label class="radio-card">
                     <input type="radio" name="delivery_option" value="inside" data-fee="80" checked>
                     <div>
                         <p class="text-sm font-medium leading-none mb-0.5">Inside Chittagong</p>
-                        <p class="text-xs text-[var(--muted)]">BDT 80</p>
+                        <p class="text-xs text-[var(--colonial-text-muted)]">BDT 80</p>
                     </div>
                 </label>
                 <label class="radio-card">
                     <input type="radio" name="delivery_option" value="outside" data-fee="150">
                     <div>
                         <p class="text-sm font-medium leading-none mb-0.5">Outside Chittagong</p>
-                        <p class="text-xs text-[var(--muted)]">BDT 150</p>
+                        <p class="text-xs text-[var(--colonial-text-muted)]">BDT 150</p>
                     </div>
                 </label>
             </div>
-            <p class="text-[.68rem] text-[var(--muted)] mt-1.5">Delivery fee is mandatory for all orders.</p>
+            <p class="text-[.68rem] text-[var(--colonial-text-muted)] mt-1.5">Delivery fee is mandatory for all orders.</p>
 
-            <!-- Payment method -->
             <p class="checkout-section-title">Payment Method</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label class="radio-card">
                     <input type="radio" name="payment_method" value="cash_on_delivery" checked>
                     <div>
                         <p class="text-sm font-medium leading-none mb-0.5">Cash on Delivery</p>
-                        <p class="text-xs text-[var(--muted)]">Pay upon arrival</p>
+                        <p class="text-xs text-[var(--colonial-text-muted)]">Pay upon arrival</p>
                     </div>
                 </label>
                 <label class="radio-card">
                     <input type="radio" name="payment_method" value="Bkash">
                     <div>
                         <p class="text-sm font-medium leading-none mb-0.5">Advance Payment</p>
-                        <p class="text-xs text-[var(--muted)]">BKash / Nagad</p>
+                        <p class="text-xs text-[var(--colonial-text-muted)]">BKash / Nagad</p>
                     </div>
                 </label>
             </div>
 
-            <!-- Payment details box -->
             <div id="manual-payment-details" class="payment-box mt-4">
-    <p id="payment-instruction-heading" class="text-[.68rem] tracking-[.1em] uppercase text-[var(--muted)] mb-1">Advance Payment</p>
-    <p class="text-base font-mono font-medium text-[var(--text)] tracking-normal">+8801871330654</p>
-    <p class="text-xs text-[var(--muted)]">BKash / Nagad</p>
-    <p id="payment-instruction-sub" class="text-xs text-[var(--muted)] mt-2">Pay the delivery charge only and enter the transaction ID below.</p>
-    <div class="amount-pill">Amount to pay: <strong id="payable-amount">BDT 0</strong></div>
-    <input type="text" id="transaction-id" placeholder="Transaction ID  (e.g. 8E7A2K9L)" class="inp mt-3">
-    <p class="text-xs text-red-500 hidden mt-1" id="txn-error">Transaction ID is required.</p>
-</div>
-            <!-- Coupon -->
+                <p id="payment-instruction-heading" class="text-[.68rem] tracking-[.1em] uppercase text-[var(--colonial-text-muted)] mb-1">Advance Payment</p>
+                <p class="text-base font-mono font-medium text-[var(--colonial-text)] tracking-normal">+8801871330654</p>
+                <p class="text-xs text-[var(--colonial-text-muted)]">BKash / Nagad</p>
+                <p id="payment-instruction-sub" class="text-xs text-[var(--colonial-text-muted)] mt-2">Pay the delivery charge only and enter the transaction ID below.</p>
+                <div class="amount-pill">Amount to pay: <strong id="payable-amount">BDT 0</strong></div>
+                <input type="text" id="transaction-id" placeholder="Transaction ID  (e.g. 8E7A2K9L)" class="inp mt-3">
+                <p class="text-xs text-red-500 hidden mt-1" id="txn-error">Transaction ID is required.</p>
+            </div>
+
             <p class="checkout-section-title">Coupon Code</p>
             <div class="coupon-row">
                 <input type="text" id="coupon-code" placeholder="Enter coupon code" class="inp">
@@ -821,7 +1474,6 @@
             </div>
             <div id="coupon-feedback" class="text-xs mt-1.5"></div>
 
-            <!-- Actions -->
             <div class="flex flex-col gap-3 mt-7">
                 <button onclick="placeOrder()" class="btn-gold w-full py-3.5 rounded-sm">Place Order</button>
                 <button onclick="closeCheckout()" class="btn-ghost w-full py-3 rounded-sm">Cancel</button>
@@ -840,7 +1492,7 @@
             <h3 id="modal-name"></h3>
             <div class="flex gap-2">
                 <button id="modal-wishlist-btn"
-                        class="w-9 h-9 min-h-0 rounded-full border border-[var(--border)] hover:border-[var(--gold)] transition">
+                        class="w-9 h-9 min-h-0 rounded-full border border-[var(--colonial-border)] hover:border-[var(--colonial-accent)] transition">
                     <i data-lucide="heart" class="w-4 h-4 mx-auto"></i>
                 </button>
                 <button onclick="closeProductModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
@@ -848,29 +1500,30 @@
         </div>
 
         <div class="px-6 pb-8">
-            <!-- Image -->
-            <div class="mt-4">
+            <!-- Image with 3D zoom -->
+            <div class="mt-4 product-modal-img-wrap">
                 <img id="modal-main-img"
-                     class="w-full h-72 md:h-96 object-cover rounded-sm cursor-zoom-in"
+                     class="w-full h-72 md:h-96 object-cover cursor-zoom-in"
                      onclick="openLightbox()" loading="lazy">
-                <div id="modal-thumbnails" class="flex gap-2 mt-3 overflow-x-auto pb-1"></div>
             </div>
+            <!-- Thumbnail strip -->
+            <div id="modal-thumbnails" class="thumb-strip mt-3"></div>
 
             <!-- Price + rating -->
             <div class="flex items-center justify-between mt-4">
                 <p id="modal-price" class="font-serif text-2xl font-light"></p>
                 <div class="flex items-center gap-2">
-                    <div id="modal-rating" class="star-rating" style="font-size:14px; color:var(--gold);"></div>
-                    <span id="modal-review-count" class="text-xs text-[var(--muted)]"></span>
+                    <div id="modal-rating" class="star-rating" style="font-size:14px; color:var(--colonial-accent);"></div>
+                    <span id="modal-review-count" class="text-xs text-[var(--colonial-text-muted)]"></span>
                 </div>
             </div>
 
-            <p id="modal-desc" class="text-sm text-[var(--muted)] mt-3 leading-relaxed"></p>
+            <p id="modal-desc" class="text-sm text-[var(--colonial-text-muted)] mt-3 leading-relaxed"></p>
 
             <!-- Size -->
             <div class="mt-5">
-                <p class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)] mb-2.5">Select Size</p>
-                <div class="flex gap-2" id="size-options">
+                <p class="section-label">Select Size</p>
+                <div class="flex gap-2 flex-wrap" id="size-options">
                     <button class="size-btn" data-size="XS">XS</button>
                     <button class="size-btn" data-size="S">S</button>
                     <button class="size-btn active" data-size="M">M</button>
@@ -879,11 +1532,17 @@
                 </div>
             </div>
 
-            <!-- Colour -->
+            <!-- Colour — redesigned beautiful section -->
             <div id="color-selector" class="mt-5">
-                <p class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)] mb-2.5">Select Colour</p>
-                <div id="color-swatches" class="flex gap-2 flex-wrap"></div>
-                <p id="selected-color-name" class="text-xs text-[var(--muted)] mt-1.5"></p>
+                <p class="section-label">Select Colour</p>
+                <div id="color-swatches" class="color-swatch-track"></div>
+                <!-- label pill showing selected colour -->
+                <div id="selected-color-pill" class="hidden">
+                    <div class="color-label-pill">
+                        <div id="selected-color-dot" class="color-label-dot"></div>
+                        <span id="selected-color-name" class="text-[var(--colonial-text-muted)]"></span>
+                    </div>
+                </div>
             </div>
 
             <button onclick="addCurrentToCart()"
@@ -895,8 +1554,8 @@
             <h4 class="font-serif text-xl font-light mb-3">Reviews</h4>
             <div id="reviews-container" class="max-h-52 overflow-y-auto space-y-3"></div>
 
-            <div id="add-review-section" class="mt-5 pt-4 border-t border-[var(--border)]">
-                <p class="text-[.65rem] tracking-[.14em] uppercase text-[var(--muted)] mb-2">Write a Review</p>
+            <div id="add-review-section" class="mt-5 pt-4 border-t border-[var(--colonial-border)]">
+                <p class="section-label">Write a Review</p>
                 <div class="star-rating mb-3" id="review-stars">
                     <span class="star" data-rating="1">★</span>
                     <span class="star" data-rating="2">★</span>
@@ -905,8 +1564,7 @@
                     <span class="star" data-rating="5">★</span>
                 </div>
                 <textarea id="review-comment" rows="2" class="inp" placeholder="Share your experience…"></textarea>
-                <button id="submit-review-btn"
-                        class="btn-primary mt-3 px-6 py-2 rounded-sm text-xs">Submit Review</button>
+                <button id="submit-review-btn" class="btn-primary mt-3 px-6 py-2 rounded-sm text-xs">Submit Review</button>
             </div>
         </div>
     </div>
@@ -932,20 +1590,16 @@
 <div id="auth-modal"
      class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="auth-panel animate-fadeUp">
-        <!-- Dark top band -->
         <div class="auth-top">
             <p class="brand">COLONIAL</p>
             <p class="tagline">Timeless Elegance</p>
             <p id="auth-tagline-sub" class="text-[.7rem] text-white/50 mt-2 tracking-[.1em] uppercase">Welcome back</p>
         </div>
-
-        <!-- Form body -->
         <div class="auth-body">
             <div class="flex justify-between items-center mb-5">
                 <h3 id="auth-modal-title" class="font-serif text-2xl font-light">Sign In</h3>
                 <button onclick="closeAuthModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
-
             <div id="auth-name-group" class="hidden mb-3">
                 <input type="text" id="auth-name" placeholder="Full Name" class="inp">
             </div>
@@ -955,20 +1609,18 @@
             <div class="mb-5">
                 <input type="password" id="auth-password" placeholder="Password" class="inp">
             </div>
-
             <button id="auth-submit" class="btn-primary w-full py-3.5 rounded-sm">Sign In</button>
-
-            <p class="text-center text-xs text-[var(--muted)] mt-5">
+            <p class="text-center text-xs text-[var(--colonial-text-muted)] mt-5">
                 <span id="auth-toggle-text">Don't have an account?</span>
                 <button id="auth-toggle-btn"
-                        class="text-[var(--gold)] ml-1 underline min-h-0 h-auto font-medium">Create one</button>
+                        class="text-[var(--colonial-accent)] ml-1 underline min-h-0 h-auto font-medium">Create one</button>
             </p>
         </div>
     </div>
 </div>
 
 
-<!-- ════════════════════════ MY ORDERS MODAL ════════════════════════ -->
+<!-- ════════════════════════ MY ORDERS MODAL — REDESIGNED ════════════════════════ -->
 <div id="orders-modal"
      class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-3xl animate-fadeUp">
@@ -976,43 +1628,43 @@
             <h3>My Orders</h3>
             <button onclick="closeOrdersModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
-        <div class="p-6">
-            <div id="orders-list-container" class="space-y-4"></div>
+        <div class="p-4 md:p-6">
+            <div id="orders-list-container" class="space-y-4 max-h-[70vh] overflow-y-auto pr-1"></div>
         </div>
     </div>
 </div>
 
 
 <!-- ════════════════════════ FOOTER ════════════════════════ -->
-<footer class="bg-[var(--ink)] text-white/60 mt-20 py-12 px-5 md:px-8 lg:px-14">
+<footer class="bg-[var(--colonial-text)] text-white/60 mt-20 py-12 px-5 md:px-8 lg:px-14">
     <div class="max-w-7xl mx-auto">
         <div class="text-center mb-8">
             <p class="font-serif text-3xl tracking-[.2em] text-white mb-1">COLONIAL</p>
-            <p class="text-[.62rem] tracking-[.22em] uppercase text-[var(--gold-pale)]"> Bangladesh</p>
+            <p class="text-[.62rem] tracking-[.22em] uppercase text-[var(--colonial-accent)]"> Bangladesh</p>
         </div>
         <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[.7rem] tracking-[.1em] uppercase text-center mb-8">
-            <a href="#" id="size-guide-link" class="hover:text-[var(--gold)] transition-colors">Size Guide</a>
-            <a href="#" id="fabric-care-link" class="hover:text-[var(--gold)] transition-colors">Fabric Care</a>
-            <a href="#" id="delivery-return-link" class="hover:text-[var(--gold)] transition-colors">Delivery & Return</a>
-            <a href="#" id="billing-link" class="hover:text-[var(--gold)] transition-colors">Billing</a>
-            <a href="#" id="footer-terms-link" class="hover:text-[var(--gold)] transition-colors">Terms</a>
-            <a href="#" id="contact-link" class="hover:text-[var(--gold)] transition-colors">Contact</a>
-            <a href="#" id="about-link" class="hover:text-[var(--gold)] transition-colors">About</a>
-            <a href="#" id="lifestyle-link" class="hover:text-[var(--gold)] transition-colors">Lifestyle Card</a>
-            <a href="#" id="offers-link" class="hover:text-[var(--gold)] transition-colors">Offers</a>
-            <a href="#" id="footer-privacy-link" class="hover:text-[var(--gold)] transition-colors">Privacy</a>
+            <a href="#" id="size-guide-link" class="hover:text-[var(--colonial-accent)] transition-colors">Size Guide</a>
+            <a href="#" id="fabric-care-link" class="hover:text-[var(--colonial-accent)] transition-colors">Fabric Care</a>
+            <a href="#" id="delivery-return-link" class="hover:text-[var(--colonial-accent)] transition-colors">Delivery & Return</a>
+            <a href="#" id="billing-link" class="hover:text-[var(--colonial-accent)] transition-colors">Billing</a>
+            <a href="#" id="footer-terms-link" class="hover:text-[var(--colonial-accent)] transition-colors">Terms</a>
+            <a href="#" id="contact-link" class="hover:text-[var(--colonial-accent)] transition-colors">Contact</a>
+            <a href="#" id="about-link" class="hover:text-[var(--colonial-accent)] transition-colors">About</a>
+            <a href="#" id="lifestyle-link" class="hover:text-[var(--colonial-accent)] transition-colors">Lifestyle Card</a>
+            <a href="#" id="offers-link" class="hover:text-[var(--colonial-accent)] transition-colors">Offers</a>
+            <a href="#" id="footer-privacy-link" class="hover:text-[var(--colonial-accent)] transition-colors">Privacy</a>
         </div>
         <div class="flex justify-center gap-6 mb-8">
             <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer"
-               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors text-sm">
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
                 <i class="fab fa-facebook-f"></i>
             </a>
             <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer"
-               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors text-sm">
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
                 <i class="fab fa-instagram"></i>
             </a>
             <a href="https://www.tiktok.com/@colonial.ltd?_r=1&_t=ZG-96KR9ohiG0H" target="_blank" rel="noopener noreferrer"
-               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors text-sm">
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
                 <i class="fab fa-tiktok"></i>
             </a>
         </div>
@@ -1024,127 +1676,111 @@
 
 
 <!-- ════════════════════════ FOOTER MODALS ════════════════════════ -->
-
-<!-- Terms -->
 <div id="terms-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Terms &amp; Conditions</h3><button onclick="closeTermsModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
-            <p><strong class="text-[var(--ink)]">1. General</strong><br>By accessing or using the COLONIAL website, you agree to be bound by these Terms &amp; Conditions.</p>
-            <p><strong class="text-[var(--ink)]">2. Products &amp; Pricing</strong><br>All product descriptions, prices, and availability are subject to change without notice.</p>
-            <p><strong class="text-[var(--ink)]">3. Orders &amp; Payment</strong><br>Orders are confirmed only after payment verification. For bKash/Nagad orders, payment status must be verified by our admin before shipment.</p>
-            <p><strong class="text-[var(--ink)]">4. Shipping &amp; Delivery</strong><br>We ship within Bangladesh. Delivery times are estimates. Risk of loss passes to you upon delivery.</p>
-            <p><strong class="text-[var(--ink)]">5. Returns &amp; Refunds</strong><br>Items must be returned unused within 7 days of delivery. Refunds will be processed after inspection.</p>
-            <p><strong class="text-[var(--ink)]">6. Contact</strong><br>Email us at Colonialbusinessltd@gmail.com or call +8801643425517.</p>
-            <p><strong class="text-[var(--ink)]">7. Governing Law</strong><br>These terms are governed by the laws of Bangladesh.</p>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
+            <p><strong class="text-[var(--colonial-text)]">1. General</strong><br>By accessing or using the COLONIAL website, you agree to be bound by these Terms &amp; Conditions.</p>
+            <p><strong class="text-[var(--colonial-text)]">2. Products &amp; Pricing</strong><br>All product descriptions, prices, and availability are subject to change without notice.</p>
+            <p><strong class="text-[var(--colonial-text)]">3. Orders &amp; Payment</strong><br>Orders are confirmed only after payment verification. For bKash/Nagad orders, payment status must be verified by our admin before shipment.</p>
+            <p><strong class="text-[var(--colonial-text)]">4. Shipping &amp; Delivery</strong><br>We ship within Bangladesh. Delivery times are estimates. Risk of loss passes to you upon delivery.</p>
+            <p><strong class="text-[var(--colonial-text)]">5. Returns &amp; Refunds</strong><br>Items must be returned unused within 7 days of delivery. Refunds will be processed after inspection.</p>
+            <p><strong class="text-[var(--colonial-text)]">6. Contact</strong><br>Email us at Colonialbusinessltd@gmail.com or call +8801643425517.</p>
+            <p><strong class="text-[var(--colonial-text)]">7. Governing Law</strong><br>These terms are governed by the laws of Bangladesh.</p>
         </div>
         <div class="px-7 pb-7"><button onclick="closeTermsModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- Privacy -->
 <div id="privacy-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Privacy Policy</h3><button onclick="closePrivacyModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
-            <p><strong class="text-[var(--ink)]">Information We Collect</strong><br>We collect name, email, shipping address, phone number, and order details to process your purchases.</p>
-            <p><strong class="text-[var(--ink)]">How We Use Your Information</strong><br>Your data is used solely for order fulfillment, customer support, and improving our service.</p>
-            <p><strong class="text-[var(--ink)]">Payment Security</strong><br>All online payments are processed through secure gateways.</p>
-            <p><strong class="text-[var(--ink)]">Cookies</strong><br>We use cookies to remember cart items and preferences.</p>
-            <p><strong class="text-[var(--ink)]">Your Rights</strong><br>Email Colonialbusinessltd@gmail.com to request access, correction, or deletion of your data.</p>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
+            <p><strong class="text-[var(--colonial-text)]">Information We Collect</strong><br>We collect name, email, shipping address, phone number, and order details to process your purchases.</p>
+            <p><strong class="text-[var(--colonial-text)]">How We Use Your Information</strong><br>Your data is used solely for order fulfillment, customer support, and improving our service.</p>
+            <p><strong class="text-[var(--colonial-text)]">Payment Security</strong><br>All online payments are processed through secure gateways.</p>
+            <p><strong class="text-[var(--colonial-text)]">Cookies</strong><br>We use cookies to remember cart items and preferences.</p>
+            <p><strong class="text-[var(--colonial-text)]">Your Rights</strong><br>Email Colonialbusinessltd@gmail.com to request access, correction, or deletion of your data.</p>
         </div>
         <div class="px-7 pb-7"><button onclick="closePrivacyModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- Size Guide -->
 <div id="size-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Size Guide</h3><button onclick="closeSizeModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
         <div class="px-7 pb-8">
             <table class="w-full text-sm border-collapse">
                 <thead>
-                    <tr style="background:var(--warm);">
-                        <th class="border border-[var(--border)] p-2.5 text-left font-medium">Size</th>
-                        <th class="border border-[var(--border)] p-2.5 text-left font-medium">Chest (in)</th>
-                        <th class="border border-[var(--border)] p-2.5 text-left font-medium">Waist (in)</th>
-                        <th class="border border-[var(--border)] p-2.5 text-left font-medium">Hip (in)</th>
+                    <tr style="background:var(--colonial-hover);">
+                        <th class="border border-[var(--colonial-border)] p-2.5 text-left font-medium">Size</th>
+                        <th class="border border-[var(--colonial-border)] p-2.5 text-left font-medium">Chest (in)</th>
+                        <th class="border border-[var(--colonial-border)] p-2.5 text-left font-medium">Waist (in)</th>
+                        <th class="border border-[var(--colonial-border)] p-2.5 text-left font-medium">Hip (in)</th>
                     </tr>
                 </thead>
-                <tbody class="text-[var(--muted)]">
-                    <tr><td class="border border-[var(--border)] p-2.5">XS</td><td class="border border-[var(--border)] p-2.5">32–34</td><td class="border border-[var(--border)] p-2.5">26–28</td><td class="border border-[var(--border)] p-2.5">34–36</td></tr>
-                    <tr><td class="border border-[var(--border)] p-2.5">S</td><td class="border border-[var(--border)] p-2.5">35–37</td><td class="border border-[var(--border)] p-2.5">29–31</td><td class="border border-[var(--border)] p-2.5">37–39</td></tr>
-                    <tr><td class="border border-[var(--border)] p-2.5">M</td><td class="border border-[var(--border)] p-2.5">38–40</td><td class="border border-[var(--border)] p-2.5">32–34</td><td class="border border-[var(--border)] p-2.5">40–42</td></tr>
-                    <tr><td class="border border-[var(--border)] p-2.5">L</td><td class="border border-[var(--border)] p-2.5">41–43</td><td class="border border-[var(--border)] p-2.5">35–37</td><td class="border border-[var(--border)] p-2.5">43–45</td></tr>
-                    <tr><td class="border border-[var(--border)] p-2.5">XL</td><td class="border border-[var(--border)] p-2.5">44–46</td><td class="border border-[var(--border)] p-2.5">38–40</td><td class="border border-[var(--border)] p-2.5">46–48</td></tr>
+                <tbody class="text-[var(--colonial-text-muted)]">
+                    <tr><td class="border border-[var(--colonial-border)] p-2.5">XS</td><td class="border border-[var(--colonial-border)] p-2.5">32–34</td><td class="border border-[var(--colonial-border)] p-2.5">26–28</td><td class="border border-[var(--colonial-border)] p-2.5">34–36</td></tr>
+                    <tr><td class="border border-[var(--colonial-border)] p-2.5">S</td><td class="border border-[var(--colonial-border)] p-2.5">35–37</td><td class="border border-[var(--colonial-border)] p-2.5">29–31</td><td class="border border-[var(--colonial-border)] p-2.5">37–39</td></tr>
+                    <tr><td class="border border-[var(--colonial-border)] p-2.5">M</td><td class="border border-[var(--colonial-border)] p-2.5">38–40</td><td class="border border-[var(--colonial-border)] p-2.5">32–34</td><td class="border border-[var(--colonial-border)] p-2.5">40–42</td></tr>
+                    <tr><td class="border border-[var(--colonial-border)] p-2.5">L</td><td class="border border-[var(--colonial-border)] p-2.5">41–43</td><td class="border border-[var(--colonial-border)] p-2.5">35–37</td><td class="border border-[var(--colonial-border)] p-2.5">43–45</td></tr>
+                    <tr><td class="border border-[var(--colonial-border)] p-2.5">XL</td><td class="border border-[var(--colonial-border)] p-2.5">44–46</td><td class="border border-[var(--colonial-border)] p-2.5">38–40</td><td class="border border-[var(--colonial-border)] p-2.5">46–48</td></tr>
                 </tbody>
             </table>
-            <p class="text-xs text-[var(--muted)] mt-4">If between sizes, order the larger size for comfort.</p>
+            <p class="text-xs text-[var(--colonial-text-muted)] mt-4">If between sizes, order the larger size for comfort.</p>
         </div>
         <div class="px-7 pb-7"><button onclick="closeSizeModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- Fabric Care -->
 <div id="fabric-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Fabric Care</h3><button onclick="closeFabricModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
-            <p><strong class="text-[var(--ink)]">General Care</strong><br>Machine wash cold with similar colors. Do not bleach. Tumble dry low. Iron on low heat if needed.</p>
-            <p><strong class="text-[var(--ink)]">Cotton</strong> — Wash inside out, avoid harsh detergents, air dry for longevity.</p>
-            <p><strong class="text-[var(--ink)]">Linen</strong> — Gentle cycle, remove promptly, iron while damp.</p>
-            <p><strong class="text-[var(--ink)]">Wool / Blends</strong> — Dry clean recommended or hand wash cold, lay flat to dry.</p>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
+            <p><strong class="text-[var(--colonial-text)]">General Care</strong><br>Machine wash cold with similar colors. Do not bleach. Tumble dry low. Iron on low heat if needed.</p>
+            <p><strong class="text-[var(--colonial-text)]">Cotton</strong> — Wash inside out, avoid harsh detergents, air dry for longevity.</p>
+            <p><strong class="text-[var(--colonial-text)]">Linen</strong> — Gentle cycle, remove promptly, iron while damp.</p>
+            <p><strong class="text-[var(--colonial-text)]">Wool / Blends</strong> — Dry clean recommended or hand wash cold, lay flat to dry.</p>
         </div>
         <div class="px-7 pb-7"><button onclick="closeFabricModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- Delivery & Return -->
 <div id="delivery-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Delivery &amp; Return</h3><button onclick="closeDeliveryModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
-            <p><strong class="text-[var(--ink)]">Shipping Policy</strong><br>We ship within Bangladesh. Standard delivery takes 3–5 business days. Express delivery available at extra cost.</p>
-            <p><strong class="text-[var(--ink)]">Return Policy</strong><br>We don't provide a return policy from the date of delivery.</p>
-            <p><strong class="text-[var(--ink)]">Exchange</strong><br>Free size exchange within 10 days with delivery charges added. Contact support to arrange pickup.</p>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
+            <p><strong class="text-[var(--colonial-text)]">Shipping Policy</strong><br>We ship within Bangladesh. Standard delivery takes 3–5 business days. Express delivery available at extra cost.</p>
+            <p><strong class="text-[var(--colonial-text)]">Return Policy</strong><br>We don't provide a return policy from the date of delivery.</p>
+            <p><strong class="text-[var(--colonial-text)]">Exchange</strong><br>Free size exchange within 10 days with delivery charges added. Contact support to arrange pickup.</p>
         </div>
         <div class="px-7 pb-7"><button onclick="closeDeliveryModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- Billing -->
 <div id="billing-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Billing Information</h3><button onclick="closeBillingModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
-            <p><strong class="text-[var(--ink)]">Payment Options</strong><br>We accept Cash on Delivery, BKash, and Nagad.</p>
-            <p><strong class="text-[var(--ink)]">Invoicing</strong><br>An invoice is sent to your email after order confirmation. For bulk orders, contact us directly.</p>
-            <p><strong class="text-[var(--ink)]">Tax &amp; Fees</strong><br>All prices include VAT. No hidden fees.</p>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
+            <p><strong class="text-[var(--colonial-text)]">Payment Options</strong><br>We accept Cash on Delivery, BKash, and Nagad.</p>
+            <p><strong class="text-[var(--colonial-text)]">Invoicing</strong><br>An invoice is sent to your email after order confirmation. For bulk orders, contact us directly.</p>
+            <p><strong class="text-[var(--colonial-text)]">Tax &amp; Fees</strong><br>All prices include VAT. No hidden fees.</p>
         </div>
         <div class="px-7 pb-7"><button onclick="closeBillingModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- Contact -->
 <div id="contact-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Contact Us</h3><button onclick="closeContactModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
-            <p><strong class="text-[var(--ink)]">Email</strong> — <a href="mailto:colonialbusinessltd@gmail.com" class="text-[var(--gold)] hover:underline">colonialbusinessltd@gmail.com</a></p>
-            <p><strong class="text-[var(--ink)]">bKash / Nagad Support</strong> — +880 18713-330654</p>
-            <p><strong class="text-[var(--ink)]">Customer Support</strong> — +880 1643-425517</p>
-            <p><strong class="text-[var(--ink)]">Address</strong> — Chittagong, Bangladesh</p>
-            <p><strong class="text-[var(--ink)]">Business Hours</strong> — Saturday–Thursday, 10am – 8pm (Friday closed)</p>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
+            <p><strong class="text-[var(--colonial-text)]">Email</strong> — <a href="mailto:colonialbusinessltd@gmail.com" class="text-[var(--colonial-accent)] hover:underline">colonialbusinessltd@gmail.com</a></p>
+            <p><strong class="text-[var(--colonial-text)]">bKash / Nagad Support</strong> — +880 18713-330654</p>
+            <p><strong class="text-[var(--colonial-text)]">Customer Support</strong> — +880 1643-425517</p>
+            <p><strong class="text-[var(--colonial-text)]">Address</strong> — Chittagong, Bangladesh</p>
+            <p><strong class="text-[var(--colonial-text)]">Business Hours</strong> — Saturday–Thursday, 10am – 8pm (Friday closed)</p>
         </div>
         <div class="px-7 pb-7"><button onclick="closeContactModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- About -->
 <div id="about-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>About COLONIAL</h3><button onclick="closeAboutModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
             <p>Founded in 2026, COLONIAL is a contemporary fashion brand that blends timeless elegance with modern minimalist design. We believe in quality craftsmanship, sustainable practices, and creating pieces that transcend seasons.</p>
             <p>Our collections are inspired by the raw beauty of nature and the precision of architecture. Every garment is designed with care, using premium materials sourced responsibly.</p>
             <p>We are proud to serve customers across Bangladesh and look forward to bringing our vision worldwide.</p>
@@ -1152,13 +1788,11 @@
         <div class="px-7 pb-7"><button onclick="closeAboutModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- Lifestyle -->
 <div id="lifestyle-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Lifestyle Card</h3><button onclick="closeLifestyleModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
-            <p class="font-medium text-[var(--ink)]">Join the COLONIAL Lifestyle Card — Free!</p>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
+            <p class="font-medium text-[var(--colonial-text)]">Join the COLONIAL Lifestyle Card — Free!</p>
             <p>Earn points on every purchase, get early access to sales, birthday discounts, and exclusive members‑only collections.</p>
             <ul class="space-y-1 pl-4 list-disc">
                 <li>5% back in points on every order</li>
@@ -1171,16 +1805,14 @@
         <div class="px-7 pb-7"><button onclick="closeLifestyleModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
 </div>
-
-<!-- Offers -->
 <div id="offers-modal" class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="modal-panel w-full max-w-2xl animate-fadeUp">
         <div class="modal-hd"><h3>Current Offers</h3><button onclick="closeOffersModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button></div>
-        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--muted)] leading-relaxed">
-            <p><strong class="text-[var(--ink)]">🎉 Summer Launch Sale</strong><br>Up to 30% off on new arrivals. Use code: <code class="font-mono bg-[var(--warm)] px-2 py-0.5 rounded text-[var(--ink)]">SUMMER30</code></p>
-            <p><strong class="text-[var(--ink)]">💳 First Order</strong><br>Get 10% off your first purchase — automatically applied at checkout.</p>
-            <p><strong class="text-[var(--ink)]">🚚 Free Shipping</strong><br>On all orders over BDT 4,000. No code needed.</p>
-            <p><strong class="text-[var(--ink)]">👭 Refer a Friend</strong><br>Give 15% off, get 15% off when they order.</p>
+        <div class="px-7 pb-8 space-y-4 text-sm text-[var(--colonial-text-muted)] leading-relaxed">
+            <p><strong class="text-[var(--colonial-text)]">🎉 Summer Launch Sale</strong><br>Up to 30% off on new arrivals. Use code: <code class="font-mono bg-[var(--colonial-hover)] px-2 py-0.5 rounded text-[var(--colonial-text)]">SUMMER30</code></p>
+            <p><strong class="text-[var(--colonial-text)]">💳 First Order</strong><br>Get 10% off your first purchase — automatically applied at checkout.</p>
+            <p><strong class="text-[var(--colonial-text)]">🚚 Free Shipping</strong><br>On all orders over BDT 4,000. No code needed.</p>
+            <p><strong class="text-[var(--colonial-text)]">👭 Refer a Friend</strong><br>Give 15% off, get 15% off when they order.</p>
         </div>
         <div class="px-7 pb-7"><button onclick="closeOffersModal()" class="btn-primary w-full py-3 rounded-sm">Close</button></div>
     </div>
@@ -1252,7 +1884,6 @@ function handleMobileAuth() {
 
 // ==================== DOM READY ====================
 document.addEventListener('DOMContentLoaded', function () {
-    // Footer links
     document.getElementById('size-guide-link')?.addEventListener('click',    e => { e.preventDefault(); openSizeModal(); });
     document.getElementById('fabric-care-link')?.addEventListener('click',   e => { e.preventDefault(); openFabricModal(); });
     document.getElementById('delivery-return-link')?.addEventListener('click', e => { e.preventDefault(); openDeliveryModal(); });
@@ -1265,33 +1896,26 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('footer-privacy-link')?.addEventListener('click', e => { e.preventDefault(); openPrivacyModal(); });
     document.getElementById('footer-wishlist-link')?.addEventListener('click', e => { e.preventDefault(); openWishlistModal(); });
 
-    // Filter toggle
     document.getElementById('filter-toggle-btn')?.addEventListener('click', () => {
         document.getElementById('filter-row')?.classList.toggle('hidden');
     });
 
-    // Search icon → focus input
     document.getElementById('search-icon-btn')?.addEventListener('click', () => {
         const si = document.getElementById('search-input');
         si?.focus();
         si?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    // Debounced search
     let st;
     document.getElementById('search-input')?.addEventListener('input', e => {
         clearTimeout(st);
         st = setTimeout(() => { currentFilters.q = e.target.value; loadProducts(true); }, 300);
     });
 
-    // Category / sort
     document.getElementById('category-filter')?.addEventListener('change', e => { currentFilters.category = e.target.value; loadProducts(true); });
     document.getElementById('sort-select')?.addEventListener('change',    e => { currentFilters.sort = e.target.value; loadProducts(true); });
-
-    // Load more
     document.getElementById('load-more')?.addEventListener('click', () => { currentPage++; loadProducts(false); });
 
-    // Size selection (delegated)
     document.addEventListener('click', e => {
         if (e.target.classList.contains('size-btn')) {
             document.querySelectorAll('#size-options .size-btn').forEach(b => b.classList.remove('active'));
@@ -1300,7 +1924,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Carousel nav
     document.getElementById('prev-btn')?.addEventListener('click', prevSlide);
     document.getElementById('next-btn')?.addEventListener('click', nextSlide);
 
@@ -1382,13 +2005,13 @@ async function renderWishlistModal() {
     const prods = await (await fetch('/api/wishlist', { headers: { 'Authorization':`Bearer ${authToken}` } })).json();
     const c = document.getElementById('wishlist-items');
     if (!c) return;
-    if (!prods.length) { c.innerHTML = '<div class="col-span-full text-center text-[var(--muted)] py-8">Your wishlist is empty.</div>'; return; }
+    if (!prods.length) { c.innerHTML = '<div class="col-span-full text-center text-[var(--colonial-text-muted)] py-8">Your wishlist is empty.</div>'; return; }
     c.innerHTML = prods.map(p => `
         <div class="wishlist-card">
             <img src="${p.image_url||'https://placehold.co/300x360/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-40 object-cover">
             <div class="p-3">
                 <p class="font-serif text-base font-light leading-snug mb-1">${escapeHtml(p.name)}</p>
-                <p class="text-sm text-[var(--muted)] mb-3">BDT ${p.final_price||p.price}</p>
+                <p class="text-sm text-[var(--colonial-text-muted)] mb-3">BDT ${p.final_price||p.price}</p>
                 <div class="flex gap-2">
                     <button onclick="addToCart({id:${p.id},name:'${p.name.replace(/'/g,"\\'")}',price:${p.final_price||p.price},image_url:'${p.image_url}'},1);closeWishlistModal();"
                             class="btn-primary flex-1 py-2 rounded-sm text-[.65rem]">Add to Bag</button>
@@ -1408,19 +2031,19 @@ async function loadReviews(productId) {
     const reviews = await (await fetch(`/api/products/${productId}/reviews`)).json();
     const c = document.getElementById('reviews-container');
     if (!c) return;
-    if (!reviews.length) { c.innerHTML = '<p class="text-sm text-[var(--muted)]">No reviews yet. Be the first!</p>'; }
+    if (!reviews.length) { c.innerHTML = '<p class="text-sm text-[var(--colonial-text-muted)]">No reviews yet. Be the first!</p>'; }
     else c.innerHTML = reviews.map(r => `
-        <div class="pb-3 border-b border-[var(--border)] last:border-0">
+        <div class="pb-3 border-b border-[var(--colonial-border)] last:border-0">
             <div class="flex items-center gap-2 mb-1">
-                <span style="color:var(--gold);font-size:13px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
-                <span class="text-xs text-[var(--muted)]">${escapeHtml(r.reviewer_name)}</span>
+                <span style="color:var(--colonial-accent);font-size:13px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+                <span class="text-xs text-[var(--colonial-text-muted)]">${escapeHtml(r.reviewer_name)}</span>
             </div>
-            <p class="text-sm text-[var(--muted)] leading-relaxed">${escapeHtml(r.comment)}</p>
+            <p class="text-sm text-[var(--colonial-text-muted)] leading-relaxed">${escapeHtml(r.comment)}</p>
         </div>
     `).join('');
     const avg = reviews.reduce((s,r)=>s+r.rating,0)/reviews.length||0;
     const rd = document.getElementById('modal-rating');
-    if (rd) rd.innerHTML = `<span style="color:var(--gold);font-size:14px;">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</span>`;
+    if (rd) rd.innerHTML = `<span style="color:var(--colonial-accent);font-size:14px;">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</span>`;
     const rc = document.getElementById('modal-review-count');
     if (rc) rc.textContent = `(${reviews.length} review${reviews.length!==1?'s':''})`;
 }
@@ -1464,16 +2087,15 @@ function updateAuthUI() {
     const ui = document.getElementById('user-info');
     if (ui) {
         if (currentUser) ui.innerHTML = `
-            <p class="font-medium text-[var(--ink)] text-sm">${escapeHtml(currentUser.name||currentUser.email)}</p>
-            <p class="text-[.65rem] tracking-[.08em] uppercase text-[var(--muted)] mt-0.5">${escapeHtml(currentUser.role||'')}</p>`;
-        else ui.innerHTML = '<p class="text-xs text-[var(--muted)]">Not signed in</p>';
+            <p class="font-medium text-[var(--colonial-text)] text-sm">${escapeHtml(currentUser.name||currentUser.email)}</p>
+            <p class="text-[.65rem] tracking-[.08em] uppercase text-[var(--colonial-text-muted)] mt-0.5">${escapeHtml(currentUser.role||'')}</p>`;
+        else ui.innerHTML = '<p class="text-xs text-[var(--colonial-text-muted)]">Not signed in</p>';
     }
     const ef = document.getElementById('customer-email');
     if (ef && currentUser && !ef.value) ef.value = currentUser.email;
     updateMobileAuthButton();
 }
 
-// Account dropdown toggle
 document.getElementById('account-btn')?.addEventListener('click', e => {
     e.stopPropagation();
     document.getElementById('account-dropdown')?.classList.toggle('hidden');
@@ -1540,44 +2162,64 @@ document.getElementById('auth-submit')?.addEventListener('click', async () => {
     } catch(e) { showToast(e.message); }
 });
 
-// ==================== ORDERS ====================
+// ==================== ORDERS — REDESIGNED ========================
 async function loadCustomerOrders() {
     if (!authToken) return;
     try {
         const orders = await (await fetch('/api/customer/orders', { headers:{ 'Authorization':`Bearer ${authToken}` } })).json();
         const c = document.getElementById('orders-list-container');
         if (!c) return;
-        if (!orders.length) { c.innerHTML = '<p class="text-center text-[var(--muted)] py-10">No orders yet.</p>'; }
-        else c.innerHTML = orders.map(o => {
-            let itemsHtml = '';
-            try {
-                const items = JSON.parse(o.items||'[]');
-                itemsHtml = items.map(i => `
-                    <div class="flex gap-3 items-center py-2.5 border-b border-[var(--border)] last:border-0">
-                        <img src="${i.image_url||'https://placehold.co/44x56/e8e2d9/7a7570?text=C'}" class="w-11 h-14 object-cover rounded-sm">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium truncate">${escapeHtml(i.name)}${i.size?` <span class="text-[var(--muted)]">(${i.size})</span>`:''}</p>
-                            <p class="text-xs text-[var(--muted)] mt-0.5">Qty ${i.quantity} · BDT ${i.price}</p>
-                        </div>
-                    </div>`).join('');
-            } catch(e) { itemsHtml = '<p class="text-xs text-[var(--muted)]">Unable to load items</p>'; }
-            return `
-                <div class="order-card">
-                    <div class="flex flex-wrap justify-between gap-3 mb-3">
-                        <div>
-                            <p class="text-[.65rem] tracking-[.12em] uppercase text-[var(--muted)]">Order</p>
-                            <p class="font-serif text-lg font-light">#${escapeHtml(o.order_number||String(o.id))}</p>
-                            <p class="text-xs text-[var(--muted)] mt-0.5">${new Date(o.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-serif text-xl font-light">BDT ${parseFloat(o.final_amount||o.total_amount||0).toFixed(2)}</p>
-                            <span class="order-status-chip mt-1">${escapeHtml(o.order_status||'pending')}</span>
-                            <div class="mt-1">${getPaymentStatusBadge(o.payment_status)}</div>
-                        </div>
+
+        if (!orders.length) {
+            c.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-16 text-center">
+                    <div style="width:56px;height:56px;border-radius:50%;background:var(--colonial-hover);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
                     </div>
-                    <div>${itemsHtml}</div>
+                    <p class="font-serif text-xl font-light text-[var(--colonial-text)] mb-1">No orders yet</p>
+                    <p class="text-sm text-[var(--colonial-text-muted)]">Your order history will appear here</p>
                 </div>`;
-        }).join('');
+        } else {
+            c.innerHTML = orders.map(o => {
+                let itemsHtml = '';
+                try {
+                    const items = JSON.parse(o.items||'[]');
+                    itemsHtml = items.map(i => `
+                        <div class="order-item-row">
+                            <img src="${i.image_url||'https://placehold.co/44x56/e8e2d9/7a7570?text=C'}" class="order-item-img" loading="lazy">
+                            <div class="flex-1 min-w-0">
+                                <p class="order-item-name truncate">${escapeHtml(i.name)}${i.size?` <span style="color:var(--colonial-text-muted);font-size:.75rem;">(${i.size})</span>`:''}</p>
+                                <p class="order-item-meta">Qty ${i.quantity}${i.color&&i.color!=='Default'?` · ${i.color}`:''}</p>
+                            </div>
+                            <p class="order-item-price text-[var(--colonial-text)]">BDT ${i.price}</p>
+                        </div>`).join('');
+                } catch(e) { itemsHtml = '<p class="text-xs text-[var(--colonial-text-muted)] px-5 py-3">Unable to load items</p>'; }
+
+                const statusLabel = escapeHtml(o.order_status||'pending');
+                const orderNum = escapeHtml(o.order_number||String(o.id));
+                const dateStr = new Date(o.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+                const total = parseFloat(o.final_amount||o.total_amount||0).toFixed(2);
+
+                return `
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <div>
+                                <div class="order-number">#${orderNum}</div>
+                                <div class="order-date">${dateStr}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="order-total">BDT ${total}</div>
+                                <div class="order-badges" style="justify-content:flex-end;margin-top:.35rem;">
+                                    <span class="order-status-chip">${statusLabel}</span>
+                                    ${getPaymentStatusBadge(o.payment_status)}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="order-card-body">${itemsHtml}</div>
+                    </div>`;
+            }).join('');
+        }
+
         document.getElementById('orders-modal').style.display = 'flex';
     } catch(e) { showToast('Could not load your orders.'); }
 }
@@ -1588,14 +2230,12 @@ function saveCart() { localStorage.setItem('amoura_cart', JSON.stringify(cart));
 
 function updateCartUI() {
     const subtotal = cart.reduce((s,i) => s+(i.price*i.quantity), 0);
-    const discount = Math.min(couponDiscount, subtotal); // never exceed subtotal
+    const discount = Math.min(couponDiscount, subtotal);
     const total    = Math.max(0, subtotal - discount);
 
-    // subtotal line
     const tsub = document.getElementById('cart-subtotal-price');
     if (tsub) tsub.textContent = `BDT ${subtotal.toFixed(2)}`;
 
-    // coupon discount row — show only when coupon is applied
     const discRow = document.getElementById('cart-discount-row');
     const discVal = document.getElementById('cart-discount-price');
     if (discRow && discVal) {
@@ -1607,11 +2247,9 @@ function updateCartUI() {
         }
     }
 
-    // total line
     const ts = document.getElementById('cart-total-price');
     if (ts) ts.textContent = `BDT ${total.toFixed(2)}`;
 
-    // cart count badge
     const ti = cart.reduce((s,i) => s+i.quantity, 0);
     const cs = document.getElementById('cart-count');
     if (cs) { cs.textContent = ti; cs.style.opacity = ti ? '1' : '0'; }
@@ -1622,11 +2260,11 @@ function updateCartUI() {
     if (!cart.length) {
         container.innerHTML = `
             <div class="flex flex-col items-center justify-center h-full text-center py-16">
-                <div class="w-14 h-14 rounded-full bg-[var(--warm)] flex items-center justify-center mb-4">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--muted)]"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                <div class="w-14 h-14 rounded-full bg-[var(--colonial-hover)] flex items-center justify-center mb-4">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--colonial-text-muted)]"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
                 </div>
-                <p class="font-serif text-lg font-light text-[var(--ink)] mb-1">Your bag is empty</p>
-                <p class="text-xs text-[var(--muted)]">Add items to get started</p>
+                <p class="font-serif text-lg font-light text-[var(--colonial-text)] mb-1">Your bag is empty</p>
+                <p class="text-xs text-[var(--colonial-text-muted)]">Add items to get started</p>
             </div>`;
     } else {
         container.innerHTML = cart.map((item, idx) => `
@@ -1634,14 +2272,14 @@ function updateCartUI() {
                 <img src="${item.image_url||'https://placehold.co/72x90/e8e2d9/7a7570?text=C'}" class="cart-item-img">
                 <div class="flex-1 min-w-0">
                     <p class="font-medium text-sm leading-snug truncate">${escapeHtml(item.name)}</p>
-                    <p class="text-xs text-[var(--muted)] mt-0.5">Size ${item.size||'M'} · ${item.color||'Default'}</p>
+                    <p class="text-xs text-[var(--colonial-text-muted)] mt-0.5">Size ${item.size||'M'} · ${item.color||'Default'}</p>
                     <p class="font-serif text-base font-light mt-1">BDT ${item.price}</p>
                     <div class="flex items-center gap-2 mt-2.5">
                         <button onclick="changeQty(${idx},-1)" class="cart-qty-btn">−</button>
                         <span class="w-6 text-center text-sm font-medium">${item.quantity}</span>
                         <button onclick="changeQty(${idx},1)" class="cart-qty-btn">+</button>
                         <button onclick="removeFromCart(${idx})"
-                                class="ml-3 text-xs text-[var(--muted)] hover:text-red-500 transition-colors underline min-h-0 h-auto">Remove</button>
+                                class="ml-3 text-xs text-[var(--colonial-text-muted)] hover:text-red-500 transition-colors underline min-h-0 h-auto">Remove</button>
                     </div>
                 </div>
             </div>`).join('');
@@ -1664,7 +2302,6 @@ function addToCart(product, qty=1) {
     if (existing) existing.quantity += qty;
     else cart.push({ ...product, quantity:qty, size, color, image_url: product.image_url||(product.images?.[0]||'') });
     saveCart();
-    // open cart drawer
     const drawer = document.getElementById('cart-drawer');
     const overlay = document.getElementById('cart-overlay');
     if (drawer && drawer.classList.contains('translate-x-full')) {
@@ -1714,13 +2351,13 @@ async function loadCarouselProducts() {
 function renderCarousel() {
     const c = document.getElementById('product-carousel');
     if (!c) return;
-    if (!carouselProducts.length) { c.innerHTML = '<div class="w-full text-center py-12 text-[var(--muted)]">No products</div>'; return; }
+    if (!carouselProducts.length) { c.innerHTML = '<div class="w-full text-center py-12 text-[var(--colonial-text-muted)]">No products</div>'; return; }
     c.innerHTML = carouselProducts.map(p => `
         <div class="flex-shrink-0 w-56 md:w-72 mx-3 md:mx-4 carousel-card cursor-pointer" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
             <img src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-56 md:h-72 object-cover">
             <div class="p-4 text-center">
                 <h3 class="font-serif text-lg font-light leading-snug mb-1">${escapeHtml(p.name)}</h3>
-                <p class="text-sm text-[var(--muted)] mb-3">BDT ${p.final_price||p.price}</p>
+                <p class="text-sm text-[var(--colonial-text-muted)] mb-3">BDT ${p.final_price||p.price}</p>
                 <button onclick="event.stopPropagation();addToCart({id:${p.id},name:'${p.name.replace(/'/g,"\\'")}',price:${p.final_price||p.price},image_url:'${p.image_url}'},1)"
                         class="btn-primary px-5 py-2 rounded-sm text-[.65rem]">Quick Add</button>
             </div>
@@ -1741,7 +2378,7 @@ async function loadProducts(resetPage=true) {
     if (resetPage) currentPage=1;
     const container = document.getElementById('products-container');
     if (!container) return;
-    if (resetPage) container.innerHTML = '<div class="col-span-full text-center py-16 text-[var(--muted)] text-sm tracking-widest uppercase">Loading…</div>';
+    if (resetPage) container.innerHTML = '<div class="col-span-full text-center py-16 text-[var(--colonial-text-muted)] text-sm tracking-widest uppercase">Loading…</div>';
     try {
         let products=[], total=0, totalPagesCalc=1;
         if (currentFilters.category==='all' && !currentFilters.q) {
@@ -1754,7 +2391,7 @@ async function loadProducts(resetPage=true) {
         }
         container.innerHTML='';
         if (!products.length) {
-            container.innerHTML='<div class="col-span-full text-center py-16 text-[var(--muted)]">No products found.</div>';
+            container.innerHTML='<div class="col-span-full text-center py-16 text-[var(--colonial-text-muted)]">No products found.</div>';
             document.getElementById('load-more')?.classList.add('hidden');
             return;
         }
@@ -1762,25 +2399,31 @@ async function loadProducts(resetPage=true) {
             const card = document.createElement('div');
             card.className = 'product-card group';
             card.innerHTML = `
-                <div class="relative aspect-[3/4] overflow-hidden bg-[var(--warm)]">
+                <div class="relative overflow-hidden bg-[var(--colonial-hover)]" style="aspect-ratio:3/4;">
                     <img src="${p.image_url||'https://placehold.co/600x800/e8e2d9/7a7570?text=COLONIAL'}"
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
                     ${p.badge?`<span class="badge">${escapeHtml(p.badge)}</span>`:''}
-                    <div class="absolute inset-0 bg-[var(--ink)]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                        <button class="w-full bg-white text-[var(--ink)] py-2.5 text-[.65rem] uppercase tracking-[.12em] font-medium rounded-sm"
+                    <div class="quick-add-overlay">
+                        <button class="w-full bg-white/95 backdrop-blur-sm text-[var(--colonial-text)] py-2.5 text-[.65rem] uppercase tracking-[.12em] font-medium rounded-sm transition hover:bg-white"
                                 onclick="event.stopPropagation();selectedSize='M';selectedColor={hex:'',name:'Default'};addToCart({id:${p.id},name:'${p.name.replace(/'/g,"\\'")}',price:${p.final_price||p.price},image_url:'${p.image_url}'},1)">
                             Quick Add
                         </button>
                     </div>
                 </div>
-                <div class="p-4">
+                <div class="p-3 md:p-4">
                     <h3 class="font-medium text-sm leading-snug">${escapeHtml(p.name)}</h3>
                     <div class="flex items-center gap-2 mt-1.5">
                         <span class="font-serif text-base font-light">BDT ${p.final_price||p.price}</span>
-                        ${p.discount_amount>0?`<span class="text-xs text-[var(--muted)] line-through">BDT ${p.price}</span>`:''}
+                        ${p.discount_amount>0?`<span class="text-xs text-[var(--colonial-text-muted)] line-through">BDT ${p.price}</span>`:''}
                         ${p.discount_percent>0?`<span class="text-[.65rem] bg-red-50 text-red-600 px-1.5 py-0.5 rounded">−${p.discount_percent}%</span>`:''}
                     </div>
-                    ${p.colors&&p.colors.length?`<div class="flex gap-1 mt-2">${p.colors.slice(0,3).map(c=>`<div class="w-2.5 h-2.5 rounded-full border border-[var(--border)]" style="background:${c}"></div>`).join('')}</div>`:''}
+                    ${p.colors&&p.colors.length?`
+                        <div class="flex gap-1.5 mt-2 items-center">
+                            ${p.colors.slice(0,4).map(c=>`
+                                <div style="width:11px;height:11px;border-radius:50%;background:${c};border:1.5px solid rgba(255,255,255,.8);outline:1px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.15);"></div>
+                            `).join('')}
+                            ${p.colors.length>4?`<span style="font-size:.62rem;color:var(--colonial-text-muted);">+${p.colors.length-4}</span>`:''}
+                        </div>`:''}
                 </div>`;
             card.onclick = () => openProductModal(p);
             container.appendChild(card);
@@ -1807,6 +2450,18 @@ function filterByCategory(cat) {
 window.filterByCategory = filterByCategory;
 
 // ==================== PRODUCT MODAL ====================
+// Helper: get colour name from hex
+function colorName(hex) {
+    const names = {
+        '#000000':'Black','#ffffff':'White','#ff0000':'Red','#0000ff':'Blue',
+        '#008000':'Green','#ffff00':'Yellow','#ffa500':'Orange','#800080':'Purple',
+        '#ffc0cb':'Pink','#a52a2a':'Brown','#808080':'Grey','#000080':'Navy',
+        '#c0c0c0':'Silver','#d4af37':'Gold','#f5f5dc':'Beige','#008080':'Teal',
+        '#800000':'Maroon','#ffe4c4':'Bisque','#2c241e':'Dark Brown',
+    };
+    return names[hex.toLowerCase()] || hex;
+}
+
 let currentProductImages=[];
 async function openProductModal(product) {
     currentProduct = product;
@@ -1816,29 +2471,60 @@ async function openProductModal(product) {
     currentProductImages = product.images?.length ? [...product.images] : (product.image_url?[product.image_url]:[]);
     const mi = document.getElementById('modal-main-img');
     if (mi) mi.src = currentProductImages[0]||'https://placehold.co/600x800/e8e2d9/7a7570?text=COLONIAL';
+
+    // Thumbnail strip — new style
     const tc = document.getElementById('modal-thumbnails');
-    if (tc) tc.innerHTML = currentProductImages.slice(1).map(img => `<img src="${img}" class="thumbnail-img w-14 h-18 object-cover rounded-sm cursor-pointer border-2 border-transparent hover:border-[var(--gold)] transition-colors" onclick="changeMainImage('${img}',this)">`).join('');
+    if (tc) {
+        tc.innerHTML = currentProductImages.map((img, idx) => `
+            <div class="thumb-item${idx===0?' active':''}" onclick="changeMainImage('${img}',this)">
+                <img src="${img}" loading="lazy">
+            </div>`).join('');
+    }
+
     document.querySelectorAll('#size-options .size-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('#size-options .size-btn[data-size="M"]')?.classList.add('active');
     selectedSize='M';
+
+    // Colours — beautiful new version
     const colors=product.colors||[];
     const sw=document.getElementById('color-swatches');
+    const pill=document.getElementById('selected-color-pill');
+    const dot=document.getElementById('selected-color-dot');
+    const nm=document.getElementById('selected-color-name');
     if (!sw) return;
+
     if (!colors.length) {
-        sw.innerHTML='<p class="text-sm text-[var(--muted)]">No colour options</p>';
+        sw.innerHTML='<p class="text-sm text-[var(--colonial-text-muted)]">No colour options</p>';
+        if (pill) pill.classList.add('hidden');
         selectedColor={hex:'',name:'Default'};
-        document.getElementById('selected-color-name').textContent='';
     } else {
-        sw.innerHTML=colors.map(c=>`<div class="color-swatch" style="background:${c};" data-color-hex="${c}" data-color-name="${c==='#000000'?'Black':c==='#ffffff'?'White':c}"></div>`).join('');
-        const first=document.querySelector('.color-swatch');
-        if (first) { first.classList.add('selected'); selectedColor={hex:first.dataset.colorHex,name:first.dataset.colorName}; document.getElementById('selected-color-name').textContent=`Selected: ${selectedColor.name}`; }
-        document.querySelectorAll('.color-swatch').forEach(s=>s.addEventListener('click',()=>{
+        sw.innerHTML=colors.map((c,i)=>`
+            <div class="color-swatch${i===0?' selected':''}"
+                 style="background:${c};"
+                 title="${colorName(c)}"
+                 data-color-hex="${c}"
+                 data-color-name="${colorName(c)}"></div>`).join('');
+
+        // Set initial selection
+        const first = document.querySelector('.color-swatch');
+        if (first) {
+            selectedColor={hex:first.dataset.colorHex,name:first.dataset.colorName};
+            if (pill) pill.classList.remove('hidden');
+            if (dot) dot.style.background = first.dataset.colorHex;
+            if (nm) nm.textContent = first.dataset.colorName;
+        }
+
+        // Swatch click handlers
+        document.querySelectorAll('.color-swatch').forEach(s => s.addEventListener('click', () => {
             document.querySelectorAll('.color-swatch').forEach(x=>x.classList.remove('selected'));
             s.classList.add('selected');
             selectedColor={hex:s.dataset.colorHex,name:s.dataset.colorName};
-            document.getElementById('selected-color-name').textContent=`Selected: ${selectedColor.name}`;
+            if (pill) pill.classList.remove('hidden');
+            if (dot) dot.style.background = s.dataset.colorHex;
+            if (nm) nm.textContent = s.dataset.colorName;
         }));
     }
+
     const inW=wishlist.includes(product.id);
     const hi=document.getElementById('modal-wishlist-btn')?.querySelector('i');
     if (hi) inW?hi.classList.add('fill-red-500'):hi.classList.remove('fill-red-500');
@@ -1846,11 +2532,11 @@ async function openProductModal(product) {
     document.getElementById('product-modal').style.display='flex';
 }
 
-function changeMainImage(url,el) {
+function changeMainImage(url, el) {
     const mi=document.getElementById('modal-main-img');
     if (mi) mi.src=url;
-    document.querySelectorAll('.thumbnail-img').forEach(i=>i.classList.remove('border-[var(--gold)]','border-2'));
-    el.classList.add('border-[var(--gold)]','border-2');
+    document.querySelectorAll('.thumb-item').forEach(i=>i.classList.remove('active'));
+    el.classList.add('active');
 }
 
 function openLightbox() {
@@ -1939,7 +2625,7 @@ document.getElementById('apply-coupon-btn')?.addEventListener('click', async() =
         const fb = document.getElementById('coupon-feedback');
         if (fb) fb.innerHTML = `<span class="text-green-700">✓ Coupon applied — you save BDT ${couponDiscount.toFixed(2)}</span>`;
         updateCartUI();
-        updatePaymentInstruction(); // recalculate payable amount after coupon
+        updatePaymentInstruction();
     } catch(e) {
         const fb = document.getElementById('coupon-feedback');
         if (fb) fb.innerHTML = `<span class="text-red-600">${e.message}</span>`;
@@ -1975,13 +2661,10 @@ async function placeOrder() {
 
     const items = cart.map(i => ({ id:i.id, name:i.name, price:i.price, quantity:i.quantity, size:i.size||'M', color:i.color||'Default', image_url:i.image_url||'' }));
 
-    // ── CORRECT CALCULATION ──────────────────────────────────────
-    // coupon discounts items only, delivery fee is never discounted
     const itemsTotal  = cart.reduce((s,i) => s + (i.price * i.quantity), 0);
     const discount    = Math.min(couponDiscount, itemsTotal);
-    const subtotal    = itemsTotal + delivery_fee;           // gross total
-    const finalAmount = Math.max(0, itemsTotal - discount) + delivery_fee; // net payable
-    // ────────────────────────────────────────────────────────────
+    const subtotal    = itemsTotal + delivery_fee;
+    const finalAmount = Math.max(0, itemsTotal - discount) + delivery_fee;
 
     const orderData = {
         customer_name:name, customer_email:email, customer_phone:phone, shipping_address:address,
@@ -2014,7 +2697,75 @@ async function placeOrder() {
         updatePaymentInstruction();
     } catch(e) { showToast(e.message); }
 }
+
+// ══════════════════════════════════════════
+//  HERO ENTRANCE ANIMATIONS
+// ══════════════════════════════════════════
+(function initHeroAnimations() {
+    function revealHero() {
+        const lines = document.querySelectorAll('.hero-headline .line-inner');
+        lines.forEach(l => l.classList.add('visible'));
+        const els = [
+            document.getElementById('hero-subline'),
+            document.getElementById('hero-cta'),
+            document.getElementById('hero-stats'),
+            document.getElementById('hero-carousel-wrap')
+        ];
+        els.forEach(el => el && el.classList.add('visible'));
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(revealHero, 80));
+    } else {
+        setTimeout(revealHero, 80);
+    }
+})();
+
+// ══════════════════════════════════════════
+//  HEADER SCROLL CLASS
+// ══════════════════════════════════════════
+window.addEventListener('scroll', function() {
+    const hdr = document.getElementById('site-header');
+    if (!hdr) return;
+    hdr.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// ══════════════════════════════════════════
+//  INTERSECTION OBSERVER — section reveals
+// ══════════════════════════════════════════
+(function initRevealObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('revealed');
+                observer.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    function observeRevealTargets() {
+        document.querySelectorAll('.section-reveal').forEach(el => observer.observe(el));
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', observeRevealTargets);
+    } else {
+        observeRevealTargets();
+    }
+})();
+
+// ══════════════════════════════════════════
+//  STAGGER product cards on load
+// ══════════════════════════════════════════
+(function patchLoadProducts() {
+    const orig = window.loadProducts;
+    if (typeof orig !== 'function') return;
+    window.loadProducts = async function(reset) {
+        await orig.call(this, reset);
+        const cards = document.querySelectorAll('.product-card');
+        cards.forEach((c, i) => { c.style.animationDelay = (i * 55) + 'ms'; });
+        // update count badge
+        const badge = document.getElementById('products-count-badge');
+        if (badge) badge.textContent = cards.length + ' pieces';
+    };
+})();
 </script>
 
 </body>
-</html>
