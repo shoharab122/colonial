@@ -1496,11 +1496,17 @@
         </p>
 
         <!-- CTA row -->
-        <div class="hero-cta-row flex flex-wrap items-center justify-center gap-4" id="hero-cta">
-            <button onclick="document.getElementById('products-container').scrollIntoView({behavior:'smooth'});"
-                    class="btn-primary px-10 py-3.5 rounded-sm">
-                Explore Collection
-        </div>
+        <div class="hero-cta-row flex flex-col items-center gap-8 mt-6" id="hero-cta">
+    <!-- Primary Button: scrolls to search bar -->
+    <button onclick="
+        const searchInput = document.getElementById('search-input');
+        if(searchInput) {
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            searchInput.focus();
+        }
+    " class="btn-primary px-10 py-3.5 rounded-sm tracking-[0.2em] text-sm font-medium">
+        Explore Collection
+    </button>
         <!-- Carousel -->
         <div id="hero-carousel-wrap" class="w-full mt-4">
             <div class="hero-rule mb-6">
