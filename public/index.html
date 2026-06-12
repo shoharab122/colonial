@@ -1398,6 +1398,87 @@
                 transition-duration: .01ms !important;
             }
         }
+
+        /* ══════════════════════════════════════════
+           HERO EXPLORE BUTTON — premium redesign
+        ══════════════════════════════════════════ */
+        .hero-explore-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: .75rem;
+            padding: 1rem 2.25rem;
+            background: var(--colonial-text);
+            color: #fff;
+            border: 1.5px solid var(--colonial-text);
+            border-radius: 3px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 400;
+            font-size: .78rem;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            cursor: pointer;
+            overflow: hidden;
+            transition: color .3s, border-color .3s, transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+            min-height: 52px;
+        }
+        .hero-explore-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--colonial-accent) 0%, var(--colonial-accent-dark) 100%);
+            opacity: 0;
+            transition: opacity .35s ease;
+        }
+        .hero-explore-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 2px;
+            background: var(--colonial-accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .35s cubic-bezier(.16,1,.3,1);
+        }
+        .hero-explore-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(62,54,46,.25), 0 4px 12px rgba(162,139,111,.2);
+            border-color: var(--colonial-accent);
+        }
+        .hero-explore-btn:hover::before { opacity: 1; }
+        .hero-explore-btn:hover::after { transform: scaleX(1); }
+        .hero-explore-btn .btn-label,
+        .hero-explore-btn .btn-arrow {
+            position: relative;
+            z-index: 1;
+        }
+        .hero-explore-btn:active { transform: translateY(-1px); }
+
+        /* ══════════════════════════════════════════
+           ACCOUNT DROPDOWN — interactive hover states
+        ══════════════════════════════════════════ */
+        #account-dropdown a:hover,
+        #account-dropdown-signedout a:hover {
+            background: var(--colonial-hover) !important;
+            padding-left: 18px !important;
+        }
+        #account-dropdown a[id="logout-link"]:hover {
+            background: #fff0f0 !important;
+        }
+        #signin-from-dropdown:hover {
+            background: var(--colonial-accent) !important;
+            transform: translateY(-1px);
+        }
+
+        /* ══════════════════════════════════════════
+           WISHLIST BUTTON — pulse on items
+        ══════════════════════════════════════════ */
+        #wishlist-btn:hover i { transform: scale(1.15); }
+        #wishlist-btn i { transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+
+        /* Cart button hover */
+        button[aria-label="Cart"]:hover i { transform: scale(1.15); }
+        button[aria-label="Cart"] i { transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
     </style>
 
 <body>
@@ -1424,26 +1505,56 @@
         </h1>
 
         <div class="flex items-center gap-4">
-            <button id="wishlist-btn" class="relative hover:opacity-60 transition-opacity" aria-label="Wishlist">
-                <i data-lucide="heart" class="w-5 h-5"></i>
+            <button id="wishlist-btn" class="relative hover:opacity-80 transition-all group" aria-label="Wishlist">
+                <i data-lucide="heart" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></i>
                 <span id="wishlist-count"
                       class="absolute -top-2 -right-2 bg-[var(--colonial-accent)] text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0 transition-opacity">0</span>
             </button>
 
             <div class="relative" id="account-container">
-                <button id="account-btn" class="hover:opacity-60 transition-opacity" aria-label="Account">
-                    <i data-lucide="user" class="w-5 h-5"></i>
+                <button id="account-btn" class="hover:opacity-70 transition-all duration-200 relative group" aria-label="Account">
+                    <i data-lucide="user" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></i>
+                    <span id="account-dot" class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[var(--colonial-accent)] opacity-0 transition-opacity"></span>
                 </button>
-                <div id="account-dropdown" class="absolute right-0 mt-3 hidden z-50 animate-slideDown">
-                    <div id="user-info" class="px-5 py-3 border-b border-[var(--colonial-border)] text-sm"></div>
-                    <a href="#" id="my-orders-link">My Orders</a>
-                    <a href="#" id="wishlist-dropdown-link">Wishlist</a>
-                    <a href="#" id="logout-link" class="danger">Sign Out</a>
+                <!-- SIGNED-IN dropdown -->
+                <div id="account-dropdown" class="absolute right-0 mt-3 hidden z-50 animate-slideDown" onclick="event.stopPropagation()" style="min-width:220px;background:var(--colonial-bg);border:1px solid var(--colonial-border);border-radius:8px;box-shadow:0 16px 48px rgba(62,54,46,.13),0 4px 12px rgba(62,54,46,.08);">
+                    <div id="user-info" class="px-4 py-3.5 border-b border-[var(--colonial-border)]"></div>
+                    <div style="padding:6px;">
+                        <a href="#" id="my-orders-link" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:6px;font-size:.78rem;letter-spacing:.07em;font-family:'Jost',sans-serif;font-weight:400;text-transform:uppercase;color:var(--colonial-text);transition:background .15s,color .15s;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+                            My Orders
+                        </a>
+                        <a href="#" id="wishlist-dropdown-link" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:6px;font-size:.78rem;letter-spacing:.07em;font-family:'Jost',sans-serif;font-weight:400;text-transform:uppercase;color:var(--colonial-text);transition:background .15s,color .15s;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>
+                            Wishlist
+                        </a>
+                        <div style="height:1px;background:var(--colonial-border);margin:4px 0;"></div>
+                        <a href="#" id="logout-link" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:6px;font-size:.78rem;letter-spacing:.07em;font-family:'Jost',sans-serif;font-weight:400;text-transform:uppercase;color:#b94040;transition:background .15s;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            Sign Out
+                        </a>
+                    </div>
+                </div>
+                <!-- SIGNED-OUT dropdown -->
+                <div id="account-dropdown-signedout" class="absolute right-0 mt-3 hidden z-50 animate-slideDown" onclick="event.stopPropagation()" style="min-width:220px;background:var(--colonial-bg);border:1px solid var(--colonial-border);border-radius:8px;box-shadow:0 16px 48px rgba(62,54,46,.13),0 4px 12px rgba(62,54,46,.08);">
+                    <div style="padding:18px 16px 14px;border-bottom:1px solid var(--colonial-border);text-align:center;">
+                        <div style="width:44px;height:44px;border-radius:50%;background:var(--colonial-hover);border:1px solid var(--colonial-border);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--colonial-text-muted)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        </div>
+                        <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;color:var(--colonial-text);letter-spacing:.04em;">Welcome</p>
+                        <p style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--colonial-text-muted);margin-top:3px;">Sign in to your account</p>
+                    </div>
+                    <div style="padding:10px;">
+                        <button id="signin-from-dropdown" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 14px;border-radius:6px;font-size:.78rem;letter-spacing:.1em;font-family:'Jost',sans-serif;font-weight:400;text-transform:uppercase;background:var(--colonial-text);color:#fff;border:none;cursor:pointer;transition:background .2s,transform .15s;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                            Sign In
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <button onclick="toggleCart()" class="relative hover:opacity-60 transition-opacity" aria-label="Cart">
-                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+            <button onclick="toggleCart()" class="relative hover:opacity-80 transition-all group" aria-label="Cart">
+                <i data-lucide="shopping-bag" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></i>
                 <span id="cart-count"
                       class="absolute -top-2 -right-2 bg-[var(--colonial-text)] text-white text-[9px] min-w-[16px] h-4 rounded-full flex items-center justify-center px-1 opacity-0 transition-opacity">0</span>
             </button>
@@ -1502,8 +1613,14 @@
         <!-- CTA row -->
         <div class="hero-cta-row flex flex-wrap items-center justify-center gap-4" id="hero-cta">
             <button onclick="document.getElementById('products-container').scrollIntoView({behavior:'smooth'});"
-                    class="btn-primary px-10 py-3.5 rounded-sm">
-                Explore Collection
+                    class="hero-explore-btn"
+                    onmouseenter="this.querySelector('.btn-arrow').style.transform='translateX(5px)'"
+                    onmouseleave="this.querySelector('.btn-arrow').style.transform='translateX(0)'">
+                <span class="btn-label">Explore Collection</span>
+                <span class="btn-arrow" style="display:inline-flex;align-items:center;transition:transform .3s cubic-bezier(.34,1.56,.64,1);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </span>
+            </button>
         </div>
         <!-- Carousel -->
         <div id="hero-carousel-wrap" class="w-full mt-4">
@@ -2307,12 +2424,29 @@ async function loadCurrentUser() {
 
 function updateAuthUI() {
     const ui = document.getElementById('user-info');
-    if (ui) {
-        if (currentUser) ui.innerHTML = `
-            <p class="font-medium text-[var(--colonial-text)] text-sm">${escapeHtml(currentUser.name||currentUser.email)}</p>
-            <p class="text-[.65rem] tracking-[.08em] uppercase text-[var(--colonial-text-muted)] mt-0.5">${escapeHtml(currentUser.role||'')}</p>`;
-        else ui.innerHTML = '<p class="text-xs text-[var(--colonial-text-muted)]">Not signed in</p>';
+    const dot = document.getElementById('account-dot');
+    const ddSignedIn  = document.getElementById('account-dropdown');
+    const ddSignedOut = document.getElementById('account-dropdown-signedout');
+
+    if (currentUser) {
+        // Show signed-in state
+        if (ui) ui.innerHTML = `
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--colonial-accent),var(--colonial-accent-dark));display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <span style="color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;">${(currentUser.name||currentUser.email||'?')[0].toUpperCase()}</span>
+                </div>
+                <div>
+                    <p style="font-weight:400;font-size:.84rem;color:var(--colonial-text);line-height:1.2;">${escapeHtml(currentUser.name||currentUser.email)}</p>
+                    <p style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--colonial-accent);margin-top:2px;">${escapeHtml(currentUser.role||'Member')}</p>
+                </div>
+            </div>`;
+        if (dot) dot.style.opacity = '1';
+        // The dropdown shown/hidden logic is handled by account-btn click below
+    } else {
+        if (ui) ui.innerHTML = '';
+        if (dot) dot.style.opacity = '0';
     }
+
     const ef = document.getElementById('customer-email');
     if (ef && currentUser && !ef.value) ef.value = currentUser.email;
     updateMobileAuthButton();
@@ -2320,9 +2454,20 @@ function updateAuthUI() {
 
 document.getElementById('account-btn')?.addEventListener('click', e => {
     e.stopPropagation();
-    document.getElementById('account-dropdown')?.classList.toggle('hidden');
+    const ddIn  = document.getElementById('account-dropdown');
+    const ddOut = document.getElementById('account-dropdown-signedout');
+    if (currentUser) {
+        ddIn?.classList.toggle('hidden');
+        ddOut?.classList.add('hidden');
+    } else {
+        ddOut?.classList.toggle('hidden');
+        ddIn?.classList.add('hidden');
+    }
 });
-document.addEventListener('click', () => document.getElementById('account-dropdown')?.classList.add('hidden'));
+document.addEventListener('click', () => {
+    document.getElementById('account-dropdown')?.classList.add('hidden');
+    document.getElementById('account-dropdown-signedout')?.classList.add('hidden');
+});
 
 document.getElementById('my-orders-link')?.addEventListener('click', e => { e.preventDefault(); if (!currentUser) openAuthModal(); else loadCustomerOrders(); });
 document.getElementById('logout-link')?.addEventListener('click', e => {
@@ -2330,6 +2475,11 @@ document.getElementById('logout-link')?.addEventListener('click', e => {
     if (customerEventSource) customerEventSource.close();
     localStorage.removeItem('amoura_token');
     authToken=null; currentUser=null; updateAuthUI(); location.reload();
+});
+document.getElementById('signin-from-dropdown')?.addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('account-dropdown-signedout')?.classList.add('hidden');
+    openAuthModal();
 });
 document.getElementById('wishlist-btn')?.addEventListener('click', openWishlistModal);
 document.getElementById('wishlist-dropdown-link')?.addEventListener('click', e => { e.preventDefault(); openWishlistModal(); });
