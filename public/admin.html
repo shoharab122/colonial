@@ -1325,8 +1325,9 @@ function renderOrders() {
     } catch { itemsHtml = '<p style="font-size:11px;color:var(--red);">Error parsing items.</p>'; }
 
     const payStatus  = o.payment_status||'pending';
-    const verifyBtn  = payStatus==='awaiting_verification'
-      ? `<button onclick="markOrderPaid(${o.id})" class="act-btn ok"><i data-lucide="check-circle"></i> Verify Paid</button>` : '';
+    const paySelect  = `<select data-oid="${o.id}" class="pay-status-sel status-select" style="border-color:${payStatus==='paid'?'var(--green)':payStatus==='awaiting_verification'?'#92400E':payStatus==='failed'?'var(--red)':'var(--amber)'};">
+      ${['pending','awaiting_verification','paid','failed'].map(s=>`<option value="${s}" ${payStatus===s?'selected':''}>${s==='awaiting_verification'?'Awaiting Verify':s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+    </select>`;
 
     return `<div class="order-card">
       <div class="order-head">
@@ -1342,8 +1343,8 @@ function renderOrders() {
           <select data-oid="${o.id}" class="order-status-sel status-select">
             ${['pending','confirmed','shipped','delivered','cancelled'].map(s=>`<option value="${s}" ${o.order_status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
           </select>
+          ${paySelect}
           <button onclick="showInvoice(${o.id})" class="act-btn"><i data-lucide="download"></i> Invoice</button>
-          ${verifyBtn}
           <button onclick="deleteOrder(${o.id})" class="act-btn danger"><i data-lucide="trash-2"></i></button>
         </div>
       </div>
@@ -1366,6 +1367,12 @@ function renderOrders() {
       loadOrders(); loadStats();
     });
   });
+  document.querySelectorAll('.pay-status-sel').forEach(sel => {
+    sel.addEventListener('change', async () => {
+      const res = await authFetch(`/api/admin/orders/${sel.dataset.oid}/payment-status`, {method:'PUT', body:JSON.stringify({payment_status:sel.value})});
+      if (res.ok) { loadOrders(); } else { const d=await res.json(); alert('Failed: '+(d.error||'Unknown')); }
+    });
+  });
   lucide.createIcons();
 }
 
@@ -1378,14 +1385,6 @@ window.deleteOrder = async id => {
   if (!confirm('Delete this order permanently?')) return;
   try { await authFetch(`/api/admin/orders/${id}`, {method:'DELETE'}); loadOrders(); loadStats(); }
   catch(e) { alert('Delete failed'); }
-};
-window.markOrderPaid = async id => {
-  if (!confirm('Confirm payment received?')) return;
-  try {
-    const res = await authFetch(`/api/admin/orders/${id}/payment-status`, {method:'PUT', body:JSON.stringify({payment_status:'paid'})});
-    if (res.ok) { loadOrders(); alert('✅ Payment verified!'); }
-    else { const d=await res.json(); alert('Failed: '+(d.error||'Unknown error')); }
-  } catch(e) { alert('Error: '+e.message); }
 };
 
 // ── INVOICE ────────────────────────────────────
