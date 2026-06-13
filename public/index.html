@@ -910,86 +910,62 @@
         .payment-failed { background: #fee2e2; color: #991b1b; }
 
         /* ══════════════════════════════════════════
-           REDESIGNED ORDER CARD — Timeline style
+           REDESIGNED ORDER CARD
         ══════════════════════════════════════════ */
         .order-card {
             background: var(--colonial-card);
             border: 1px solid var(--colonial-border);
-            border-radius: 10px;
+            border-radius: 6px;
             overflow: hidden;
-            transition: box-shadow .3s, transform .3s;
+            transition: box-shadow .25s;
         }
-        .order-card:hover { box-shadow: 0 10px 36px rgba(62,54,46,.11); transform: translateY(-2px); }
+        .order-card:hover { box-shadow: 0 6px 24px rgba(62,54,46,.09); }
         .order-card-header {
-            background: linear-gradient(135deg, #2a1f16 0%, var(--colonial-accent-dark) 50%, #1e130c 100%);
-            padding: 1.1rem 1.4rem;
+            background: linear-gradient(135deg, var(--colonial-text) 0%, #2a1f16 100%);
+            padding: .85rem 1.25rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: .75rem;
-            position: relative;
-            overflow: hidden;
-        }
-        .order-card-header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none;
         }
         .order-card-header .order-number {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.2rem;
-            font-weight: 300;
+            font-size: 1.15rem;
+            font-weight: 400;
             color: #fff;
-            letter-spacing: .06em;
-            position: relative;
+            letter-spacing: .04em;
         }
         .order-card-header .order-date {
-            font-size: .58rem;
-            letter-spacing: .14em;
+            font-size: .65rem;
+            letter-spacing: .1em;
             text-transform: uppercase;
-            color: rgba(217,196,168,.55);
-            margin-top: 2px;
-            position: relative;
+            color: rgba(255,255,255,.5);
+            margin-top: 1px;
         }
         .order-card-header .order-total {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 300;
             color: #fff;
             white-space: nowrap;
-            position: relative;
         }
         .order-badges {
             display: flex;
-            gap: .4rem;
+            gap: .5rem;
             align-items: center;
             flex-wrap: wrap;
-            position: relative;
         }
         .order-status-chip {
             display: inline-block;
-            font-size: .57rem;
-            letter-spacing: .12em;
+            font-size: .62rem;
+            letter-spacing: .1em;
             text-transform: uppercase;
-            padding: .25rem .7rem;
+            padding: .28rem .75rem;
             border-radius: 20px;
-            background: rgba(255,255,255,.13);
+            background: rgba(255,255,255,.15);
             color: rgba(255,255,255,.9);
-            border: 1px solid rgba(255,255,255,.18);
-        }
-        /* Progress bar under header */
-        .order-progress-bar {
-            height: 3px;
-            background: rgba(162,139,111,.15);
-            position: relative;
-            overflow: hidden;
-        }
-        .order-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--colonial-accent), #D9C4A8);
-            transition: width .6s ease;
+            border: 1px solid rgba(255,255,255,.2);
+            backdrop-filter: blur(4px);
         }
         .order-card-body { padding: 0; }
         .order-item-row {
@@ -1010,253 +986,55 @@
             flex-shrink: 0;
             background: var(--colonial-hover);
         }
-        .order-item-name { font-size: .84rem; font-weight: 400; color: var(--colonial-text); line-height: 1.3; }
-        .order-item-meta { font-size: .72rem; color: var(--colonial-text-muted); margin-top: .2rem; }
-        .order-item-price { margin-left: auto; font-family: 'Cormorant Garamond',serif; font-size: 1rem; font-weight: 400; white-space: nowrap; padding-left: .5rem; }
-
-        /* ══════════════════════════════════════════
-           AUTH MODAL — Cinematic split-panel redesign
-        ══════════════════════════════════════════ */
-        #auth-modal {
-            background: rgba(30,22,15,.7);
-            backdrop-filter: blur(12px);
+        .order-item-name {
+            font-size: .84rem;
+            font-weight: 400;
+            color: var(--colonial-text);
+            line-height: 1.3;
         }
+        .order-item-meta {
+            font-size: .72rem;
+            color: var(--colonial-text-muted);
+            margin-top: .2rem;
+        }
+        .order-item-price {
+            margin-left: auto;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 400;
+            white-space: nowrap;
+            padding-left: .5rem;
+        }
+
+        /* ── AUTH MODAL ── */
         .auth-panel {
             background: var(--colonial-bg);
-            max-width: 860px;
+            max-width: 420px;
             width: 100%;
-            border-radius: 12px;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 60px 120px rgba(20,14,8,.45), 0 0 0 1px rgba(162,139,111,.15);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            box-shadow: 0 40px 100px rgba(62,54,46,.25);
         }
-        @media (max-width: 600px) {
-            .auth-panel { grid-template-columns: 1fr; max-width: 420px; }
-            .auth-visual { display: none; }
-        }
-        /* Left visual panel */
-        .auth-visual {
-            position: relative;
-            overflow: hidden;
+        .auth-top {
             background: var(--colonial-accent-dark);
-            min-height: 480px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem 2.5rem;
+            padding: 2.5rem 2rem 2rem;
             text-align: center;
         }
-        /* Animated radial rings inside visual */
-        .auth-visual-rings {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .auth-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            border-radius: 50%;
-            border: 1px solid rgba(217,196,168,.12);
-            transform: translate(-50%,-50%) scale(0);
-            animation: authRingExpand 6s ease-out infinite;
-        }
-        .auth-ring:nth-child(1) { width: 200px; height: 200px; animation-delay: 0s; }
-        .auth-ring:nth-child(2) { width: 340px; height: 340px; animation-delay: 1.5s; }
-        .auth-ring:nth-child(3) { width: 500px; height: 500px; animation-delay: 3s; }
-        .auth-ring:nth-child(4) { width: 660px; height: 660px; animation-delay: 4.5s; }
-        @keyframes authRingExpand {
-            0%   { transform: translate(-50%,-50%) scale(0); opacity: .8; }
-            100% { transform: translate(-50%,-50%) scale(1); opacity: 0; }
-        }
-        /* Grain overlay */
-        .auth-visual::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
-        }
-        /* Warm gradient blobs */
-        .auth-visual-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            pointer-events: none;
-        }
-        .auth-blob-1 {
-            width: 240px; height: 240px;
-            background: radial-gradient(circle, rgba(162,139,111,.25) 0%, transparent 70%);
-            top: -10%; left: -10%;
-            animation: blobDrift1 12s ease-in-out infinite;
-        }
-        .auth-blob-2 {
-            width: 200px; height: 200px;
-            background: radial-gradient(circle, rgba(92,75,58,.35) 0%, transparent 70%);
-            bottom: -5%; right: -5%;
-            animation: blobDrift2 14s ease-in-out infinite;
-        }
-        @keyframes blobDrift1 {
-            0%,100% { transform: translate(0,0); }
-            50%      { transform: translate(20px,25px); }
-        }
-        @keyframes blobDrift2 {
-            0%,100% { transform: translate(0,0); }
-            50%      { transform: translate(-20px,-20px); }
-        }
-        .auth-visual-content { position: relative; z-index: 1; }
-        .auth-visual-logo {
+        .auth-top .brand {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 2.8rem;
-            font-weight: 300;
-            color: #fff;
-            letter-spacing: .18em;
-            line-height: 1;
-            margin-bottom: .5rem;
-        }
-        .auth-visual-rule {
-            width: 40px;
-            height: 1px;
-            background: rgba(217,196,168,.4);
-            margin: 1rem auto;
-        }
-        .auth-visual-tagline {
-            font-size: .62rem;
-            letter-spacing: .24em;
-            text-transform: uppercase;
-            color: rgba(217,196,168,.8);
-            line-height: 2;
-        }
-        .auth-visual-quote {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.1rem;
-            font-style: italic;
-            font-weight: 300;
-            color: rgba(255,255,255,.55);
-            margin-top: 2rem;
-            line-height: 1.6;
-        }
-        /* Right form panel */
-        .auth-form-panel {
-            padding: 2.75rem 2.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-        }
-        .auth-form-header {
-            margin-bottom: 2rem;
-        }
-        .auth-form-eyebrow {
-            font-size: .6rem;
-            letter-spacing: .2em;
-            text-transform: uppercase;
-            color: var(--colonial-accent);
-            margin-bottom: .4rem;
-        }
-        .auth-form-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.2rem;
-            font-weight: 300;
-            color: var(--colonial-text);
-            letter-spacing: .02em;
-            line-height: 1.1;
-        }
-        /* Floating label input */
-        .auth-field {
-            position: relative;
-            margin-bottom: 1rem;
-        }
-        .auth-field .inp {
-            padding-top: 1.3rem;
-            padding-bottom: .45rem;
-            height: 52px;
-        }
-        .auth-field label {
-            position: absolute;
-            left: .9rem;
-            top: .75rem;
-            font-size: .62rem;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-            color: var(--colonial-text-muted);
-            pointer-events: none;
-            transition: all .2s;
-            opacity: .7;
-        }
-        .auth-field .inp:focus ~ label,
-        .auth-field .inp:not(:placeholder-shown) ~ label {
-            top: .3rem;
-            font-size: .55rem;
-            color: var(--colonial-accent);
-            opacity: 1;
-        }
-        /* Submit button for auth */
-        .auth-submit-btn {
-            width: 100%;
-            padding: .95rem 1rem;
-            background: var(--colonial-text);
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-family: 'Jost', sans-serif;
-            font-size: .72rem;
-            letter-spacing: .16em;
-            text-transform: uppercase;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform .2s, box-shadow .2s;
-            margin-top: .5rem;
-            min-height: 50px;
-        }
-        .auth-submit-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--colonial-accent), var(--colonial-accent-dark));
-            opacity: 0;
-            transition: opacity .3s;
-        }
-        .auth-submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(62,54,46,.25);
-        }
-        .auth-submit-btn:hover::before { opacity: 1; }
-        .auth-submit-btn span { position: relative; z-index: 1; }
-        .auth-close-x {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            width: 32px;
-            height: 32px;
-            min-height: 32px;
-            border-radius: 50%;
-            border: 1px solid var(--colonial-border);
-            background: transparent;
-            cursor: pointer;
-            transition: background .15s, transform .2s;
-        }
-        .auth-close-x:hover { background: var(--colonial-hover); transform: rotate(90deg); }
-        .auth-toggle-row {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: .78rem;
-            color: var(--colonial-text-muted);
-        }
-        .auth-toggle-row button {
-            color: var(--colonial-accent);
-            text-decoration: underline;
+            font-size: 2rem;
             font-weight: 400;
-            min-height: 0;
-            height: auto;
-            font-size: .78rem;
-            margin-left: .25rem;
+            color: #fff;
+            letter-spacing: .12em;
         }
+        .auth-top .tagline {
+            font-size: .7rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: #D9C4A8;
+            margin-top: .25rem;
+        }
+        .auth-body { padding: 2rem; }
 
         /* ── TOAST — enhanced ── */
         #toast {
@@ -1383,79 +1161,17 @@
             background: #D9C4A8;
         }
 
-        /* ══════════════════════════════════════════
-           WISHLIST — Slide-in drawer redesign
-        ══════════════════════════════════════════ */
-        #wishlist-modal {
-            background: none !important;
-            pointer-events: none !important;
-            display: block !important;
-        }
-        #wishlist-modal.wl-open { pointer-events: all !important; }
-        .wl-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(30,22,15,.5);
-            backdrop-filter: blur(4px);
-            opacity: 0;
-            transition: opacity .35s ease;
-            z-index: 1;
-        }
-        #wishlist-modal.wl-open .wl-overlay { opacity: 1; }
-        .wishlist-drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: min(500px, 100vw);
-            height: 100%;
-            background: var(--colonial-bg);
-            border-left: 1px solid var(--colonial-border);
-            box-shadow: -24px 0 80px rgba(30,22,15,.14);
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform .4s cubic-bezier(.16,1,.3,1);
-        }
-        #wishlist-modal.wl-open .wishlist-drawer { transform: translateX(0); }
-        .wl-header {
-            background: var(--colonial-text);
-            color: #fff;
-            padding: 1.4rem 1.6rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-        .wl-header-title { font-family: 'Cormorant Garamond',serif; font-size: 1.6rem; font-weight: 300; letter-spacing: .04em; }
-        .wl-header-count { font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(217,196,168,.7); margin-top: 2px; }
-        .wl-close { width: 34px; height: 34px; min-height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: transparent; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s; }
-        .wl-close:hover { background: rgba(255,255,255,.1); }
-        .wl-body { flex: 1; overflow-y: auto; padding: 1.1rem; display: flex; flex-direction: column; gap: .75rem; }
-        .wl-body::-webkit-scrollbar { width: 3px; }
-        .wl-body::-webkit-scrollbar-thumb { background: var(--colonial-border); }
-        /* Wishlist item — horizontal card */
-        .wishlist-item {
-            display: flex;
-            gap: .875rem;
-            padding: .875rem;
+        .wishlist-card {
             background: var(--colonial-card);
             border: 1px solid var(--colonial-border);
-            border-radius: 6px;
-            transition: box-shadow .25s, border-color .25s;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: box-shadow .25s, transform .25s;
         }
-        .wishlist-item:hover { box-shadow: 0 6px 20px rgba(62,54,46,.09); border-color: rgba(162,139,111,.3); }
-        .wishlist-item-img { width: 68px; height: 86px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background: var(--colonial-hover); }
-        .wishlist-item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-        .wishlist-item-name { font-size: .87rem; font-weight: 400; color: var(--colonial-text); line-height: 1.3; }
-        .wishlist-item-price { font-family: 'Cormorant Garamond',serif; font-size: 1rem; font-weight: 300; color: var(--colonial-accent); margin-top: .2rem; }
-        .wishlist-item-actions { display: flex; gap: .5rem; margin-top: auto; padding-top: .5rem; }
-        .wl-add { flex: 1; padding: .45rem .6rem; background: var(--colonial-text); color: #fff; border: none; border-radius: 3px; font-family: 'Jost',sans-serif; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .2s; min-height: 34px; }
-        .wl-add:hover { background: var(--colonial-accent); }
-        .wl-remove { width: 32px; height: 32px; min-height: 32px; border-radius: 50%; border: 1px solid var(--colonial-border); background: transparent; cursor: pointer; color: var(--colonial-text-muted); display: flex; align-items: center; justify-content: center; transition: background .15s, color .15s; font-size: .8rem; }
-        .wl-remove:hover { background: #fff0f0; color: #b94040; border-color: #fca5a5; }
-        /* Keep legacy wishlist-card for any backward compat */
-        .wishlist-card { background: var(--colonial-card); border: 1px solid var(--colonial-border); border-radius: 4px; overflow: hidden; }
+        .wishlist-card:hover {
+            box-shadow: 0 8px 30px rgba(62,54,46,.12);
+            transform: translateY(-3px);
+        }
 
         .thumbnail-img.active { border-color: var(--colonial-accent) !important; }
 
@@ -1702,99 +1418,6 @@
         }
 
         /* ══════════════════════════════════════════
-           MOBILE OPTIMIZATIONS
-        ══════════════════════════════════════════ */
-        @media (max-width: 640px) {
-            /* Hero tighter on mobile */
-            #hero-section { min-height: 100svh; padding-top: 60px; }
-            .hero-headline { font-size: clamp(2.8rem, 14vw, 5rem); }
-            .hero-subline { font-size: .82rem; max-width: 90%; }
-            .hero-corner-tl, .hero-corner-tr { top: 6%; }
-            .hero-corner-bl, .hero-corner-br { bottom: 8%; }
-            .hero-deco-line-left { left: 3%; }
-            .hero-deco-line-right { right: 3%; }
-
-            /* Auth panel full-width on mobile */
-            .auth-panel { max-width: 94vw; border-radius: 10px; }
-            .auth-form-panel { padding: 2rem 1.5rem; }
-            .auth-form-title { font-size: 1.85rem; }
-
-            /* Orders modal full-width on mobile */
-            #orders-modal .modal-panel { max-width: 100%; border-radius: 12px 12px 0 0; }
-            #orders-modal { align-items: flex-end; padding: 0; }
-
-            /* Bottom sheet modals */
-            #product-modal .modal-panel,
-            #checkout-modal .modal-panel { max-width: 100%; border-radius: 16px 16px 0 0; }
-            #product-modal, #checkout-modal { align-items: flex-end; padding: 0; }
-            #product-modal .modal-panel, #checkout-modal .modal-panel { max-height: 95svh; }
-
-            /* Wishlist drawer full-width on mobile */
-            .wishlist-drawer { width: 100%; border-left: none; border-top: 1px solid var(--colonial-border); border-radius: 16px 16px 0 0; top: auto; bottom: 0; height: 90svh; transform: translateY(100%); }
-            #wishlist-modal.wl-open .wishlist-drawer { transform: translateY(0); }
-
-            /* Header tighter */
-            #site-header { padding: 0; }
-
-            /* Product card — 2 cols on mobile already but tighter gap */
-            #products-container { gap: .75rem; }
-        }
-
-        /* ══════════════════════════════════════════
-           HERO FLOATING PARTICLES — enhanced
-        ══════════════════════════════════════════ */
-        .hero-particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            border-radius: 50%;
-            background: var(--colonial-accent);
-            pointer-events: none;
-            opacity: 0;
-            animation: particleFly var(--dur, 8s) ease-in-out var(--delay, 0s) infinite;
-        }
-        @keyframes particleFly {
-            0%   { opacity: 0; transform: translateY(0) scale(0); }
-            10%  { opacity: .6; transform: translateY(-12px) scale(1); }
-            90%  { opacity: .3; transform: translateY(calc(-1 * var(--travel, 80px))) scale(.6); }
-            100% { opacity: 0; transform: translateY(calc(-1 * var(--travel, 80px))) scale(0); }
-        }
-
-        /* ══════════════════════════════════════════
-           ORDERS MODAL — slide up on mobile
-        ══════════════════════════════════════════ */
-        #orders-modal .modal-panel {
-            border-radius: 10px;
-        }
-
-        /* ══════════════════════════════════════════
-           HERO — Enhanced interactive elements
-        ══════════════════════════════════════════ */
-        .hero-interactive-text {
-            position: relative;
-            display: inline-block;
-        }
-        .hero-interactive-text::after {
-            content: attr(data-hover);
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Cormorant Garamond',serif;
-            font-style: italic;
-            color: var(--colonial-accent);
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity .4s, transform .4s;
-            pointer-events: none;
-        }
-        .hero-headline:hover .hero-interactive-text::after {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ══════════════════════════════════════════
            HERO EXPLORE BUTTON — premium redesign
         ══════════════════════════════════════════ */
         .hero-explore-btn {
@@ -1803,9 +1426,9 @@
             align-items: center;
             gap: .75rem;
             padding: 1rem 2.25rem;
-            background: var(--colonial-accent);
+            background: var(--colonial-text);
             color: #fff;
-            border: 1.5px solid var(--colonial-accent);
+            border: 1.5px solid var(--colonial-text);
             border-radius: 3px;
             font-family: 'Jost', sans-serif;
             font-weight: 400;
@@ -1814,17 +1437,34 @@
             text-transform: uppercase;
             cursor: pointer;
             overflow: hidden;
-            transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .3s, background .3s, border-color .3s;
+            transition: color .3s, border-color .3s, transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
             min-height: 52px;
         }
-        .hero-explore-btn::before { display: none; }
-        .hero-explore-btn::after { display: none; }
-        .hero-explore-btn:hover {
-            background: var(--colonial-accent-dark);
-            border-color: var(--colonial-accent-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(162,139,111,.4);
+        .hero-explore-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--colonial-accent) 0%, var(--colonial-accent-dark) 100%);
+            opacity: 0;
+            transition: opacity .35s ease;
         }
+        .hero-explore-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 2px;
+            background: var(--colonial-accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .35s cubic-bezier(.16,1,.3,1);
+        }
+        .hero-explore-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(62,54,46,.25), 0 4px 12px rgba(162,139,111,.2);
+            border-color: var(--colonial-accent);
+        }
+        .hero-explore-btn:hover::before { opacity: 1; }
+        .hero-explore-btn:hover::after { transform: scaleX(1); }
         .hero-explore-btn .btn-label,
         .hero-explore-btn .btn-arrow {
             position: relative;
@@ -2046,13 +1686,6 @@
     <div class="hero-orb hero-orb-1"></div>
     <div class="hero-orb hero-orb-2"></div>
     <div class="hero-orb hero-orb-3"></div>
-    <!-- Floating particles -->
-    <div class="hero-particle" style="left:12%;bottom:20%;--dur:9s;--delay:0s;--travel:120px;"></div>
-    <div class="hero-particle" style="left:25%;bottom:15%;--dur:11s;--delay:1.5s;--travel:90px;width:3px;height:3px;"></div>
-    <div class="hero-particle" style="left:55%;bottom:25%;--dur:8s;--delay:3s;--travel:110px;"></div>
-    <div class="hero-particle" style="left:72%;bottom:18%;--dur:12s;--delay:0.8s;--travel:80px;width:3px;height:3px;"></div>
-    <div class="hero-particle" style="left:85%;bottom:30%;--dur:10s;--delay:2s;--travel:100px;"></div>
-    <div class="hero-particle" style="left:40%;bottom:12%;--dur:7s;--delay:4s;--travel:130px;"></div>
 
     <div class="relative z-10 w-full max-w-7xl mx-auto px-5 flex flex-col items-center gap-8 py-16">
 
@@ -2081,7 +1714,6 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </span>
             </button>
-
         </div>
         <!-- Carousel -->
         <div id="hero-carousel-wrap" class="w-full mt-4">
@@ -2376,18 +2008,17 @@
 </div>
 
 
-<!-- ════════════════════════ WISHLIST DRAWER ════════════════════════ -->
-<div id="wishlist-modal" style="position:fixed;inset:0;z-index:50;display:none;">
-    <div class="wl-overlay" onclick="closeWishlistModal()"></div>
-    <div class="wishlist-drawer">
-        <div class="wl-header">
-            <div>
-                <div class="wl-header-title">Wishlist</div>
-                <div class="wl-header-count" id="wl-item-count">0 saved pieces</div>
-            </div>
-            <button class="wl-close" onclick="closeWishlistModal()"><i data-lucide="x" class="w-4 h-4"></i></button>
+<!-- ════════════════════════ WISHLIST MODAL ════════════════════════ -->
+<div id="wishlist-modal"
+     class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-3xl animate-fadeUp">
+        <div class="modal-hd">
+            <h3>My Wishlist</h3>
+            <button onclick="closeWishlistModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
-        <div id="wishlist-items" class="wl-body"></div>
+        <div class="p-6">
+            <div id="wishlist-items" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+        </div>
     </div>
 </div>
 
@@ -2450,50 +2081,31 @@
 <div id="auth-modal"
      class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
     <div class="auth-panel animate-fadeUp">
-        <!-- Left: Visual Panel -->
-        <div class="auth-visual">
-            <div class="auth-visual-rings">
-                <div class="auth-ring"></div>
-                <div class="auth-ring"></div>
-                <div class="auth-ring"></div>
-                <div class="auth-ring"></div>
-            </div>
-            <div class="auth-blob-1 auth-visual-blob"></div>
-            <div class="auth-blob-2 auth-visual-blob"></div>
-            <div class="auth-visual-content">
-                <div class="auth-visual-logo">COLONIAL</div>
-                <div class="auth-visual-rule"></div>
-                <div class="auth-visual-tagline">
-                    Timeless Elegance<br>
-                    Chittagong, Bangladesh
-                </div>
-                <p class="auth-visual-quote">"Style is knowing who you are, what you want to say — and not giving a damn."</p>
-            </div>
+        <div class="auth-top">
+            <p class="brand">COLONIAL</p>
+            <p class="tagline">Timeless Elegance</p>
+            <p id="auth-tagline-sub" class="text-[.7rem] text-white/50 mt-2 tracking-[.1em] uppercase">Welcome back</p>
         </div>
-        <!-- Right: Form Panel -->
-        <div class="auth-form-panel">
-            <button onclick="closeAuthModal()" class="auth-close-x"><i data-lucide="x" class="w-4 h-4 mx-auto"></i></button>
-            <div class="auth-form-header">
-                <p class="auth-form-eyebrow" id="auth-tagline-sub">Welcome back</p>
-                <h3 class="auth-form-title" id="auth-modal-title">Sign In</h3>
+        <div class="auth-body">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="auth-modal-title" class="font-serif text-2xl font-light">Sign In</h3>
+                <button onclick="closeAuthModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
-            <div id="auth-name-group" class="auth-field hidden">
-                <input type="text" id="auth-name" placeholder=" " class="inp">
-                <label>Full Name</label>
+            <div id="auth-name-group" class="hidden mb-3">
+                <input type="text" id="auth-name" placeholder="Full Name" class="inp">
             </div>
-            <div class="auth-field">
-                <input type="email" id="auth-email" placeholder=" " class="inp">
-                <label>Email Address</label>
+            <div class="mb-3">
+                <input type="email" id="auth-email" placeholder="Email Address" class="inp">
             </div>
-            <div class="auth-field">
-                <input type="password" id="auth-password" placeholder=" " class="inp">
-                <label>Password</label>
+            <div class="mb-5">
+                <input type="password" id="auth-password" placeholder="Password" class="inp">
             </div>
-            <button id="auth-submit" class="auth-submit-btn"><span>Sign In</span></button>
-            <div class="auth-toggle-row">
+            <button id="auth-submit" class="btn-primary w-full py-3.5 rounded-sm">Sign In</button>
+            <p class="text-center text-xs text-[var(--colonial-text-muted)] mt-5">
                 <span id="auth-toggle-text">Don't have an account?</span>
-                <button id="auth-toggle-btn">Create one</button>
-            </div>
+                <button id="auth-toggle-btn"
+                        class="text-[var(--colonial-accent)] ml-1 underline min-h-0 h-auto font-medium">Create one</button>
+            </p>
         </div>
     </div>
 </div>
@@ -2697,87 +2309,6 @@
 
 <!-- ════════════════════════ TOAST ════════════════════════ -->
 <div id="toast"></div>
-
-<!-- ════════════════════════ ORDER SUCCESS OVERLAY ════════════════════════ -->
-<div id="order-success-overlay" style="
-    position:fixed;inset:0;z-index:9999;
-    display:none;
-    align-items:center;justify-content:center;
-    background:rgba(30,22,15,.65);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-">
-    <div id="order-success-card" style="
-        background:var(--colonial-bg);
-        border-radius:16px;
-        padding:3rem 2.5rem 2.5rem;
-        max-width:380px;
-        width:90%;
-        text-align:center;
-        box-shadow:0 40px 100px rgba(20,14,8,.4), 0 0 0 1px rgba(162,139,111,.15);
-        transform:scale(.88) translateY(20px);
-        opacity:0;
-        transition:transform .45s cubic-bezier(.16,1,.3,1), opacity .35s ease;
-        position:relative;
-        overflow:hidden;
-    ">
-        <!-- Subtle grain -->
-        <div style="position:absolute;inset:0;background-image:url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E\");pointer-events:none;border-radius:16px;"></div>
-        <!-- Top accent line -->
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--colonial-accent),transparent);"></div>
-
-        <!-- SVG Animation -->
-        <div style="width:160px;height:160px;margin:0 auto 1.5rem;background:linear-gradient(135deg,var(--colonial-accent-dark),#2a1f16);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(92,75,58,.35);">
-            <svg fill="none" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" width="120" height="120">
-                <defs/>
-                <g id="Shiping Outlines">
-                    <g transform="translate(406,431.5)">
-                        <g transform="scale(1.5,1.5)">
-                            <animateTransform repeatCount="indefinite" type="scale" attributeName="transform" dur="2.135s" begin="0.534s" calcMode="spline" values="1.5 1.5; 1.5 1.45; 1.5 1.5; 1.5 1.45; 1.5 1.5; 1.5 1.45; 1.5 1.5; 1.5 1.45; 1.5 1.5; 1.5 1.45; 1.5 1.5; 1.5 1.45; 1.5 1.5; 1.5 1.45; 1.5 1.5; 1.5 1.45; 1.5 1.5" keyTimes="0; 0.062; 0.125; 0.187; 0.25; 0.312; 0.375; 0.437; 0.5; 0.562; 0.625; 0.687; 0.75; 0.812; 0.875; 0.937; 1" keySplines="0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1" fill="freeze"/>
-                            <g transform="translate(-106.333,-130)">
-                                <g id="Group 5" transform="matrix(1,0,0,1,86.794,93.662)"><path fill="#D9C4A8" fill-opacity="1" d="M-27.869,19.705L-27.869,-17.226C-27.869,-19.277,-25.774,-20.942,-23.196,-20.942L23.199,-20.942C25.774,-20.942,27.869,-19.277,27.869,-17.226L27.869,19.705C27.869,20.389,27.172,20.942,26.31,20.942L-26.311,20.942C-27.172,20.942,-27.869,20.389,-27.869,19.705Z"/></g>
-                                <g id="Group 4" transform="matrix(1,0,0,1,84.141,124.898)"><path fill="#D9C4A8" fill-opacity="1" d="M-0.001,4.452C-2.459,4.452,-4.454,2.456,-4.454,-0.002C-4.454,-2.46,-2.459,-4.453,-0.001,-4.453C2.457,-4.453,4.45,-2.46,4.45,-0.002C4.45,2.456,2.457,4.452,-0.001,4.452ZM-0.001,-8.905C-4.918,-8.905,-8.905,-4.92,-8.905,-0.002C-8.905,4.917,-4.918,8.905,-0.001,8.905C4.917,8.905,8.905,4.917,8.905,-0.002C8.905,-4.92,4.917,-8.905,-0.001,-8.905Z"/></g>
-                                <g id="Group 3" transform="matrix(1,0,0,1,67.708,119.595)"><path fill="#D9C4A8" fill-opacity="1" d="M8.764,-3.602L-7.335,-3.602C-8.124,-3.602,-8.764,-2.961,-8.764,-2.169L-8.764,2.17C-8.764,2.961,-8.124,3.602,-7.335,3.602L4.802,3.602C5.22,0.739,6.669,-1.794,8.764,-3.602Z"/></g>
-                                <g id="Group 2" transform="matrix(1,0,0,1,134.587,124.898)"><path fill="#D9C4A8" fill-opacity="1" d="M-0.001,4.452C-2.457,4.452,-4.452,2.456,-4.452,-0.002C-4.452,-2.46,-2.461,-4.453,-0.001,-4.453C2.46,-4.453,4.452,-2.46,4.452,-0.002C4.452,2.456,2.46,4.452,-0.001,4.452ZM-0.001,-8.905C-4.917,-8.905,-8.906,-4.92,-8.906,-0.002C-8.906,4.917,-4.917,8.905,-0.001,8.905C4.916,8.905,8.906,4.917,8.906,-0.002C8.906,-4.92,4.916,-8.905,-0.001,-8.905Z"/></g>
-                                <g id="Group 1" transform="matrix(1,0,0,1,125.523,97.697)"><path fill="#D9C4A8" fill-opacity="1" d="M18.023,-4.973L0.193,-4.973C-0.596,-4.973,-1.239,-5.614,-1.239,-6.405L-1.239,-16.3C-1.239,-17.091,-0.596,-17.731,0.193,-17.731L11.057,-17.731C11.524,-17.731,11.961,-17.505,12.229,-17.125L19.191,-7.226C19.861,-6.281,19.179,-4.973,18.023,-4.973ZM32.282,18.296L28.797,18.296L28.797,-1.151C28.797,-3.434,28.116,-5.664,26.835,-7.557L18.128,-20.457C15.996,-23.61,12.444,-25.499,8.637,-25.499L-4.871,-25.499C-6.453,-25.499,-7.733,-24.219,-7.733,-22.638L-7.733,18.296L-33.713,18.296C-31.616,20.104,-30.169,22.636,-29.753,25.499L-2.567,25.499C-1.736,19.816,3.156,15.435,9.065,15.435C14.971,15.435,19.865,19.816,20.694,25.499L32.282,25.499C33.07,25.499,33.713,24.859,33.713,24.068L33.713,19.728C33.713,18.936,33.07,18.296,32.282,18.296Z"/></g>
-                            </g>
-                        </g>
-                    </g>
-                </g>
-                <g opacity="0" id="Shape Layer 1">
-                    <animate repeatCount="indefinite" attributeName="opacity" dur="2.135s" begin="0.534s" calcMode="spline" values="0; 1; 1; 0" keyTimes="0; 0.062; 0.937; 1" keySplines="0.333 0 0.667 1; 0.333 0 0.667 1; 0.333 0 0.667 1" fill="freeze"/>
-                    <g transform="translate(400,400) scale(1,1) translate(0,0)">
-                        <g id="Shape 1b" transform="matrix(1.062,0,0,1,0,0)">
-                            <path stroke-linejoin="miter" stroke-linecap="butt" stroke-width="3" stroke-opacity="1" stroke="#D9C4A8" d="M-111.5,-34.5L-86.5,-34.5M-128.75,-26.25L-93.5,-26.25M-94.25,-17L-72.5,-17M-119.5,-8.5L-97.75,-8.5"/>
-                        </g>
-                    </g>
-                </g>
-                <g transform="matrix(1,0,0,1,400,400)" visibility="hidden" id="Shape Layer 2">
-                    <animate repeatCount="indefinite" begin="0.334s" calcMode="discrete" fill="freeze" dur="4.004s" values="visible; visible" keyTimes="0; 1" attributeName="visibility"/>
-                    <g id="Shape 1c"><path stroke-linejoin="miter" stroke-linecap="butt" stroke-width="6" stroke-opacity="1" stroke="#ffffff" d="M-38.5,-17L-26.5,-6L-3,-40.5"/></g>
-                </g>
-            </svg>
-        </div>
-
-        <!-- Text -->
-        <p style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--colonial-accent);margin-bottom:.5rem;">Order Confirmed</p>
-        <h3 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--colonial-text);letter-spacing:.02em;line-height:1.1;margin-bottom:.75rem;">Thank You!</h3>
-        <p style="font-size:.84rem;color:var(--colonial-text-muted);line-height:1.7;margin-bottom:.5rem;">Your order has been placed successfully.<br>We'll be in touch shortly.</p>
-        <p id="order-success-number" style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--colonial-accent);letter-spacing:.06em;margin-bottom:2rem;"></p>
-
-        <!-- Divider -->
-        <div style="height:1px;background:var(--colonial-border);margin-bottom:1.75rem;"></div>
-
-        <button onclick="closeOrderSuccess()" style="
-            width:100%;padding:.9rem 1rem;
-            background:var(--colonial-text);color:#fff;
-            border:none;border-radius:4px;
-            font-family:'Jost',sans-serif;font-size:.72rem;
-            letter-spacing:.14em;text-transform:uppercase;
-            cursor:pointer;transition:background .2s;min-height:48px;
-        " onmouseover="this.style.background='var(--colonial-accent)'" onmouseout="this.style.background='var(--colonial-text)'">Continue Shopping</button>
-    </div>
-</div>
 
 
 <!-- ════════════════════════ SCRIPTS ════════════════════════ -->
@@ -3083,50 +2614,27 @@ async function renderWishlistModal() {
     if (!authToken) return;
     const prods = await (await fetch('/api/wishlist', { headers: { 'Authorization':`Bearer ${authToken}` } })).json();
     const c = document.getElementById('wishlist-items');
-    const countEl = document.getElementById('wl-item-count');
     if (!c) return;
-    if (countEl) countEl.textContent = `${prods.length} saved ${prods.length === 1 ? 'piece' : 'pieces'}`;
-    if (!prods.length) {
-        c.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;text-align:center;gap:1rem;">
-            <div style="width:56px;height:56px;border-radius:50%;background:var(--colonial-hover);display:flex;align-items:center;justify-content:center;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>
-            </div>
-            <p style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;color:var(--colonial-text);">Nothing saved yet</p>
-            <p style="font-size:.78rem;color:var(--colonial-text-muted);">Tap the heart on any piece to save it here</p>
-        </div>`;
-        return;
-    }
+    if (!prods.length) { c.innerHTML = '<div class="col-span-full text-center text-[var(--colonial-text-muted)] py-8">Your wishlist is empty.</div>'; return; }
     c.innerHTML = prods.map(p => `
-        <div class="wishlist-item">
-            <img src="${p.image_url||'https://placehold.co/68x86/e8e2d9/7a7570?text=C'}" class="wishlist-item-img" loading="lazy">
-            <div class="wishlist-item-info">
-                <p class="wishlist-item-name">${escapeHtml(p.name)}</p>
-                <p class="wishlist-item-price">BDT ${p.final_price||p.price}</p>
-                <div class="wishlist-item-actions">
-                    <button class="wl-add" onclick="addToCart({id:${p.id},name:'${p.name.replace(/'/g,"\\'")}',price:${p.final_price||p.price},image_url:'${p.image_url}'},1);closeWishlistModal();">Add to Bag</button>
-                    <button class="wl-remove" onclick="toggleWishlist(${p.id})" title="Remove">✕</button>
+        <div class="wishlist-card">
+            <img src="${p.image_url||'https://placehold.co/300x360/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-40 object-cover">
+            <div class="p-3">
+                <p class="font-serif text-base font-light leading-snug mb-1">${escapeHtml(p.name)}</p>
+                <p class="text-sm text-[var(--colonial-text-muted)] mb-3">BDT ${p.final_price||p.price}</p>
+                <div class="flex gap-2">
+                    <button onclick="addToCart({id:${p.id},name:'${p.name.replace(/'/g,"\\'")}',price:${p.final_price||p.price},image_url:'${p.image_url}'},1);closeWishlistModal();"
+                            class="btn-primary flex-1 py-2 rounded-sm text-[.65rem]">Add to Bag</button>
+                    <button onclick="toggleWishlist(${p.id})"
+                            class="btn-ghost px-3 py-2 rounded-sm text-[.65rem]">✕</button>
                 </div>
             </div>
-        </div>`).join('');
+        </div>
+    `).join('');
 }
 
-function openWishlistModal()  {
-    if (!authToken) { openAuthModal(); return; }
-    const m = document.getElementById('wishlist-modal');
-    if (!m) return;
-    m.style.display = 'block';
-    requestAnimationFrame(() => m.classList.add('wl-open'));
-    document.body.style.overflow = 'hidden';
-    renderWishlistModal();
-    lucide.createIcons();
-}
-function closeWishlistModal() {
-    const m = document.getElementById('wishlist-modal');
-    if (!m) return;
-    m.classList.remove('wl-open');
-    document.body.style.overflow = '';
-    setTimeout(() => { m.style.display = 'none'; }, 400);
-}
+function openWishlistModal()  { if (!authToken) { openAuthModal(); return; } renderWishlistModal(); document.getElementById('wishlist-modal').style.display='flex'; }
+function closeWishlistModal() { document.getElementById('wishlist-modal').style.display='none'; }
 
 // ==================== REVIEWS ====================
 async function loadReviews(productId) {
@@ -3252,31 +2760,27 @@ let isLoginMode = true;
 function openAuthModal() {
     isLoginMode = true;
     document.getElementById('auth-modal-title').textContent = 'Sign In';
-    const btn = document.getElementById('auth-submit');
-    if (btn) { const sp = btn.querySelector('span'); if (sp) sp.textContent = 'Sign In'; else btn.textContent = 'Sign In'; }
+    document.getElementById('auth-submit').textContent = 'Sign In';
     document.getElementById('auth-toggle-text').textContent = "Don't have an account?";
     document.getElementById('auth-toggle-btn').textContent = 'Create one';
     document.getElementById('auth-tagline-sub').textContent = 'Welcome back';
     document.getElementById('auth-name-group').classList.add('hidden');
     document.getElementById('auth-modal').style.display = 'flex';
-    lucide.createIcons();
 }
 function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
 
 document.getElementById('auth-toggle-btn')?.addEventListener('click', () => {
     isLoginMode = !isLoginMode;
-    const btn = document.getElementById('auth-submit');
-    const setLabel = (txt) => { if (btn) { const sp = btn.querySelector('span'); if (sp) sp.textContent = txt; else btn.textContent = txt; } };
     if (isLoginMode) {
         document.getElementById('auth-modal-title').textContent = 'Sign In';
-        setLabel('Sign In');
+        document.getElementById('auth-submit').textContent = 'Sign In';
         document.getElementById('auth-toggle-text').textContent = "Don't have an account?";
         document.getElementById('auth-toggle-btn').textContent = 'Create one';
         document.getElementById('auth-tagline-sub').textContent = 'Welcome back';
         document.getElementById('auth-name-group').classList.add('hidden');
     } else {
         document.getElementById('auth-modal-title').textContent = 'Create Account';
-        setLabel('Register');
+        document.getElementById('auth-submit').textContent = 'Register';
         document.getElementById('auth-toggle-text').textContent = 'Already have an account?';
         document.getElementById('auth-toggle-btn').textContent = 'Sign in';
         document.getElementById('auth-tagline-sub').textContent = 'Join COLONIAL';
@@ -3288,10 +2792,6 @@ document.getElementById('auth-submit')?.addEventListener('click', async () => {
     const email = document.getElementById('auth-email').value.trim();
     const password = document.getElementById('auth-password').value;
     if (!email || !password) { showToast('Email and password are required'); return; }
-    const btn = document.getElementById('auth-submit');
-    const sp = btn?.querySelector('span');
-    const origText = sp ? sp.textContent : (btn?.textContent || '');
-    if (sp) sp.textContent = 'Please wait…'; else if (btn) btn.textContent = 'Please wait…';
     const endpoint = isLoginMode ? '/api/auth/login' : '/api/auth/register';
     const body = { email, password };
     if (!isLoginMode) body.name = document.getElementById('auth-name').value.trim();
@@ -3302,10 +2802,7 @@ document.getElementById('auth-submit')?.addEventListener('click', async () => {
         authToken = d.token; localStorage.setItem('amoura_token', authToken);
         currentUser = d.user; updateAuthUI(); closeAuthModal(); initCustomerSSE(); loadWishlistCount();
         showToast(`Welcome, ${d.user.name||d.user.email}!`);
-    } catch(e) {
-        showToast(e.message);
-        if (sp) sp.textContent = origText; else if (btn) btn.textContent = origText;
-    }
+    } catch(e) { showToast(e.message); }
 });
 
 // ==================== ORDERS — REDESIGNED ========================
@@ -3360,9 +2857,6 @@ async function loadCustomerOrders() {
                                     ${getPaymentStatusBadge(o.payment_status)}
                                 </div>
                             </div>
-                        </div>
-                        <div class="order-progress-bar">
-                            <div class="order-progress-fill" style="width:${['pending','confirmed','shipped','delivered'].indexOf(statusLabel.toLowerCase()) >= 0 ? (['pending','confirmed','shipped','delivered'].indexOf(statusLabel.toLowerCase())+1)*25 : 10}%"></div>
                         </div>
                         <div class="order-card-body">${itemsHtml}</div>
                     </div>`;
@@ -3829,7 +3323,7 @@ async function placeOrder() {
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || 'Order failed');
 
-        showOrderSuccess(d.order_number || d.orderNumber || '');
+        showToast('Order placed — thank you!');
         cart = []; couponDiscount = 0; appliedCoupon = null; saveCart();
         closeCheckout(); toggleCart();
 
@@ -3845,34 +3339,6 @@ async function placeOrder() {
         if (insideRadio) insideRadio.checked = true;
         updatePaymentInstruction();
     } catch(e) { showToast(e.message); }
-}
-
-// ══════════════════════════════════════════
-//  ORDER SUCCESS OVERLAY
-// ══════════════════════════════════════════
-function showOrderSuccess(orderNumber) {
-    const overlay = document.getElementById('order-success-overlay');
-    const card    = document.getElementById('order-success-card');
-    const numEl   = document.getElementById('order-success-number');
-    if (!overlay || !card) return;
-    if (numEl && orderNumber) numEl.textContent = `Order #${orderNumber}`;
-    overlay.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    requestAnimationFrame(() => {
-        card.style.transform = 'scale(1) translateY(0)';
-        card.style.opacity   = '1';
-    });
-}
-function closeOrderSuccess() {
-    const overlay = document.getElementById('order-success-overlay');
-    const card    = document.getElementById('order-success-card');
-    if (!overlay || !card) return;
-    card.style.transform = 'scale(.88) translateY(20px)';
-    card.style.opacity   = '0';
-    setTimeout(() => {
-        overlay.style.display = 'none';
-        document.body.style.overflow = '';
-    }, 380);
 }
 
 // ══════════════════════════════════════════
