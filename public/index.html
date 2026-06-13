@@ -240,6 +240,24 @@
             opacity: .7;
         }
 
+        /* ══════════════════════════════════════
+           DOT MATRIX — animated canvas layer
+        ══════════════════════════════════════ */
+        #hero-dot-matrix {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        #dot-matrix-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
         /* Custom cursor */
         #hero-cursor {
             position: fixed;
@@ -1479,6 +1497,80 @@
         /* Cart button hover */
         button[aria-label="Cart"]:hover i { transform: scale(1.15); }
         button[aria-label="Cart"] i { transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+
+        /* ══════════════════════════════════════════
+           TRACKING MODAL STYLES
+        ══════════════════════════════════════════ */
+        .tracking-status {
+            background: var(--colonial-card);
+            border-radius: 8px;
+            padding: 1.2rem;
+            border: 1px solid var(--colonial-border);
+            margin-top: 1rem;
+        }
+        .status-timeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 1rem 0;
+            position: relative;
+        }
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--colonial-border);
+            z-index: 0;
+        }
+        .timeline-step {
+            background: var(--colonial-card);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--colonial-border);
+            position: relative;
+            z-index: 1;
+            transition: all .2s;
+        }
+        .timeline-step.active {
+            border-color: var(--colonial-accent);
+            background: var(--colonial-accent);
+            color: white;
+        }
+        .timeline-step.completed {
+            border-color: var(--green, #2E8A5A);
+            background: var(--green, #2E8A5A);
+            color: white;
+        }
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(46,138,90,0.12);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #2E8A5A;
+            margin-left: 8px;
+        }
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #2E8A5A;
+            border-radius: 50%;
+            animation: pulseLive 1.5s infinite;
+        }
+        @keyframes pulseLive {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.2); }
+        }
     </style>
 
 <body>
@@ -1590,6 +1682,7 @@
 <section id="hero-section">
     <!-- Background layers -->
     <div id="hero-bg-gradient"></div>
+    <div id="hero-dot-matrix"><canvas id="dot-matrix-canvas"></canvas></div>
     <div class="hero-orb hero-orb-1"></div>
     <div class="hero-orb hero-orb-2"></div>
     <div class="hero-orb hero-orb-3"></div>
@@ -1930,6 +2023,60 @@
 </div>
 
 
+<!-- ════════════════════════ TRACK ORDER MODAL (REAL-TIME SSE) ════════════════════════ -->
+<div id="track-modal"
+     class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
+    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+        <div class="modal-hd">
+            <h3>Track Your Order</h3>
+            <button onclick="closeTrackingModal()" class="modal-close"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <div class="px-7 pb-8">
+            <div class="flex gap-3 mb-6">
+                <input type="text" id="track-order-number" placeholder="Enter order number (e.g. COL-1734567890123)" class="inp flex-1" autocomplete="off">
+                <button id="track-order-btn" class="btn-primary px-6 py-2 rounded-sm">Track</button>
+            </div>
+            <div id="track-loading" class="hidden text-center py-8">
+                <div class="inline-block w-6 h-6 border-2 border-[var(--colonial-accent)] border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-xs text-[var(--colonial-text-muted)] mt-2">Fetching order details...</p>
+            </div>
+            <div id="track-error" class="hidden text-red-500 text-center py-4 text-sm"></div>
+            <div id="track-result" class="hidden">
+                <div class="tracking-status">
+                    <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[.6rem] font-mono tracking-wider bg-[var(--colonial-hover)] px-2 py-1 rounded">Order #<span id="track-order-number-display"></span></span>
+                            <span class="live-badge"><span class="live-dot"></span> Live updates</span>
+                        </div>
+                        <span class="text-xs text-[var(--colonial-text-muted)]" id="track-order-date"></span>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs text-[var(--colonial-text-muted)] mb-1">
+                            <span>Status</span>
+                            <span id="track-order-status" class="font-medium text-[var(--colonial-text)]"></span>
+                        </div>
+                        <div class="status-timeline">
+                            <div class="timeline-step" data-step="pending">✓</div>
+                            <div class="timeline-step" data-step="confirmed">✓</div>
+                            <div class="timeline-step" data-step="shipped">✈</div>
+                            <div class="timeline-step" data-step="delivered">🏠</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-xs text-[var(--colonial-text-muted)] mb-4">
+                        <span>Payment: <span id="track-payment-status" class="font-medium"></span></span>
+                        <span>Total: <span id="track-total" class="font-medium"></span></span>
+                    </div>
+                    <div id="track-items" class="border-t border-[var(--colonial-border)] pt-3 mt-2">
+                        <p class="text-xs font-medium text-[var(--colonial-text-muted)] mb-2">Items</p>
+                        <div id="track-items-list" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- ════════════════════════ AUTH MODAL ════════════════════════ -->
 <div id="auth-modal"
      class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
@@ -1992,6 +2139,8 @@
             <a href="#" id="lifestyle-link" class="hover:text-[var(--colonial-accent)] transition-colors">Lifestyle Card</a>
             <a href="#" id="offers-link" class="hover:text-[var(--colonial-accent)] transition-colors">Offers</a>
             <a href="#" id="footer-privacy-link" class="hover:text-[var(--colonial-accent)] transition-colors">Privacy</a>
+            <!-- TRACK ORDER LINK -->
+            <a href="#" id="track-order-footer-link" class="hover:text-[var(--colonial-accent)] transition-colors">Track Order</a>
         </div>
         <div class="flex justify-center gap-6 mb-8">
             <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer"
@@ -2221,6 +2370,126 @@ function handleMobileAuth() {
     });
 }
 
+// ==================== TRACK ORDER (REAL-TIME SSE) ====================
+let trackingEventSource = null;
+let currentTrackingNumber = null;
+
+function openTrackingModal() {
+    document.getElementById('track-modal').style.display = 'flex';
+    // Reset UI
+    document.getElementById('track-order-number').value = '';
+    document.getElementById('track-result').classList.add('hidden');
+    document.getElementById('track-error').classList.add('hidden');
+    document.getElementById('track-loading').classList.add('hidden');
+    if (trackingEventSource) {
+        trackingEventSource.close();
+        trackingEventSource = null;
+    }
+}
+
+function closeTrackingModal() {
+    document.getElementById('track-modal').style.display = 'none';
+    if (trackingEventSource) {
+        trackingEventSource.close();
+        trackingEventSource = null;
+    }
+}
+
+async function fetchAndTrackOrder() {
+    const orderNumber = document.getElementById('track-order-number').value.trim();
+    if (!orderNumber) {
+        showToast('Please enter an order number');
+        return;
+    }
+    // Close previous SSE if any
+    if (trackingEventSource) {
+        trackingEventSource.close();
+        trackingEventSource = null;
+    }
+    document.getElementById('track-loading').classList.remove('hidden');
+    document.getElementById('track-error').classList.add('hidden');
+    document.getElementById('track-result').classList.add('hidden');
+    try {
+        // First fetch order details
+        const res = await fetch(`/api/track/${encodeURIComponent(orderNumber)}`);
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || 'Order not found');
+        }
+        const order = await res.json();
+        displayOrderTracking(order);
+        currentTrackingNumber = orderNumber;
+        // Setup SSE for live updates
+        trackingEventSource = new EventSource(`/api/track/${encodeURIComponent(orderNumber)}/events`);
+        trackingEventSource.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'order_status_update' && data.orderNumber === orderNumber) {
+                    const statusElem = document.getElementById('track-order-status');
+                    if (statusElem) statusElem.textContent = data.newStatus?.toUpperCase() || data.newStatus;
+                    updateTimelineStep(data.newStatus);
+                    showToast(`Order status updated to ${data.newStatus}`);
+                } else if (data.type === 'payment_status_update' && data.orderNumber === orderNumber) {
+                    const payElem = document.getElementById('track-payment-status');
+                    if (payElem) payElem.textContent = data.paymentStatus?.replace(/_/g, ' ').toUpperCase() || data.paymentStatus;
+                    showToast(`Payment status: ${data.paymentStatus}`);
+                }
+            } catch (e) { console.warn(e); }
+        };
+        trackingEventSource.onerror = () => {
+            if (trackingEventSource) trackingEventSource.close();
+            trackingEventSource = null;
+        };
+    } catch (err) {
+        document.getElementById('track-error').classList.remove('hidden');
+        document.getElementById('track-error').innerHTML = err.message;
+    } finally {
+        document.getElementById('track-loading').classList.add('hidden');
+    }
+}
+
+function displayOrderTracking(order) {
+    document.getElementById('track-order-number-display').textContent = order.order_number;
+    document.getElementById('track-order-date').textContent = new Date(order.created_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
+    document.getElementById('track-order-status').textContent = (order.order_status || 'pending').toUpperCase();
+    document.getElementById('track-payment-status').textContent = (order.payment_status || 'pending').replace(/_/g, ' ').toUpperCase();
+    const finalAmt = order.final_amount || order.total_amount || 0;
+    document.getElementById('track-total').textContent = `BDT ${parseFloat(finalAmt).toFixed(2)}`;
+    // Items
+    let items = [];
+    try {
+        items = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []);
+    } catch(e) { items = []; }
+    const itemsContainer = document.getElementById('track-items-list');
+    if (!items.length) {
+        itemsContainer.innerHTML = '<p class="text-xs text-[var(--colonial-text-muted)]">No items</p>';
+    } else {
+        itemsContainer.innerHTML = items.map(i => `
+            <div class="flex gap-2 text-xs">
+                <span class="font-medium">${escapeHtml(i.name)}</span>
+                <span class="text-[var(--colonial-text-muted)]">x${i.quantity}</span>
+                <span class="ml-auto">BDT ${(i.price * i.quantity).toFixed(2)}</span>
+            </div>
+        `).join('');
+    }
+    updateTimelineStep(order.order_status);
+    document.getElementById('track-result').classList.remove('hidden');
+}
+
+function updateTimelineStep(status) {
+    const steps = ['pending', 'confirmed', 'shipped', 'delivered'];
+    const idx = steps.indexOf(status?.toLowerCase());
+    document.querySelectorAll('#track-result .timeline-step').forEach((stepEl, i) => {
+        stepEl.classList.remove('active', 'completed');
+        if (i <= idx) {
+            stepEl.classList.add('completed');
+        }
+        if (i === idx && idx !== -1) {
+            stepEl.classList.add('active');
+        }
+    });
+}
+
 // ==================== DOM READY ====================
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('size-guide-link')?.addEventListener('click',    e => { e.preventDefault(); openSizeModal(); });
@@ -2233,7 +2502,9 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('lifestyle-link')?.addEventListener('click',     e => { e.preventDefault(); openLifestyleModal(); });
     document.getElementById('offers-link')?.addEventListener('click',        e => { e.preventDefault(); openOffersModal(); });
     document.getElementById('footer-privacy-link')?.addEventListener('click', e => { e.preventDefault(); openPrivacyModal(); });
-    document.getElementById('footer-wishlist-link')?.addEventListener('click', e => { e.preventDefault(); openWishlistModal(); });
+    document.getElementById('track-order-footer-link')?.addEventListener('click', e => { e.preventDefault(); openTrackingModal(); });
+    document.getElementById('track-order-btn')?.addEventListener('click', fetchAndTrackOrder);
+    document.getElementById('track-order-number')?.addEventListener('keypress', e => { if (e.key === 'Enter') fetchAndTrackOrder(); });
 
     document.getElementById('filter-toggle-btn')?.addEventListener('click', () => {
         document.getElementById('filter-row')?.classList.toggle('hidden');
@@ -3069,6 +3340,201 @@ async function placeOrder() {
         updatePaymentInstruction();
     } catch(e) { showToast(e.message); }
 }
+
+// ══════════════════════════════════════════
+//  DOT MATRIX CANVAS — desktop + mobile
+// ══════════════════════════════════════════
+(function initDotMatrix() {
+    const canvas = document.getElementById('dot-matrix-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const isMobile = () => window.innerWidth <= 640;
+
+    // Accent colour  rgb(162, 139, 111)
+    const AR = 162, AG = 139, AB = 111;
+
+    // Config — tighter / faster on mobile
+    function cfg() {
+        const mob = isMobile();
+        return {
+            spacing:    mob ? 24  : 30,
+            baseR:      mob ? 1.3 : 1.5,
+            waveSpd:    mob ? 1.4 : 0.8,   // wave cycles/sec multiplier
+            shimmerSpd: mob ? 0.6 : 0.25,
+            twinkleSpd: mob ? 1.8 : 1.0,
+            mouseR:     mob ? 0   : 180,    // no mouse on mobile
+            touchR:     mob ? 140 : 0,
+        };
+    }
+
+    let W, H, cols, rows, dots;
+    let t = 0;
+    // Pointer state — works for both mouse and touch
+    let px = -9999, py = -9999;
+    // Touch ripples list  { x, y, born }
+    let ripples = [];
+    // Gyroscope tilt (mobile)
+    let tiltX = 0, tiltY = 0;
+
+    /* ── resize ── */
+    function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        W = canvas.width  = rect.width  || window.innerWidth;
+        H = canvas.height = rect.height || window.innerHeight;
+        const c = cfg();
+        cols = Math.ceil(W / c.spacing) + 2;
+        rows = Math.ceil(H / c.spacing) + 2;
+        buildDots(c);
+    }
+
+    function buildDots(c) {
+        dots = [];
+        for (let r = 0; r < rows; r++) {
+            for (let col = 0; col < cols; col++) {
+                dots.push({
+                    x:       col * c.spacing,
+                    y:       r   * c.spacing,
+                    phase:   Math.random() * Math.PI * 2,
+                    waveOff: col * 0.18 + r * 0.22,
+                    shimOff: col * 0.6  + r * 0.4,
+                });
+            }
+        }
+    }
+
+    /* ── radial vignette: dots fade near edges ── */
+    function edgeAlpha(x, y) {
+        const nx = (x - W * 0.5) / (W * 0.52);
+        const ny = (y - H * 0.5) / (H * 0.52);
+        const d  = Math.sqrt(nx * nx + ny * ny);
+        return Math.max(0, 1 - Math.pow(d, 1.7));
+    }
+
+    /* ── main draw loop ── */
+    function draw(ts) {
+        t = ts * 0.001; // seconds
+        const c = cfg();
+        ctx.clearRect(0, 0, W, H);
+
+        // Remove old ripples
+        ripples = ripples.filter(r => (t - r.born) < 1.8);
+
+        // Gyro offset shifts the whole grid slightly (mobile delight)
+        const gox = tiltX * 18;
+        const goy = tiltY * 18;
+
+        for (let i = 0; i < dots.length; i++) {
+            const d = dots[i];
+            const x = d.x + gox;
+            const y = d.y + goy;
+
+            // 1. Rolling sine wave across grid
+            const wave = Math.sin(d.waveOff - t * c.waveSpd * 2.5) * 0.5 + 0.5;
+
+            // 2. Diagonal shimmer band
+            const shim = Math.sin(d.shimOff * 0.012 - t * c.shimmerSpd) * 0.5 + 0.5;
+
+            // 3. Per-dot twinkle
+            const twink = Math.sin(t * c.twinkleSpd * 3.5 + d.phase) * 0.4 + 0.6;
+
+            // 4. Pointer glow (mouse on desktop / last-touch on mobile)
+            const mdx = d.x - px, mdy = d.y - py;
+            const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+            const r = isMobile() ? c.touchR : c.mouseR;
+            const ptrGlow = r > 0 ? Math.max(0, 1 - mdist / r) : 0;
+
+            // 5. Touch ripple pulses (mobile)
+            let rippleGlow = 0;
+            for (let rp of ripples) {
+                const age  = t - rp.born;           // 0 → 1.8s
+                const rdx  = d.x - rp.x;
+                const rdy  = d.y - rp.y;
+                const dist = Math.sqrt(rdx * rdx + rdy * rdy);
+                const front = age * 260;             // wave front radius px
+                const ring  = Math.abs(dist - front);
+                const pulse = Math.max(0, 1 - ring / 55) * Math.max(0, 1 - age / 1.8);
+                rippleGlow = Math.max(rippleGlow, pulse);
+            }
+
+            // Compose
+            const ea = edgeAlpha(d.x, d.y);
+            const baseA = 0.06 + wave * 0.10 + shim * 0.07 + twink * 0.06;
+            const alpha  = Math.min(0.6, (baseA + ptrGlow * 0.45 + rippleGlow * 0.55) * ea);
+            const radius = c.baseR + ptrGlow * 1.8 + rippleGlow * 2.2 + wave * 0.5;
+
+            if (alpha < 0.012) continue;
+
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${AR},${AG},${AB},${alpha.toFixed(3)})`;
+            ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    /* ── event listeners ── */
+    const hero = document.getElementById('hero-section');
+
+    // Desktop mouse
+    if (hero) {
+        hero.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            px = e.clientX - rect.left;
+            py = e.clientY - rect.top;
+        }, { passive: true });
+        hero.addEventListener('mouseleave', () => { px = -9999; py = -9999; }, { passive: true });
+    }
+
+    // Mobile touch — glow + ripple
+    if (hero) {
+        hero.addEventListener('touchstart', e => {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            px = touch.clientX - rect.left;
+            py = touch.clientY - rect.top;
+            ripples.push({ x: px, y: py, born: t });
+        }, { passive: true });
+
+        hero.addEventListener('touchmove', e => {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            px = touch.clientX - rect.left;
+            py = touch.clientY - rect.top;
+        }, { passive: true });
+
+        hero.addEventListener('touchend', () => {
+            setTimeout(() => { px = -9999; py = -9999; }, 600);
+        }, { passive: true });
+    }
+
+    // Gyroscope tilt (mobile) — permission handled gracefully
+    function enableGyro() {
+        window.addEventListener('deviceorientation', e => {
+            if (!isMobile()) return;
+            tiltX = Math.max(-1, Math.min(1, (e.gamma || 0) / 30));
+            tiltY = Math.max(-1, Math.min(1, (e.beta  || 0) / 40));
+        }, { passive: true });
+    }
+    if (typeof DeviceOrientationEvent !== 'undefined') {
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            // iOS 13+ needs explicit permission — attach to first touch
+            document.addEventListener('touchstart', function askGyro() {
+                DeviceOrientationEvent.requestPermission().then(r => {
+                    if (r === 'granted') enableGyro();
+                }).catch(() => {});
+                document.removeEventListener('touchstart', askGyro);
+            }, { once: true, passive: true });
+        } else {
+            enableGyro();
+        }
+    }
+
+    window.addEventListener('resize', () => { resize(); }, { passive: true });
+    resize();
+    requestAnimationFrame(draw);
+})();
 
 // ══════════════════════════════════════════
 //  HERO ENTRANCE ANIMATIONS
