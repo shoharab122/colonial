@@ -1,15 +1,17 @@
+// Suppress pg SSL mode warning on Render
+process.removeAllListeners('warning');
+
 const { Pool } = require('pg');
 require('dotenv').config();
 
 let pool;
 
 if (process.env.DATABASE_URL) {
-  // For Render's PostgreSQL — append sslmode=no-verify to silence SSL warning
-  const connectionString = process.env.DATABASE_URL.includes('sslmode=')
-    ? process.env.DATABASE_URL
-    : `${process.env.DATABASE_URL}?sslmode=no-verify`;
-
-  pool = new Pool({ connectionString });
+  // For Render's PostgreSQL connection string
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  });
 } else {
   // Local development fallback
   pool = new Pool({
