@@ -1,3 +1,4 @@
+
 // server.js — COLONIAL E-Commerce Backend (Optimised)
 // PostgreSQL + Cloudinary + JWT Auth + SSE + Coupons
 require('dotenv').config();
@@ -16,17 +17,9 @@ const compression  = require('compression');
 const pool         = require('./db');
 const cloudinary   = require('cloudinary').v2;
 
-// ── NODEMAILER CONFIG ──────────────────────────────────────────
-const nodemailer = require('nodemailer');
-const mailer = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // use STARTTLS (port 465 is blocked on Render)
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// ── RESEND EMAIL CONFIG ────────────────────────────────────────
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendOrderConfirmation({ order_number, customer_name, customer_email, items, final_amount, payment_method, delivery_method, delivery_fee }) {
   if (!customer_email) return;
@@ -40,8 +33,8 @@ async function sendOrderConfirmation({ order_number, customer_name, customer_ema
       <td style="padding:10px 0;border-bottom:1px solid #e8e2d9;text-align:right;font-size:13px;">BDT ${(parseFloat(i.price) * parseInt(i.quantity)).toLocaleString()}</td>
     </tr>`).join('');
 
-  await mailer.sendMail({
-    from: `"Colonial" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'Colonial <onboarding@resend.dev>',
     to: customer_email,
     subject: `Order Confirmed — ${order_number}`,
     html: `
@@ -114,12 +107,11 @@ const PORT       = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'colonial_super_secret_key_change_me';
 
 // ── MIDDLEWARE ─────────────────────────────────────────────────
-app.use(compression()); // gzip all responses
+app.use(compression());
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 app.use(cookieParser());
 
-// Static files with aggressive caching for immutable assets
 app.use(express.static('public', {
   maxAge: '1d',
   etag: true,
@@ -147,7 +139,7 @@ passport.deserializeUser(async (id, done) => {
   } catch (err) { done(err); }
 });
 
-// ── SIMPLE IN-MEMORY CACHE (for stats & product lists) ─────────
+// ── SIMPLE IN-MEMORY CACHE ─────────────────────────────────────
 const cache = new Map();
 function setCache(key, value, ttlMs = 30_000) {
   cache.set(key, { value, expires: Date.now() + ttlMs });
@@ -237,7 +229,6 @@ const mapProduct = (p) => ({
 });
 
 // ── SSE MANAGER ────────────────────────────────────────────────
-// Uses a Set instead of array for O(1) removal
 class SSEBroadcaster {
   constructor() { this.clients = new Set(); }
   add(res, cleanup) {
@@ -254,8 +245,7 @@ class SSEBroadcaster {
 }
 
 const orderBroadcaster = new SSEBroadcaster();
-// Per-user customer SSE
-const customerSSE = new Map(); // userId -> Set<res>
+const customerSSE = new Map();
 
 function addCustomerClient(userId, res) {
   if (!customerSSE.has(userId)) customerSSE.set(userId, new Set());
@@ -276,10 +266,9 @@ function initSSEResponse(res) {
     'Content-Type':  'text/event-stream',
     'Cache-Control': 'no-cache, no-transform',
     'Connection':    'keep-alive',
-    'X-Accel-Buffering': 'no', // Nginx: disable buffering
+    'X-Accel-Buffering': 'no',
   });
   res.flushHeaders();
-  // Heartbeat every 25s to prevent proxy timeouts
   const hb = setInterval(() => { try { res.write(': ping\n\n'); } catch {} }, 25_000);
   return hb;
 }
@@ -312,7 +301,6 @@ const PRODUCT_SELECT = `
   FROM products
 `;
 
-// GET all active products (cached 30s)
 app.get('/api/products', async (req, res) => {
   const cached = getCache('products:all');
   if (cached) return res.json(cached);
@@ -328,7 +316,6 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-// GET products with search / filter / pagination
 app.get('/api/products/search', async (req, res) => {
   const { q = '', category = 'all', sort = 'newest', page = 1, limit = 8 } = req.query;
   const params = [];
@@ -366,7 +353,6 @@ app.get('/api/products/search', async (req, res) => {
   }
 });
 
-// GET single product
 app.get('/api/products/:id', async (req, res) => {
   const cacheKey = `product:${req.params.id}`;
   const cached   = getCache(cacheKey);
@@ -384,7 +370,6 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
-// POST create product (admin)
 app.post('/api/products', authenticateToken, requireAdmin, async (req, res) => {
   const { name, price, discount_amount, category, image_url, images,
           badge, description, materials, colors, care, stock } = req.body;
@@ -411,7 +396,6 @@ app.post('/api/products', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
-// PUT update product (admin)
 app.put('/api/products/:id', authenticateToken, requireAdmin, async (req, res) => {
   const { name, price, discount_amount, category, image_url, images,
           badge, description, materials, colors, care, stock, is_active } = req.body;
@@ -440,7 +424,6 @@ app.put('/api/products/:id', authenticateToken, requireAdmin, async (req, res) =
   }
 });
 
-// DELETE product (admin)
 app.delete('/api/products/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rowCount } = await pool.query('DELETE FROM products WHERE id = $1', [req.params.id]);
@@ -452,7 +435,6 @@ app.delete('/api/products/:id', authenticateToken, requireAdmin, async (req, res
   }
 });
 
-// Product variants (stub — kept for compatibility)
 app.get('/api/products/:id/variants', async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -525,13 +507,12 @@ app.post('/api/orders', async (req, res) => {
   if (!Array.isArray(items) || !items.length)
     return res.status(400).json({ error: 'Cart is empty. Cannot place order.' });
 
-  const finalEmail    = userEmail || customer_email;
-  const order_number  = `COL-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const finalEmail     = userEmail || customer_email;
+  const order_number   = `COL-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
   const payment_status = (payment_method === 'bkash' || payment_method === 'nagad')
     ? 'awaiting_verification' : 'pending';
 
   try {
-    // All DB work in a transaction for consistency
     const client = await pool.connect();
     let orderId;
     try {
@@ -564,7 +545,6 @@ app.post('/api/orders', async (req, res) => {
       );
       orderId = rows[0].id;
 
-      // Increment coupon usage
       if (coupon_code) {
         await client.query(
           'UPDATE coupons SET used_count = used_count + 1 WHERE UPPER(code) = UPPER($1)',
@@ -572,7 +552,6 @@ app.post('/api/orders', async (req, res) => {
         );
       }
 
-      // Upsert customer analytics
       await client.query(
         `INSERT INTO customers (email, name, phone, total_orders, total_spent, last_order_at)
          VALUES ($1,$2,$3,1,$4,CURRENT_TIMESTAMP)
@@ -585,7 +564,6 @@ app.post('/api/orders', async (req, res) => {
         [finalEmail, customer_name, customer_phone || null, parseFloat(final_amount) || 0]
       );
 
-      // Decrement stock — batch with unnest for efficiency
       if (items.length) {
         const ids  = items.map(i => i.id);
         const qtys = items.map(i => i.quantity);
@@ -613,7 +591,6 @@ app.post('/api/orders', async (req, res) => {
       created_at: new Date().toISOString(),
     });
 
-    // ── SEND CONFIRMATION EMAIL (non-blocking) ─────────────────
     if (finalEmail) {
       sendOrderConfirmation({
         order_number, customer_name,
@@ -630,7 +607,6 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
-// GET admin all orders
 app.get('/api/admin/orders', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -646,7 +622,6 @@ app.get('/api/admin/orders', authenticateToken, requireAdmin, async (req, res) =
   }
 });
 
-// PUT order status (admin) + broadcast to customer
 app.put('/api/admin/orders/:id/status', authenticateToken, requireAdmin, async (req, res) => {
   const VALID_STATUSES = new Set(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']);
   const { status } = req.body;
@@ -658,7 +633,6 @@ app.put('/api/admin/orders/:id/status', authenticateToken, requireAdmin, async (
     );
     if (!rows.length) return res.status(404).json({ error: 'Order not found' });
 
-    // Fire-and-forget customer lookup + SSE broadcast
     pool.query('SELECT id FROM users WHERE email = $1', [rows[0].customer_email])
       .then(({ rows: u }) => {
         if (u.length) broadcastToCustomer(u[0].id, {
@@ -673,7 +647,6 @@ app.put('/api/admin/orders/:id/status', authenticateToken, requireAdmin, async (
   }
 });
 
-// PUT payment status (admin)
 app.put('/api/admin/orders/:id/payment-status', authenticateToken, requireAdmin, async (req, res) => {
   const VALID_PAY = new Set(['pending', 'awaiting_verification', 'paid', 'failed']);
   const { payment_status } = req.body;
@@ -698,7 +671,6 @@ app.put('/api/admin/orders/:id/payment-status', authenticateToken, requireAdmin,
   }
 });
 
-// DELETE order (admin)
 app.delete('/api/admin/orders/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rowCount } = await pool.query('DELETE FROM orders WHERE id = $1', [req.params.id]);
@@ -710,7 +682,6 @@ app.delete('/api/admin/orders/:id', authenticateToken, requireAdmin, async (req,
   }
 });
 
-// GET admin stats (cached 30s, parallel queries)
 app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) => {
   const cached = getCache('stats');
   if (cached) return res.json(cached);
@@ -878,7 +849,6 @@ app.post('/api/products/:id/reviews', authenticateToken, async (req, res) => {
       'INSERT INTO reviews (product_id, user_id, user_name, rating, comment) VALUES ($1,$2,$3,$4,$5)',
       [productId, req.user.id, req.user.name || 'Anonymous', rating, comment || '']
     );
-    // Single query: update avg & count together
     await pool.query(
       `UPDATE products SET
          avg_rating   = (SELECT AVG(rating)  FROM reviews WHERE product_id = $1),
@@ -891,7 +861,6 @@ app.post('/api/products/:id/reviews', authenticateToken, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Admin: list all reviews
 app.get('/api/admin/reviews', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -906,7 +875,6 @@ app.get('/api/admin/reviews', authenticateToken, requireAdmin, async (req, res) 
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Admin: delete review + recalculate rating
 app.delete('/api/admin/reviews/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(
