@@ -16,6 +16,83 @@ const compression  = require('compression');
 const pool         = require('./db');
 const cloudinary   = require('cloudinary').v2;
 
+// ── NODEMAILER CONFIG ──────────────────────────────────────────
+const nodemailer = require('nodemailer');
+const mailer = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+async function sendOrderConfirmation({ order_number, customer_name, customer_email, items, final_amount, payment_method, delivery_method, delivery_fee }) {
+  if (!customer_email) return;
+  const payLabel = payment_method === 'bkash' ? 'bKash' : payment_method === 'nagad' ? 'Nagad' : 'Cash on Delivery';
+  const deliveryLabel = delivery_method === 'inside_dhaka' ? 'Inside Dhaka' : delivery_method === 'outside_dhaka' ? 'Outside Dhaka' : delivery_method || 'Standard';
+
+  const itemRows = (Array.isArray(items) ? items : JSON.parse(items)).map(i => `
+    <tr>
+      <td style="padding:10px 0;border-bottom:1px solid #e8e2d9;font-size:13px;">${i.name}${i.size ? ` <span style="color:#8a7d6e;font-size:11px;">(${i.size})</span>` : ''}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #e8e2d9;text-align:center;font-size:13px;">${i.quantity}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #e8e2d9;text-align:right;font-size:13px;">BDT ${(parseFloat(i.price) * parseInt(i.quantity)).toLocaleString()}</td>
+    </tr>`).join('');
+
+  await mailer.sendMail({
+    from: `"Colonial" <${process.env.EMAIL_USER}>`,
+    to: customer_email,
+    subject: `Order Confirmed — ${order_number}`,
+    html: `
+    <div style="max-width:580px;margin:0 auto;background:#faf7f2;font-family:'Georgia',serif;color:#3e362e;padding:48px 40px;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <h1 style="font-size:26px;font-weight:400;letter-spacing:.18em;margin:0 0 4px;">COLONIAL</h1>
+        <p style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8a7d6e;margin:0;">Chittagong, Bangladesh</p>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #d9c4a8;margin:0 0 32px;">
+
+      <p style="font-size:15px;font-weight:400;margin:0 0 6px;">Thank you, ${customer_name}.</p>
+      <p style="font-size:13px;color:#6b5e52;margin:0 0 24px;line-height:1.6;">Your order has been received and is now being processed. We'll notify you once it ships.</p>
+
+      <div style="background:#f2ece3;border:1px solid #e0d5c5;border-radius:3px;padding:14px 18px;margin-bottom:28px;">
+        <p style="margin:0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;">Order Number</p>
+        <p style="margin:4px 0 0;font-size:17px;letter-spacing:.06em;color:#3e362e;">${order_number}</p>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
+        <thead>
+          <tr style="border-bottom:2px solid #d9c4a8;">
+            <th style="text-align:left;padding-bottom:10px;font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;">Item</th>
+            <th style="text-align:center;padding-bottom:10px;font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;">Qty</th>
+            <th style="text-align:right;padding-bottom:10px;font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;">Price</th>
+          </tr>
+        </thead>
+        <tbody>${itemRows}</tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" style="padding-top:14px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8a7d6e;">Delivery (${deliveryLabel})</td>
+            <td style="padding-top:14px;text-align:right;font-size:13px;">BDT ${parseFloat(delivery_fee || 0).toLocaleString()}</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding-top:10px;font-size:13px;letter-spacing:.06em;">Total</td>
+            <td style="padding-top:10px;text-align:right;font-size:18px;font-weight:600;letter-spacing:.04em;">BDT ${parseFloat(final_amount).toLocaleString()}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <hr style="border:none;border-top:1px solid #d9c4a8;margin:28px 0;">
+
+      <p style="font-size:12px;color:#8a7d6e;margin:0 0 6px;">Payment method: <strong style="color:#3e362e;">${payLabel}</strong></p>
+      ${payment_method === 'bkash' || payment_method === 'nagad'
+        ? `<p style="font-size:12px;color:#8a7d6e;margin:0 0 20px;">Your payment is awaiting verification. We'll confirm once checked.</p>`
+        : `<p style="font-size:12px;color:#8a7d6e;margin:0 0 20px;">Payment will be collected upon delivery.</p>`}
+
+      <hr style="border:none;border-top:1px solid #d9c4a8;margin:0 0 24px;">
+      <p style="font-size:11px;color:#a09080;text-align:center;letter-spacing:.06em;margin:0;">Questions? Reply to this email or message us on Facebook.<br>© Colonial, Chittagong</p>
+    </div>`
+  });
+}
+
 // ── CLOUDINARY CONFIG ──────────────────────────────────────────
 if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
   console.warn('⚠️  Cloudinary credentials missing — image uploads will fail.');
@@ -533,6 +610,16 @@ app.post('/api/orders', async (req, res) => {
       payment_status, delivery_method, delivery_fee,
       created_at: new Date().toISOString(),
     });
+
+    // ── SEND CONFIRMATION EMAIL (non-blocking) ─────────────────
+    if (finalEmail) {
+      sendOrderConfirmation({
+        order_number, customer_name,
+        customer_email: finalEmail,
+        items, final_amount,
+        payment_method, delivery_method, delivery_fee,
+      }).catch(err => console.error('Confirmation email error:', err));
+    }
 
     res.status(201).json({ id: orderId, order_number, payment_status });
   } catch (err) {
