@@ -2954,7 +2954,8 @@ function updateAuthUI() {
     }
 
     const ef = document.getElementById('customer-email');
-    if (ef && currentUser && !ef.value) ef.value = currentUser.email;
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (ef && currentUser && !ef.value && EMAIL_RE.test(currentUser.email)) ef.value = currentUser.email;
     updateMobileAuthButton();
 }
 
@@ -3520,6 +3521,7 @@ async function placeOrder() {
     const phone   = document.getElementById('customer-phone').value.trim();
     const address = document.getElementById('shipping-address').value.trim();
     if (!name || !email) { showToast('Name and email are required'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address'); return; }
 
     const dr = document.querySelector('input[name="delivery_option"]:checked');
     if (!dr) { showToast('Please select a delivery option'); return; }
