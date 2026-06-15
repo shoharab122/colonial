@@ -1,4 +1,3 @@
-
 // server.js — COLONIAL E-Commerce Backend (Optimised)
 // PostgreSQL + Cloudinary + JWT Auth + SSE + Coupons
 require('dotenv').config();
@@ -16,77 +15,6 @@ const multer       = require('multer');
 const compression  = require('compression');
 const pool         = require('./db');
 const cloudinary   = require('cloudinary').v2;
-
-// ── RESEND EMAIL CONFIG ────────────────────────────────────────
-const { Resend } = require('resend');
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-async function sendOrderConfirmation({ order_number, customer_name, customer_email, items, final_amount, payment_method, delivery_method, delivery_fee }) {
-  if (!customer_email) return;
-  const payLabel = payment_method === 'bkash' ? 'bKash' : payment_method === 'nagad' ? 'Nagad' : 'Cash on Delivery';
-  const deliveryLabel = delivery_method === 'inside_dhaka' ? 'Inside Dhaka' : delivery_method === 'outside_dhaka' ? 'Outside Dhaka' : delivery_method || 'Standard';
-
-  const itemRows = (Array.isArray(items) ? items : JSON.parse(items)).map(i => `
-    <tr>
-      <td style="padding:10px 0;border-bottom:1px solid #e8e2d9;font-size:13px;">${i.name}${i.size ? ` <span style="color:#8a7d6e;font-size:11px;">(${i.size})</span>` : ''}</td>
-      <td style="padding:10px 0;border-bottom:1px solid #e8e2d9;text-align:center;font-size:13px;">${i.quantity}</td>
-      <td style="padding:10px 0;border-bottom:1px solid #e8e2d9;text-align:right;font-size:13px;">BDT ${(parseFloat(i.price) * parseInt(i.quantity)).toLocaleString()}</td>
-    </tr>`).join('');
-
-  await resend.emails.send({
-    from: 'Colonial <onboarding@resend.dev>',
-    to: customer_email,
-    subject: `Order Confirmed — ${order_number}`,
-    html: `
-    <div style="max-width:580px;margin:0 auto;background:#faf7f2;font-family:'Georgia',serif;color:#3e362e;padding:48px 40px;">
-      <div style="text-align:center;margin-bottom:32px;">
-        <h1 style="font-size:26px;font-weight:400;letter-spacing:.18em;margin:0 0 4px;">COLONIAL</h1>
-        <p style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8a7d6e;margin:0;">Chittagong, Bangladesh</p>
-      </div>
-
-      <hr style="border:none;border-top:1px solid #d9c4a8;margin:0 0 32px;">
-
-      <p style="font-size:15px;font-weight:400;margin:0 0 6px;">Thank you, ${customer_name}.</p>
-      <p style="font-size:13px;color:#6b5e52;margin:0 0 24px;line-height:1.6;">Your order has been received and is now being processed. We'll notify you once it ships.</p>
-
-      <div style="background:#f2ece3;border:1px solid #e0d5c5;border-radius:3px;padding:14px 18px;margin-bottom:28px;">
-        <p style="margin:0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;">Order Number</p>
-        <p style="margin:4px 0 0;font-size:17px;letter-spacing:.06em;color:#3e362e;">${order_number}</p>
-      </div>
-
-      <table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
-        <thead>
-          <tr style="border-bottom:2px solid #d9c4a8;">
-            <th style="text-align:left;padding-bottom:10px;font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;">Item</th>
-            <th style="text-align:center;padding-bottom:10px;font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;">Qty</th>
-            <th style="text-align:right;padding-bottom:10px;font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a7d6e;">Price</th>
-          </tr>
-        </thead>
-        <tbody>${itemRows}</tbody>
-        <tfoot>
-          <tr>
-            <td colspan="2" style="padding-top:14px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8a7d6e;">Delivery (${deliveryLabel})</td>
-            <td style="padding-top:14px;text-align:right;font-size:13px;">BDT ${parseFloat(delivery_fee || 0).toLocaleString()}</td>
-          </tr>
-          <tr>
-            <td colspan="2" style="padding-top:10px;font-size:13px;letter-spacing:.06em;">Total</td>
-            <td style="padding-top:10px;text-align:right;font-size:18px;font-weight:600;letter-spacing:.04em;">BDT ${parseFloat(final_amount).toLocaleString()}</td>
-          </tr>
-        </tfoot>
-      </table>
-
-      <hr style="border:none;border-top:1px solid #d9c4a8;margin:28px 0;">
-
-      <p style="font-size:12px;color:#8a7d6e;margin:0 0 6px;">Payment method: <strong style="color:#3e362e;">${payLabel}</strong></p>
-      ${payment_method === 'bkash' || payment_method === 'nagad'
-        ? `<p style="font-size:12px;color:#8a7d6e;margin:0 0 20px;">Your payment is awaiting verification. We'll confirm once checked.</p>`
-        : `<p style="font-size:12px;color:#8a7d6e;margin:0 0 20px;">Payment will be collected upon delivery.</p>`}
-
-      <hr style="border:none;border-top:1px solid #d9c4a8;margin:0 0 24px;">
-      <p style="font-size:11px;color:#a09080;text-align:center;letter-spacing:.06em;margin:0;">Questions? Reply to this email or message us on Facebook.<br>© Colonial, Chittagong</p>
-    </div>`
-  });
-}
 
 // ── CLOUDINARY CONFIG ──────────────────────────────────────────
 if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
@@ -107,11 +35,12 @@ const PORT       = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'colonial_super_secret_key_change_me';
 
 // ── MIDDLEWARE ─────────────────────────────────────────────────
-app.use(compression());
+app.use(compression()); // gzip all responses
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 app.use(cookieParser());
 
+// Static files with aggressive caching for immutable assets
 app.use(express.static('public', {
   maxAge: '1d',
   etag: true,
@@ -139,7 +68,7 @@ passport.deserializeUser(async (id, done) => {
   } catch (err) { done(err); }
 });
 
-// ── SIMPLE IN-MEMORY CACHE ─────────────────────────────────────
+// ── SIMPLE IN-MEMORY CACHE (for stats & product lists) ─────────
 const cache = new Map();
 function setCache(key, value, ttlMs = 30_000) {
   cache.set(key, { value, expires: Date.now() + ttlMs });
@@ -229,6 +158,7 @@ const mapProduct = (p) => ({
 });
 
 // ── SSE MANAGER ────────────────────────────────────────────────
+// Uses a Set instead of array for O(1) removal
 class SSEBroadcaster {
   constructor() { this.clients = new Set(); }
   add(res, cleanup) {
@@ -245,7 +175,8 @@ class SSEBroadcaster {
 }
 
 const orderBroadcaster = new SSEBroadcaster();
-const customerSSE = new Map();
+// Per-user customer SSE
+const customerSSE = new Map(); // userId -> Set<res>
 
 function addCustomerClient(userId, res) {
   if (!customerSSE.has(userId)) customerSSE.set(userId, new Set());
@@ -266,9 +197,10 @@ function initSSEResponse(res) {
     'Content-Type':  'text/event-stream',
     'Cache-Control': 'no-cache, no-transform',
     'Connection':    'keep-alive',
-    'X-Accel-Buffering': 'no',
+    'X-Accel-Buffering': 'no', // Nginx: disable buffering
   });
   res.flushHeaders();
+  // Heartbeat every 25s to prevent proxy timeouts
   const hb = setInterval(() => { try { res.write(': ping\n\n'); } catch {} }, 25_000);
   return hb;
 }
@@ -301,6 +233,7 @@ const PRODUCT_SELECT = `
   FROM products
 `;
 
+// GET all active products (cached 30s)
 app.get('/api/products', async (req, res) => {
   const cached = getCache('products:all');
   if (cached) return res.json(cached);
@@ -316,6 +249,7 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
+// GET products with search / filter / pagination
 app.get('/api/products/search', async (req, res) => {
   const { q = '', category = 'all', sort = 'newest', page = 1, limit = 8 } = req.query;
   const params = [];
@@ -353,6 +287,7 @@ app.get('/api/products/search', async (req, res) => {
   }
 });
 
+// GET single product
 app.get('/api/products/:id', async (req, res) => {
   const cacheKey = `product:${req.params.id}`;
   const cached   = getCache(cacheKey);
@@ -370,6 +305,7 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
+// POST create product (admin)
 app.post('/api/products', authenticateToken, requireAdmin, async (req, res) => {
   const { name, price, discount_amount, category, image_url, images,
           badge, description, materials, colors, care, stock } = req.body;
@@ -396,6 +332,7 @@ app.post('/api/products', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
+// PUT update product (admin)
 app.put('/api/products/:id', authenticateToken, requireAdmin, async (req, res) => {
   const { name, price, discount_amount, category, image_url, images,
           badge, description, materials, colors, care, stock, is_active } = req.body;
@@ -424,6 +361,7 @@ app.put('/api/products/:id', authenticateToken, requireAdmin, async (req, res) =
   }
 });
 
+// DELETE product (admin)
 app.delete('/api/products/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rowCount } = await pool.query('DELETE FROM products WHERE id = $1', [req.params.id]);
@@ -435,6 +373,7 @@ app.delete('/api/products/:id', authenticateToken, requireAdmin, async (req, res
   }
 });
 
+// Product variants (stub — kept for compatibility)
 app.get('/api/products/:id/variants', async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -507,12 +446,13 @@ app.post('/api/orders', async (req, res) => {
   if (!Array.isArray(items) || !items.length)
     return res.status(400).json({ error: 'Cart is empty. Cannot place order.' });
 
-  const finalEmail     = userEmail || customer_email;
-  const order_number   = `COL-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const finalEmail    = userEmail || customer_email;
+  const order_number  = `COL-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
   const payment_status = (payment_method === 'bkash' || payment_method === 'nagad')
     ? 'awaiting_verification' : 'pending';
 
   try {
+    // All DB work in a transaction for consistency
     const client = await pool.connect();
     let orderId;
     try {
@@ -545,6 +485,7 @@ app.post('/api/orders', async (req, res) => {
       );
       orderId = rows[0].id;
 
+      // Increment coupon usage
       if (coupon_code) {
         await client.query(
           'UPDATE coupons SET used_count = used_count + 1 WHERE UPPER(code) = UPPER($1)',
@@ -552,6 +493,7 @@ app.post('/api/orders', async (req, res) => {
         );
       }
 
+      // Upsert customer analytics
       await client.query(
         `INSERT INTO customers (email, name, phone, total_orders, total_spent, last_order_at)
          VALUES ($1,$2,$3,1,$4,CURRENT_TIMESTAMP)
@@ -564,6 +506,7 @@ app.post('/api/orders', async (req, res) => {
         [finalEmail, customer_name, customer_phone || null, parseFloat(final_amount) || 0]
       );
 
+      // Decrement stock — batch with unnest for efficiency
       if (items.length) {
         const ids  = items.map(i => i.id);
         const qtys = items.map(i => i.quantity);
@@ -591,15 +534,6 @@ app.post('/api/orders', async (req, res) => {
       created_at: new Date().toISOString(),
     });
 
-    if (finalEmail) {
-      sendOrderConfirmation({
-        order_number, customer_name,
-        customer_email: finalEmail,
-        items, final_amount,
-        payment_method, delivery_method, delivery_fee,
-      }).catch(err => console.error('Confirmation email error:', err));
-    }
-
     res.status(201).json({ id: orderId, order_number, payment_status });
   } catch (err) {
     console.error('Order creation error:', err);
@@ -607,6 +541,7 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
+// GET admin all orders
 app.get('/api/admin/orders', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -622,6 +557,7 @@ app.get('/api/admin/orders', authenticateToken, requireAdmin, async (req, res) =
   }
 });
 
+// PUT order status (admin) + broadcast to customer
 app.put('/api/admin/orders/:id/status', authenticateToken, requireAdmin, async (req, res) => {
   const VALID_STATUSES = new Set(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']);
   const { status } = req.body;
@@ -633,6 +569,7 @@ app.put('/api/admin/orders/:id/status', authenticateToken, requireAdmin, async (
     );
     if (!rows.length) return res.status(404).json({ error: 'Order not found' });
 
+    // Fire-and-forget customer lookup + SSE broadcast
     pool.query('SELECT id FROM users WHERE email = $1', [rows[0].customer_email])
       .then(({ rows: u }) => {
         if (u.length) broadcastToCustomer(u[0].id, {
@@ -647,6 +584,7 @@ app.put('/api/admin/orders/:id/status', authenticateToken, requireAdmin, async (
   }
 });
 
+// PUT payment status (admin)
 app.put('/api/admin/orders/:id/payment-status', authenticateToken, requireAdmin, async (req, res) => {
   const VALID_PAY = new Set(['pending', 'awaiting_verification', 'paid', 'failed']);
   const { payment_status } = req.body;
@@ -671,6 +609,7 @@ app.put('/api/admin/orders/:id/payment-status', authenticateToken, requireAdmin,
   }
 });
 
+// DELETE order (admin)
 app.delete('/api/admin/orders/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rowCount } = await pool.query('DELETE FROM orders WHERE id = $1', [req.params.id]);
@@ -682,6 +621,7 @@ app.delete('/api/admin/orders/:id', authenticateToken, requireAdmin, async (req,
   }
 });
 
+// GET admin stats (cached 30s, parallel queries)
 app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) => {
   const cached = getCache('stats');
   if (cached) return res.json(cached);
@@ -849,6 +789,7 @@ app.post('/api/products/:id/reviews', authenticateToken, async (req, res) => {
       'INSERT INTO reviews (product_id, user_id, user_name, rating, comment) VALUES ($1,$2,$3,$4,$5)',
       [productId, req.user.id, req.user.name || 'Anonymous', rating, comment || '']
     );
+    // Single query: update avg & count together
     await pool.query(
       `UPDATE products SET
          avg_rating   = (SELECT AVG(rating)  FROM reviews WHERE product_id = $1),
@@ -861,6 +802,7 @@ app.post('/api/products/:id/reviews', authenticateToken, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// Admin: list all reviews
 app.get('/api/admin/reviews', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -875,6 +817,7 @@ app.get('/api/admin/reviews', authenticateToken, requireAdmin, async (req, res) 
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// Admin: delete review + recalculate rating
 app.delete('/api/admin/reviews/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(
