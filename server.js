@@ -1,10 +1,11 @@
-// server.js — COLONIAL E-Commerce Backend (Optimised)
-// PostgreSQL + Cloudinary + JWT Auth + SSE + Coupons
+// server.js — COLONIAL E-Commerce Backend
+// PostgreSQL + Cloudinary + JWT Auth + SSE + Coupons + Brevo Email
 require('dotenv').config();
 
 const express      = require('express');
 const cors         = require('cors');
 const path         = require('path');
+const crypto       = require('crypto');
 const bcrypt       = require('bcrypt');
 const jwt          = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
@@ -13,6 +14,7 @@ const pgSession    = require('connect-pg-simple')(session);
 const passport     = require('passport');
 const multer       = require('multer');
 const compression  = require('compression');
+const nodemailer   = require('nodemailer');
 const pool         = require('./db');
 const cloudinary   = require('cloudinary').v2;
 
@@ -29,18 +31,290 @@ if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !pr
 }
 console.log('🔌 DB:', process.env.DATABASE_URL ? 'DATABASE_URL (cloud)' : 'local config');
 
+// ── BREVO EMAIL (via nodemailer SMTP) ──────────────────────────
+const mailerReady = !!(process.env.BREVO_SMTP_KEY);
+if (!mailerReady) {
+  console.warn('⚠️  BREVO_SMTP_KEY not set — emails will be skipped.');
+} else {
+  console.log('✅ Brevo mailer configured');
+}
+
+const transporter = nodemailer.createTransport({
+  host:   'smtp-relay.brevo.com',
+  port:   587,
+  secure: false,
+  auth: {
+    user: process.env.BREVO_SMTP_LOGIN || 'aee85c001@smtp-brevo.com',
+    pass: process.env.BREVO_SMTP_KEY,
+  },
+});
+
+const EMAIL_FROM      = process.env.EMAIL_FROM      || 'noreply@colonial.com';
+const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || 'COLONIAL';
+const APP_URL         = process.env.APP_URL         || 'http://localhost:3000';
+
+async function sendEmail({ to, subject, html }) {
+  if (!mailerReady) return;
+  try {
+    await transporter.sendMail({
+      from:    `"${EMAIL_FROM_NAME}" <${EMAIL_FROM}>`,
+      to:      Array.isArray(to) ? to.join(', ') : to,
+      subject,
+      html,
+    });
+  } catch (err) {
+    console.error('Brevo send error:', err.message);
+  }
+}
+
+// ── EMAIL TEMPLATES ────────────────────────────────────────────
+function emailShell(bodyHtml) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f0eb;font-family:Georgia,serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f0eb;padding:40px 0">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0"
+             style="background:#fff;border-radius:4px;overflow:hidden;max-width:600px">
+        <!-- Header -->
+        <tr>
+          <td style="background:#1a1a1a;padding:32px 40px;text-align:center">
+            <h1 style="margin:0;color:#c9a96e;font-size:28px;letter-spacing:6px;font-weight:400">COLONIAL</h1>
+            <p style="margin:8px 0 0;color:#999;font-size:11px;letter-spacing:3px;text-transform:uppercase">Timeless Elegance</p>
+          </td>
+        </tr>
+        ${bodyHtml}
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f5f0eb;padding:24px 40px;text-align:center;border-top:1px solid #e8e0d5">
+            <p style="margin:0;color:#999;font-size:12px;letter-spacing:1px">
+              © ${new Date().getFullYear()} COLONIAL. All rights reserved.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function goldBtn(link, label) {
+  return `<table cellpadding="0" cellspacing="0" style="margin-top:24px"><tr><td>
+    <a href="${link}"
+       style="display:inline-block;background:#1a1a1a;color:#c9a96e;text-decoration:none;
+              padding:14px 36px;font-size:13px;letter-spacing:2px;text-transform:uppercase;border-radius:2px">
+      ${label}
+    </a>
+  </td></tr></table>`;
+}
+
+async function sendVerificationEmail(user, token) {
+  const link = `${APP_URL}/api/auth/verify-email?token=${token}`;
+  await sendEmail({
+    to:      user.email,
+    subject: 'Verify your COLONIAL account',
+    html: emailShell(`
+      <tr><td style="padding:48px 40px 32px">
+        <h2 style="margin:0 0 16px;color:#1a1a1a;font-size:22px;font-weight:400">
+          Welcome${user.name ? ', ' + user.name : ''}
+        </h2>
+        <p style="margin:0 0 8px;color:#555;font-size:15px;line-height:1.7">
+          Thank you for creating your COLONIAL account. Please verify your email address
+          to complete registration.
+        </p>
+        ${goldBtn(link, 'Verify Email Address')}
+        <p style="margin:28px 0 0;color:#888;font-size:13px;line-height:1.6">
+          This link expires in <strong>24 hours</strong>.
+          If you didn't create an account, you can safely ignore this email.
+        </p>
+        <p style="margin:12px 0 0;color:#bbb;font-size:11px;word-break:break-all">
+          Or copy: <a href="${link}" style="color:#c9a96e">${link}</a>
+        </p>
+      </td></tr>`),
+  });
+}
+
+async function sendOrderConfirmationEmail(order) {
+  const {
+    customer_name, customer_email, order_number,
+    items, final_amount, payment_method,
+    shipping_address, delivery_method, delivery_fee,
+  } = order;
+
+  const parsedItems = typeof items === 'string' ? JSON.parse(items) : (items || []);
+  const payLabel = { cash_on_delivery: 'Cash on Delivery', bkash: 'bKash', nagad: 'Nagad' }[payment_method]
+    || payment_method || 'N/A';
+
+  const itemRows = parsedItems.map(item => `
+    <tr>
+      <td style="padding:10px 0;border-bottom:1px solid #f0ebe5;color:#333;font-size:14px">
+        ${item.name}${item.color ? ` <span style="color:#999">(${item.color})</span>` : ''}
+      </td>
+      <td style="padding:10px 0;border-bottom:1px solid #f0ebe5;color:#333;font-size:14px;text-align:center">
+        ${item.quantity}
+      </td>
+      <td style="padding:10px 0;border-bottom:1px solid #f0ebe5;color:#333;font-size:14px;text-align:right">
+        BDT ${(item.price * item.quantity).toLocaleString()}
+      </td>
+    </tr>`).join('');
+
+  const deliveryRow = parseFloat(delivery_fee) > 0
+    ? `<tr>
+         <td style="color:#888;font-size:13px;padding:6px 0">Delivery Fee</td>
+         <td style="color:#555;font-size:13px;text-align:right;padding:6px 0">
+           BDT ${parseFloat(delivery_fee).toLocaleString()}
+         </td>
+       </tr>` : '';
+
+  await sendEmail({
+    to:      customer_email,
+    subject: `Order Confirmed — ${order_number}`,
+    html: emailShell(`
+      <!-- Green banner -->
+      <tr>
+        <td style="background:#2d5a27;padding:18px 40px;text-align:center">
+          <p style="margin:0;color:#fff;font-size:15px;letter-spacing:1px">✓ &nbsp;Your order has been confirmed</p>
+        </td>
+      </tr>
+      <tr><td style="padding:40px 40px 32px">
+        <p style="margin:0 0 8px;color:#555;font-size:15px">Dear ${customer_name},</p>
+        <p style="margin:0 0 28px;color:#555;font-size:15px;line-height:1.7">
+          Thank you for your order. We've received it and will begin processing shortly.
+        </p>
+
+        <!-- Order meta -->
+        <table width="100%" cellpadding="0" cellspacing="0"
+               style="background:#f9f6f2;border-radius:4px;padding:20px;margin-bottom:28px">
+          <tr>
+            <td style="color:#888;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding-bottom:4px">Order Number</td>
+            <td style="color:#1a1a1a;font-size:15px;text-align:right;font-weight:bold">${order_number}</td>
+          </tr>
+          <tr>
+            <td style="color:#888;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding-top:12px">Payment</td>
+            <td style="color:#555;font-size:14px;text-align:right;padding-top:12px">${payLabel}</td>
+          </tr>
+          ${delivery_method ? `
+          <tr>
+            <td style="color:#888;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding-top:12px">Delivery</td>
+            <td style="color:#555;font-size:14px;text-align:right;padding-top:12px">${delivery_method}</td>
+          </tr>` : ''}
+          ${shipping_address ? `
+          <tr>
+            <td style="color:#888;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding-top:12px">Ship To</td>
+            <td style="color:#555;font-size:14px;text-align:right;padding-top:12px">${shipping_address}</td>
+          </tr>` : ''}
+        </table>
+
+        <!-- Items table -->
+        <h3 style="margin:0 0 16px;color:#1a1a1a;font-size:13px;letter-spacing:2px;text-transform:uppercase;font-weight:400">
+          Order Summary
+        </h3>
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <thead>
+            <tr>
+              <th style="color:#888;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:400;
+                         padding-bottom:10px;border-bottom:2px solid #e8e0d5;text-align:left">Item</th>
+              <th style="color:#888;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:400;
+                         padding-bottom:10px;border-bottom:2px solid #e8e0d5;text-align:center">Qty</th>
+              <th style="color:#888;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:400;
+                         padding-bottom:10px;border-bottom:2px solid #e8e0d5;text-align:right">Total</th>
+            </tr>
+          </thead>
+          <tbody>${itemRows}</tbody>
+        </table>
+
+        <!-- Totals -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px">
+          ${deliveryRow}
+          <tr>
+            <td style="color:#1a1a1a;font-size:16px;font-weight:bold;padding:14px 0 0;border-top:2px solid #1a1a1a">
+              Total
+            </td>
+            <td style="color:#c9a96e;font-size:18px;font-weight:bold;text-align:right;padding:14px 0 0;border-top:2px solid #1a1a1a">
+              BDT ${parseFloat(final_amount).toLocaleString()}
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:32px 0 0;color:#888;font-size:13px;line-height:1.7">
+          Questions? Reply to this email and we'll be happy to help.
+        </p>
+      </td></tr>`),
+  });
+}
+
+async function sendOrderStatusEmail(order, newStatus) {
+  const cfg = {
+    confirmed: { label: 'Confirmed', color: '#2d5a27', msg: 'Your order has been confirmed and is being prepared.' },
+    shipped:   { label: 'Shipped',   color: '#1a4a7a', msg: 'Great news — your order is on its way!' },
+    delivered: { label: 'Delivered', color: '#1a1a1a', msg: 'Your order has been delivered. We hope you love it!' },
+    cancelled: { label: 'Cancelled', color: '#8b2020', msg: 'Your order has been cancelled. Contact us if you have questions.' },
+  }[newStatus];
+  if (!cfg) return;
+
+  await sendEmail({
+    to:      order.customer_email,
+    subject: `Order ${cfg.label} — ${order.order_number}`,
+    html: emailShell(`
+      <tr>
+        <td style="background:${cfg.color};padding:18px 40px;text-align:center">
+          <p style="margin:0;color:#fff;font-size:15px;letter-spacing:1px">Order ${cfg.label}</p>
+        </td>
+      </tr>
+      <tr><td style="padding:40px">
+        <p style="margin:0 0 16px;color:#555;font-size:15px">Dear ${order.customer_name},</p>
+        <p style="margin:0 0 24px;color:#555;font-size:15px;line-height:1.7">${cfg.msg}</p>
+        <table width="100%" cellpadding="0" cellspacing="0"
+               style="background:#f9f6f2;border-radius:4px;padding:20px">
+          <tr>
+            <td style="color:#888;font-size:12px;letter-spacing:1px;text-transform:uppercase">Order Number</td>
+            <td style="color:#1a1a1a;font-size:15px;text-align:right;font-weight:bold">${order.order_number}</td>
+          </tr>
+          <tr>
+            <td style="color:#888;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding-top:12px">Status</td>
+            <td style="color:${cfg.color};font-size:14px;text-align:right;padding-top:12px;font-weight:bold">
+              ${cfg.label}
+            </td>
+          </tr>
+        </table>
+      </td></tr>`),
+  });
+}
+
+async function sendPasswordResetEmail(user, token) {
+  const link = `${APP_URL}/reset-password?token=${token}`;
+  await sendEmail({
+    to:      user.email,
+    subject: 'Reset your COLONIAL password',
+    html: emailShell(`
+      <tr><td style="padding:48px 40px 32px">
+        <h2 style="margin:0 0 16px;color:#1a1a1a;font-size:22px;font-weight:400">Password Reset</h2>
+        <p style="margin:0 0 8px;color:#555;font-size:15px;line-height:1.7">
+          We received a request to reset the password for your COLONIAL account.
+          Click below to choose a new password.
+        </p>
+        ${goldBtn(link, 'Reset Password')}
+        <p style="margin:28px 0 0;color:#888;font-size:13px;line-height:1.6">
+          This link expires in <strong>1 hour</strong>.
+          If you didn't request this, you can safely ignore this email.
+        </p>
+      </td></tr>`),
+  });
+}
+
 // ── APP SETUP ──────────────────────────────────────────────────
 const app        = express();
 const PORT       = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'colonial_super_secret_key_change_me';
 
 // ── MIDDLEWARE ─────────────────────────────────────────────────
-app.use(compression()); // gzip all responses
+app.use(compression());
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 app.use(cookieParser());
 
-// Static files with aggressive caching for immutable assets
 app.use(express.static('public', {
   maxAge: '1d',
   etag: true,
@@ -68,7 +342,7 @@ passport.deserializeUser(async (id, done) => {
   } catch (err) { done(err); }
 });
 
-// ── SIMPLE IN-MEMORY CACHE (for stats & product lists) ─────────
+// ── SIMPLE IN-MEMORY CACHE ─────────────────────────────────────
 const cache = new Map();
 function setCache(key, value, ttlMs = 30_000) {
   cache.set(key, { value, expires: Date.now() + ttlMs });
@@ -158,7 +432,6 @@ const mapProduct = (p) => ({
 });
 
 // ── SSE MANAGER ────────────────────────────────────────────────
-// Uses a Set instead of array for O(1) removal
 class SSEBroadcaster {
   constructor() { this.clients = new Set(); }
   add(res, cleanup) {
@@ -175,8 +448,7 @@ class SSEBroadcaster {
 }
 
 const orderBroadcaster = new SSEBroadcaster();
-// Per-user customer SSE
-const customerSSE = new Map(); // userId -> Set<res>
+const customerSSE = new Map();
 
 function addCustomerClient(userId, res) {
   if (!customerSSE.has(userId)) customerSSE.set(userId, new Set());
@@ -194,20 +466,19 @@ function broadcastToCustomer(userId, data) {
 
 function initSSEResponse(res) {
   res.writeHead(200, {
-    'Content-Type':  'text/event-stream',
-    'Cache-Control': 'no-cache, no-transform',
-    'Connection':    'keep-alive',
-    'X-Accel-Buffering': 'no', // Nginx: disable buffering
+    'Content-Type':      'text/event-stream',
+    'Cache-Control':     'no-cache, no-transform',
+    'Connection':        'keep-alive',
+    'X-Accel-Buffering': 'no',
   });
   res.flushHeaders();
-  // Heartbeat every 25s to prevent proxy timeouts
   const hb = setInterval(() => { try { res.write(': ping\n\n'); } catch {} }, 25_000);
   return hb;
 }
 
 // Admin SSE
 app.get('/api/admin/order-events', authenticateToken, requireAdmin, (req, res) => {
-  const hb    = initSSEResponse(res);
+  const hb     = initSSEResponse(res);
   const remove = orderBroadcaster.add(res);
   req.on('close', () => { clearInterval(hb); remove(); });
 });
@@ -233,7 +504,6 @@ const PRODUCT_SELECT = `
   FROM products
 `;
 
-// GET all active products (cached 30s)
 app.get('/api/products', async (req, res) => {
   const cached = getCache('products:all');
   if (cached) return res.json(cached);
@@ -244,18 +514,15 @@ app.get('/api/products', async (req, res) => {
     const result = rows.map(mapProduct);
     setCache('products:all', result, 30_000);
     res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// GET products with search / filter / pagination
 app.get('/api/products/search', async (req, res) => {
   const { q = '', category = 'all', sort = 'newest', page = 1, limit = 8 } = req.query;
   const params = [];
   let where = ' WHERE is_active = true';
 
-  if (q)              { params.push(`%${q}%`); where += ` AND name ILIKE $${params.length}`; }
+  if (q)               { params.push(`%${q}%`); where += ` AND name ILIKE $${params.length}`; }
   if (category !== 'all') { params.push(category); where += ` AND category = $${params.length}`; }
 
   const orderBy = sort === 'price_asc' ? 'final_price ASC'
@@ -282,12 +549,9 @@ app.get('/api/products/search', async (req, res) => {
       limit:      lim,
       totalPages: Math.ceil(total / lim),
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// GET single product
 app.get('/api/products/:id', async (req, res) => {
   const cacheKey = `product:${req.params.id}`;
   const cached   = getCache(cacheKey);
@@ -300,12 +564,9 @@ app.get('/api/products/:id', async (req, res) => {
     const result = mapProduct(rows[0]);
     setCache(cacheKey, result, 60_000);
     res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// POST create product (admin)
 app.post('/api/products', authenticateToken, requireAdmin, async (req, res) => {
   const { name, price, discount_amount, category, image_url, images,
           badge, description, materials, colors, care, stock } = req.body;
@@ -327,12 +588,9 @@ app.post('/api/products', authenticateToken, requireAdmin, async (req, res) => {
     );
     invalidateCache('products:all', 'stats');
     res.status(201).json({ id: rows[0].id, ...req.body });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// PUT update product (admin)
 app.put('/api/products/:id', authenticateToken, requireAdmin, async (req, res) => {
   const { name, price, discount_amount, category, image_url, images,
           badge, description, materials, colors, care, stock, is_active } = req.body;
@@ -356,24 +614,18 @@ app.put('/api/products/:id', authenticateToken, requireAdmin, async (req, res) =
     if (!rowCount) return res.status(404).json({ error: 'Product not found' });
     invalidateCache('products:all', `product:${req.params.id}`, 'stats');
     res.json({ id: req.params.id, ...req.body });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// DELETE product (admin)
 app.delete('/api/products/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rowCount } = await pool.query('DELETE FROM products WHERE id = $1', [req.params.id]);
     if (!rowCount) return res.status(404).json({ error: 'Product not found' });
     invalidateCache('products:all', `product:${req.params.id}`, 'stats');
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Product variants (stub — kept for compatibility)
 app.get('/api/products/:id/variants', async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -420,9 +672,7 @@ app.post('/api/validate-coupon', async (req, res) => {
       discount_type:  coupon.discount_type,
       discount_value: parseFloat(coupon.discount_value),
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -446,13 +696,12 @@ app.post('/api/orders', async (req, res) => {
   if (!Array.isArray(items) || !items.length)
     return res.status(400).json({ error: 'Cart is empty. Cannot place order.' });
 
-  const finalEmail    = userEmail || customer_email;
-  const order_number  = `COL-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const finalEmail     = userEmail || customer_email;
+  const order_number   = `COL-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
   const payment_status = (payment_method === 'bkash' || payment_method === 'nagad')
     ? 'awaiting_verification' : 'pending';
 
   try {
-    // All DB work in a transaction for consistency
     const client = await pool.connect();
     let orderId;
     try {
@@ -476,16 +725,15 @@ app.post('/api/orders', async (req, res) => {
           JSON.stringify(items),
           coupon_code ? coupon_code.toUpperCase().trim() : null,
           notes || null,
-          payment_method   || 'cash_on_delivery',
-          transaction_id   || null,
+          payment_method  || 'cash_on_delivery',
+          transaction_id  || null,
           payment_status,
-          delivery_method  || null,
+          delivery_method || null,
           parseFloat(delivery_fee) || 0,
         ]
       );
       orderId = rows[0].id;
 
-      // Increment coupon usage
       if (coupon_code) {
         await client.query(
           'UPDATE coupons SET used_count = used_count + 1 WHERE UPPER(code) = UPPER($1)',
@@ -493,7 +741,6 @@ app.post('/api/orders', async (req, res) => {
         );
       }
 
-      // Upsert customer analytics
       await client.query(
         `INSERT INTO customers (email, name, phone, total_orders, total_spent, last_order_at)
          VALUES ($1,$2,$3,1,$4,CURRENT_TIMESTAMP)
@@ -506,7 +753,6 @@ app.post('/api/orders', async (req, res) => {
         [finalEmail, customer_name, customer_phone || null, parseFloat(final_amount) || 0]
       );
 
-      // Decrement stock — batch with unnest for efficiency
       if (items.length) {
         const ids  = items.map(i => i.id);
         const qtys = items.map(i => i.quantity);
@@ -534,6 +780,13 @@ app.post('/api/orders', async (req, res) => {
       created_at: new Date().toISOString(),
     });
 
+    // ✉️ Order confirmation email (fire-and-forget)
+    sendOrderConfirmationEmail({
+      customer_name, customer_email: finalEmail, order_number,
+      items, final_amount, payment_method,
+      shipping_address, delivery_method, delivery_fee,
+    }).catch(console.error);
+
     res.status(201).json({ id: orderId, order_number, payment_status });
   } catch (err) {
     console.error('Order creation error:', err);
@@ -544,44 +797,43 @@ app.post('/api/orders', async (req, res) => {
 // GET admin all orders
 app.get('/api/admin/orders', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const { rows } = await pool.query(
-      'SELECT * FROM orders ORDER BY created_at DESC'
-    );
+    const { rows } = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
     res.json(rows.map(o => ({
       ...o,
       items:        serializeItems(o.items),
       final_amount: o.final_amount ?? o.total_amount ?? 0,
     })));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// PUT order status (admin) + broadcast to customer
+// PUT order status (admin) + SSE broadcast + status email
 app.put('/api/admin/orders/:id/status', authenticateToken, requireAdmin, async (req, res) => {
   const VALID_STATUSES = new Set(['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']);
   const { status } = req.body;
   if (!VALID_STATUSES.has(status)) return res.status(400).json({ error: 'Invalid status' });
   try {
     const { rows } = await pool.query(
-      'UPDATE orders SET order_status = $1 WHERE id = $2 RETURNING customer_email',
+      'UPDATE orders SET order_status = $1 WHERE id = $2 RETURNING *',
       [status, req.params.id]
     );
     if (!rows.length) return res.status(404).json({ error: 'Order not found' });
 
-    // Fire-and-forget customer lookup + SSE broadcast
-    pool.query('SELECT id FROM users WHERE email = $1', [rows[0].customer_email])
+    const updatedOrder = rows[0];
+
+    // SSE broadcast to customer
+    pool.query('SELECT id FROM users WHERE email = $1', [updatedOrder.customer_email])
       .then(({ rows: u }) => {
         if (u.length) broadcastToCustomer(u[0].id, {
           type: 'order_status_update', orderId: parseInt(req.params.id), newStatus: status,
         });
       }).catch(() => {});
 
+    // ✉️ Status update email (fire-and-forget)
+    sendOrderStatusEmail(updatedOrder, status).catch(console.error);
+
     invalidateCache('stats');
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // PUT payment status (admin)
@@ -604,9 +856,7 @@ app.put('/api/admin/orders/:id/payment-status', authenticateToken, requireAdmin,
       }).catch(() => {});
 
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // DELETE order (admin)
@@ -616,12 +866,10 @@ app.delete('/api/admin/orders/:id', authenticateToken, requireAdmin, async (req,
     if (!rowCount) return res.status(404).json({ error: 'Order not found' });
     invalidateCache('stats');
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// GET admin stats (cached 30s, parallel queries)
+// GET admin stats
 app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) => {
   const cached = getCache('stats');
   if (cached) return res.json(cached);
@@ -641,9 +889,7 @@ app.get('/api/admin/stats', authenticateToken, requireAdmin, async (req, res) =>
     };
     setCache('stats', result, 30_000);
     res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -789,7 +1035,6 @@ app.post('/api/products/:id/reviews', authenticateToken, async (req, res) => {
       'INSERT INTO reviews (product_id, user_id, user_name, rating, comment) VALUES ($1,$2,$3,$4,$5)',
       [productId, req.user.id, req.user.name || 'Anonymous', rating, comment || '']
     );
-    // Single query: update avg & count together
     await pool.query(
       `UPDATE products SET
          avg_rating   = (SELECT AVG(rating)  FROM reviews WHERE product_id = $1),
@@ -802,7 +1047,6 @@ app.post('/api/products/:id/reviews', authenticateToken, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Admin: list all reviews
 app.get('/api/admin/reviews', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -817,7 +1061,6 @@ app.get('/api/admin/reviews', authenticateToken, requireAdmin, async (req, res) 
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Admin: delete review + recalculate rating
 app.delete('/api/admin/reviews/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -866,23 +1109,125 @@ app.delete('/api/admin/wishlist/:id', authenticateToken, requireAdmin, async (re
 // ═══════════════════════════════════════════════════════════════
 // AUTHENTICATION
 // ═══════════════════════════════════════════════════════════════
+
+// REGISTER — creates account + sends verification email
 app.post('/api/auth/register', async (req, res) => {
   const { email, password, name } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
   try {
     const { rows: ex } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
     if (ex.length) return res.status(409).json({ error: 'Email already exists' });
-    const hashed = await bcrypt.hash(password, 12);
+
+    const hashed    = await bcrypt.hash(password, 12);
+    const verifyTok = crypto.randomBytes(32).toString('hex');
+    const verifyExp = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 h
+
     const { rows } = await pool.query(
-      'INSERT INTO users (email, password, name, role) VALUES ($1,$2,$3,$4) RETURNING id,email,name,role',
-      [email, hashed, name || null, 'customer']
+      `INSERT INTO users (email, password, name, role, verify_token, verify_token_exp)
+       VALUES ($1,$2,$3,$4,$5,$6)
+       RETURNING id, email, name, role`,
+      [email, hashed, name || null, 'customer', verifyTok, verifyExp]
     );
-    const user  = rows[0];
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
-    res.status(201).json({ token, user });
+    const user = rows[0];
+
+    // ✉️ Verification email (fire-and-forget)
+    sendVerificationEmail(user, verifyTok).catch(console.error);
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET, { expiresIn: '7d' }
+    );
+    res.status(201).json({
+      token, user,
+      message: 'Account created. Please check your email to verify your address.',
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// VERIFY EMAIL — clicked from email link
+app.get('/api/auth/verify-email', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).send('Token required');
+  try {
+    const { rows } = await pool.query(
+      `UPDATE users
+       SET email_verified = TRUE, verify_token = NULL, verify_token_exp = NULL
+       WHERE verify_token = $1
+         AND verify_token_exp > NOW()
+         AND email_verified = FALSE
+       RETURNING id`,
+      [token]
+    );
+    if (!rows.length) return res.redirect(`${APP_URL}/?verified=invalid`);
+    res.redirect(`${APP_URL}/?verified=success`);
+  } catch (err) {
+    console.error('Verify email error:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+// RESEND VERIFICATION
+app.post('/api/auth/resend-verification', authenticateToken, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, email, name, email_verified FROM users WHERE id = $1', [req.user.id]
+    );
+    if (!rows.length)           return res.status(404).json({ error: 'User not found' });
+    if (rows[0].email_verified) return res.status(400).json({ error: 'Email already verified' });
+
+    const token  = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await pool.query(
+      'UPDATE users SET verify_token = $1, verify_token_exp = $2 WHERE id = $3',
+      [token, expiry, req.user.id]
+    );
+    sendVerificationEmail(rows[0], token).catch(console.error);
+    res.json({ message: 'Verification email resent.' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// FORGOT PASSWORD
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email required' });
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, email, name FROM users WHERE email = $1', [email]
+    );
+    // Always 200 — prevents email enumeration
+    if (!rows.length) return res.json({ message: 'If that email exists, a reset link has been sent.' });
+
+    const token  = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 h
+    await pool.query(
+      'UPDATE users SET reset_token = $1, reset_token_exp = $2 WHERE id = $3',
+      [token, expiry, rows[0].id]
+    );
+    sendPasswordResetEmail(rows[0], token).catch(console.error);
+    res.json({ message: 'If that email exists, a reset link has been sent.' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// RESET PASSWORD
+app.post('/api/auth/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) return res.status(400).json({ error: 'Token and new password required' });
+  if (password.length < 8)  return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  try {
+    const hashed = await bcrypt.hash(password, 12);
+    const { rows } = await pool.query(
+      `UPDATE users
+       SET password = $1, reset_token = NULL, reset_token_exp = NULL
+       WHERE reset_token = $2 AND reset_token_exp > NOW()
+       RETURNING id`,
+      [hashed, token]
+    );
+    if (!rows.length) return res.status(400).json({ error: 'Invalid or expired reset link' });
+    res.json({ message: 'Password updated successfully.' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// LOGIN
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
@@ -900,10 +1245,11 @@ app.post('/api/auth/login', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// ME
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, email, name, role FROM users WHERE id = $1', [req.user.id]
+      'SELECT id, email, name, role, email_verified FROM users WHERE id = $1', [req.user.id]
     );
     if (!rows.length) return res.status(404).json({ error: 'User not found' });
     res.json(rows[0]);
