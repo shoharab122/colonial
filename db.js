@@ -4,22 +4,19 @@ require('dotenv').config();
 let pool;
 
 if (process.env.DATABASE_URL) {
-  // Add sslmode=verify-full to silence pg SSL warning
-  const dbUrl = process.env.DATABASE_URL.includes('?')
-    ? `${process.env.DATABASE_URL}&sslmode=verify-full`
-    : `${process.env.DATABASE_URL}?sslmode=verify-full`;
-  
+  // For Render's PostgreSQL connection string
   pool = new Pool({
-    connectionString: dbUrl,
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
   });
 } else {
   // Local development fallback
   pool = new Pool({
-    host:     process.env.DB_HOST     || 'localhost',
-    port:     process.env.DB_PORT     || 5432,
-    user:     process.env.DB_USER     || 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME     || 'colonial_db',
+    database: process.env.DB_NAME || 'colonial_db',
   });
 }
 
