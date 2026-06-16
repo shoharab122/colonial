@@ -4,10 +4,13 @@ require('dotenv').config();
 let pool;
 
 if (process.env.DATABASE_URL) {
-  // For Neon / Render PostgreSQL — explicit rejectUnauthorized silences pg SSL warning
+  // Add sslmode=verify-full to silence pg SSL warning
+  const dbUrl = process.env.DATABASE_URL.includes('?')
+    ? `${process.env.DATABASE_URL}&sslmode=verify-full`
+    : `${process.env.DATABASE_URL}?sslmode=verify-full`;
+  
   pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: true },
+    connectionString: dbUrl,
   });
 } else {
   // Local development fallback
