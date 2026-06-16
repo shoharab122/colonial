@@ -4,10 +4,10 @@ require('dotenv').config();
 let pool;
 
 if (process.env.DATABASE_URL) {
-  // For Render's PostgreSQL connection string
+  // For Neon / Render PostgreSQL — explicit verify-full silences pg SSL warning
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: true },
   });
 } else {
   // Local development fallback
