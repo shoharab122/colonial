@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1016,10 +1015,13 @@
             opacity: 0;
             transform: translateY(24px);
             animation: cardReveal .5s cubic-bezier(.16,1,.3,1) forwards;
-            contain: content; /* paint isolation — faster compositing */
+            will-change: transform, box-shadow;
+            contain: layout style;
+        }
+        @keyframes cardReveal {
+            to { opacity: 1; transform: translateY(0); }
         }
         .product-card:hover {
-            will-change: transform, box-shadow; /* promote GPU layer only during interaction */
             box-shadow:
                 0 20px 60px rgba(62,54,46,.16),
                 0 8px 24px rgba(162,139,111,.12),
