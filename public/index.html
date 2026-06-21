@@ -2980,16 +2980,26 @@ let selectedSize = 'M';
 
 // ── Lightweight in-memory API cache (30 s TTL) ──────────────────────────────
 const _apiCache = new Map();
+const _apiPending = new Map();
 async function _cachedFetch(url, ttlMs) {
     ttlMs = ttlMs || 30000;
     const now = Date.now();
     const hit = _apiCache.get(url);
     if (hit && (now - hit.ts) < ttlMs) return hit.data;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Network error ' + res.status);
-    const data = await res.json();
-    _apiCache.set(url, { ts: now, data: data });
-    return data;
+    if (_apiPending.has(url)) return _apiPending.get(url);
+    const p = (async () => {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Network error ' + res.status);
+            const data = await res.json();
+            _apiCache.set(url, { ts: Date.now(), data: data });
+            return data;
+        } finally {
+            _apiPending.delete(url);
+        }
+    })();
+    _apiPending.set(url, p);
+    return p;
 }
 function _bustCache(prefix) {
     _apiCache.forEach((_, k) => { if (k.startsWith(prefix)) _apiCache.delete(k); });
@@ -3000,6 +3010,7 @@ let currentUser = null;
 let appliedCoupon = null;
 let couponDiscount = 0;
 let customerEventSource = null;
+let _sseRetryDelay = 5000;
 let carouselProducts = [], currentSlide = 0, slideInterval;
 let wishlist = [];
 let currentRating = 0;
@@ -3060,7 +3071,7 @@ async function renderWishlistModal() {
     if (!prods.length) { c.innerHTML = '<div class="col-span-full text-center text-[var(--colonial-text-muted)] py-8">Your wishlist is empty.</div>'; return; }
     c.innerHTML = prods.map(p => `
         <div class="wishlist-card">
-            <img src="${p.image_url||'https://placehold.co/300x360/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-40 object-cover">
+            <img src="${p.image_url||'https://placehold.co/300x360/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-40 object-cover" loading="lazy" decoding="async">
             <div class="p-3">
                 <p class="font-serif text-base font-light leading-snug mb-1">${escapeHtml(p.name)}</p>
                 <p class="text-sm text-[var(--colonial-text-muted)] mb-3">BDT ${p.final_price||p.price}</p>
@@ -3116,13 +3127,17 @@ function initCustomerSSE() {
     if (customerEventSource) customerEventSource.close();
     if (!authToken) return;
     customerEventSource = new EventSource(`/api/customer/order-events?token=${authToken}`);
+    customerEventSource.onopen = () => { _sseRetryDelay = 5000; };
     customerEventSource.onmessage = e => {
         const d = JSON.parse(e.data);
         if (d.type === 'order_status_update') showToast(`Order #${d.orderId} → ${d.newStatus}`);
         else if (d.type === 'payment_status_update') showToast(`Payment for order #${d.orderId}: ${d.paymentStatus}`);
         if (document.getElementById('orders-modal').style.display==='flex') loadCustomerOrders();
     };
-    customerEventSource.onerror = () => setTimeout(initCustomerSSE, 5000);
+    customerEventSource.onerror = () => {
+        setTimeout(initCustomerSSE, _sseRetryDelay);
+        _sseRetryDelay = Math.min(_sseRetryDelay * 2, 60000);
+    };
 }
 
 // ==================== AUTH ====================
@@ -3272,7 +3287,7 @@ async function loadCustomerOrders() {
                     const items = JSON.parse(o.items||'[]');
                     itemsHtml = items.map(i => `
                         <div class="order-item-row">
-                            <img src="${i.image_url||'https://placehold.co/44x56/e8e2d9/7a7570?text=C'}" class="order-item-img" loading="lazy">
+                            <img src="${i.image_url||'https://placehold.co/44x56/e8e2d9/7a7570?text=C'}" class="order-item-img" loading="lazy" decoding="async">
                             <div class="flex-1 min-w-0">
                                 <p class="order-item-name truncate">${escapeHtml(i.name)}${i.size?` <span style="color:var(--colonial-text-muted);font-size:.75rem;">(${i.size})</span>`:''}</p>
                                 <p class="order-item-meta">Qty ${i.quantity}${i.color&&i.color!=='Default'?` · ${i.color}`:''}</p>
@@ -3355,7 +3370,7 @@ function updateCartUI() {
     } else {
         container.innerHTML = cart.map((item, idx) => `
             <div class="cart-item-row">
-                <img src="${item.image_url||'https://placehold.co/72x90/e8e2d9/7a7570?text=C'}" class="cart-item-img">
+                <img src="${item.image_url||'https://placehold.co/72x90/e8e2d9/7a7570?text=C'}" class="cart-item-img" loading="lazy" decoding="async">
                 <div class="flex-1 min-w-0">
                     <p class="font-medium text-sm leading-snug truncate">${escapeHtml(item.name)}</p>
                     <p class="text-xs text-[var(--colonial-text-muted)] mt-0.5">Size ${item.size||'M'} · ${item.color||'Default'}</p>
@@ -3439,7 +3454,7 @@ function renderCarousel() {
     if (!carouselProducts.length) { c.innerHTML = '<div class="w-full text-center py-12 text-[var(--colonial-text-muted)]">No products</div>'; return; }
     c.innerHTML = carouselProducts.map(p => `
         <div class="flex-shrink-0 w-56 md:w-72 mx-3 md:mx-4 carousel-card cursor-pointer" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
-            <img src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-56 md:h-72 object-cover" loading="lazy">
+            <img src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-56 md:h-72 object-cover" loading="lazy" decoding="async">
             <div class="p-4 text-center">
                 <h3 class="font-serif text-lg font-light leading-snug mb-1">${escapeHtml(p.name)}</h3>
                 <p class="text-sm text-[var(--colonial-text-muted)] mb-3">BDT ${p.final_price||p.price}</p>
@@ -3454,16 +3469,24 @@ function startAutoSlide() {
     if (slideInterval) clearInterval(slideInterval);
     slideInterval = setInterval(() => { currentSlide = (currentSlide+1)%carouselProducts.length; updateCarouselPosition(); }, 5000);
 }
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (slideInterval) clearInterval(slideInterval); }
+    else if (carouselProducts.length) startAutoSlide();
+}, { passive: true });
 function nextSlide() { currentSlide = (currentSlide+1)%carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
 function prevSlide() { currentSlide = (currentSlide-1+carouselProducts.length)%carouselProducts.length; updateCarouselPosition(); resetAutoSlide(); }
 function resetAutoSlide() { if (slideInterval) clearInterval(slideInterval); startAutoSlide(); }
 
 // ==================== PRODUCTS ====================
+let _productsAbortController = null;
 async function loadProducts(resetPage=true) {
     if (resetPage) currentPage=1;
     const container = document.getElementById('products-container');
     if (!container) return;
     if (resetPage) container.innerHTML = '<div class="col-span-full text-center py-16 text-[var(--colonial-text-muted)] text-sm tracking-widest uppercase">Loading…</div>';
+    if (_productsAbortController) _productsAbortController.abort();
+    _productsAbortController = new AbortController();
+    const signal = _productsAbortController.signal;
     try {
         let products=[], total=0, totalPagesCalc=1;
         if (currentFilters.category==='all' && !currentFilters.q) {
@@ -3471,7 +3494,7 @@ async function loadProducts(resetPage=true) {
             products=d; total=d.length; totalPagesCalc=Math.ceil(total/8);
         } else {
             const params = new URLSearchParams({ q:currentFilters.q, category:currentFilters.category, sort:currentFilters.sort, page:currentPage, limit:8 });
-            const d = await (await fetch(`/api/products/search?${params}`)).json();
+            const d = await (await fetch(`/api/products/search?${params}`, { signal })).json();
             products=d.products; total=d.total; totalPagesCalc=d.totalPages||Math.ceil(total/8);
         }
         container.innerHTML='';
@@ -3480,13 +3503,14 @@ async function loadProducts(resetPage=true) {
             document.getElementById('load-more')?.classList.add('hidden');
             return;
         }
+        const frag = document.createDocumentFragment();
         products.forEach(p => {
             const card = document.createElement('div');
             card.className = 'product-card group';
             card.innerHTML = `
                 <div class="relative overflow-hidden bg-[var(--colonial-hover)]" style="aspect-ratio:3/4;">
                     <img src="${p.image_url||'https://placehold.co/600x800/e8e2d9/7a7570?text=COLONIAL'}"
-                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" decoding="async">
                     ${p.badge?`<span class="badge">${escapeHtml(p.badge)}</span>`:''}
                     <div class="quick-add-overlay">
                         <button class="w-full bg-white/95 backdrop-blur-sm text-[var(--colonial-text)] py-2.5 text-[.65rem] uppercase tracking-[.12em] font-medium rounded-sm transition hover:bg-white"
@@ -3511,11 +3535,13 @@ async function loadProducts(resetPage=true) {
                         </div>`:''}
                 </div>`;
             card.onclick = () => openProductModal(p);
-            container.appendChild(card);
+            frag.appendChild(card);
         });
+        container.appendChild(frag);
         totalPages = totalPagesCalc;
         document.getElementById('load-more')?.classList.toggle('hidden', currentPage>=totalPages);
     } catch(e) {
+        if (e.name === 'AbortError') return;
         console.error(e);
         container.innerHTML='<div class="col-span-full text-center py-16 text-red-500">Error loading products. Please refresh.</div>';
     }
@@ -3860,6 +3886,7 @@ async function placeOrder() {
         return Math.max(0, 1 - Math.pow(d, 1.7));
     }
 
+    let _dmRaf = null;
     /* ── main draw loop ── */
     function draw(ts) {
         t = ts * 0.001; // seconds
@@ -3920,7 +3947,7 @@ async function placeOrder() {
             ctx.fill();
         }
 
-        requestAnimationFrame(draw);
+        _dmRaf = requestAnimationFrame(draw);
     }
 
     /* ── event listeners ── */
@@ -3980,9 +4007,14 @@ async function placeOrder() {
         }
     }
 
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { if (_dmRaf) cancelAnimationFrame(_dmRaf); _dmRaf = null; }
+        else if (!_dmRaf) { _dmRaf = requestAnimationFrame(draw); }
+    }, { passive: true });
+
     window.addEventListener('resize', () => { resize(); }, { passive: true });
     resize();
-    requestAnimationFrame(draw);
+    _dmRaf = requestAnimationFrame(draw);
 })();
 
 // ══════════════════════════════════════════
