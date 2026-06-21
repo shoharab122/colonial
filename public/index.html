@@ -3642,7 +3642,7 @@ function openLightbox() {
 }
 
 function closeProductModal() { document.getElementById('product-modal').style.display='none'; }
-function addCurrentToCart() { if (currentProduct) addToCart(currentProduct,1); closeProductModal(); }
+function addCurrentToCart() { if (currentProduct) addToCart({...currentProduct, price: currentProduct.final_price||currentProduct.price}, 1); closeProductModal(); }
 
 // Stars
 const reviewStars=document.querySelectorAll('#review-stars .star');
