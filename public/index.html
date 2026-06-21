@@ -2981,7 +2981,7 @@ let selectedSize = 'M';
 // ── Lightweight in-memory API cache (30 s TTL) ──────────────────────────────
 const _apiCache = new Map();
 const _apiPending = new Map();
-async function _cachedFetch(url, ttlMs) {
+async function _cachedFetch(url, ttlMs, opts) {
     ttlMs = ttlMs || 30000;
     const now = Date.now();
     const hit = _apiCache.get(url);
@@ -2989,7 +2989,7 @@ async function _cachedFetch(url, ttlMs) {
     if (_apiPending.has(url)) return _apiPending.get(url);
     const p = (async () => {
         try {
-            const res = await fetch(url);
+            const res = await fetch(url, opts);
             if (!res.ok) throw new Error('Network error ' + res.status);
             const data = await res.json();
             _apiCache.set(url, { ts: Date.now(), data: data });
@@ -3003,6 +3003,11 @@ async function _cachedFetch(url, ttlMs) {
 }
 function _bustCache(prefix) {
     _apiCache.forEach((_, k) => { if (k.startsWith(prefix)) _apiCache.delete(k); });
+}
+function _fetchWithTimeout(url, opts, timeoutMs) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs || 20000);
+    return fetch(url, { ...(opts||{}), signal: controller.signal }).finally(() => clearTimeout(id));
 }
 let selectedColor = { hex: '', name: '' };
 let authToken = localStorage.getItem('amoura_token');
@@ -3020,6 +3025,12 @@ function escapeHtml(s) {
     return s.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;');
 }
 
+let _lucideRaf = null;
+function _refreshIcons() {
+    if (_lucideRaf) return;
+    _lucideRaf = requestAnimationFrame(() => { if (window.lucide) lucide.createIcons(); _lucideRaf = null; });
+}
+
 function showToast(msg) {
     const t = document.getElementById('toast');
     if (!t) return;
@@ -3035,11 +3046,16 @@ function getPaymentStatusBadge(status) {
 }
 
 // ==================== WISHLIST ====================
+function _fetchWishlist() {
+    if (!authToken) return Promise.resolve([]);
+    return _cachedFetch('/api/wishlist', 10000, { headers: { 'Authorization': `Bearer ${authToken}` } });
+}
+
 async function loadWishlistCount() {
     if (!authToken) return;
     try {
-        const r = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${authToken}` } });
-        wishlist = (await r.json()).map(p => p.id);
+        const prods = await _fetchWishlist();
+        wishlist = prods.map(p => p.id);
         const s = document.getElementById('wishlist-count');
         if (s) { s.textContent = wishlist.length; s.style.opacity = wishlist.length ? '1' : '0'; }
     } catch(e) { console.error(e); }
@@ -3052,6 +3068,7 @@ async function toggleWishlist(productId) {
     try {
         const r = await fetch(url, { method: inW?'DELETE':'POST', headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${authToken}` }, body: JSON.stringify({ product_id: productId }) });
         if (r.ok) {
+            _bustCache('/api/wishlist');
             if (inW) wishlist = wishlist.filter(id => id !== productId); else wishlist.push(productId);
             const s = document.getElementById('wishlist-count');
             if (s) { s.textContent = wishlist.length; s.style.opacity = wishlist.length ? '1' : '0'; }
@@ -3065,7 +3082,7 @@ async function toggleWishlist(productId) {
 
 async function renderWishlistModal() {
     if (!authToken) return;
-    const prods = await (await fetch('/api/wishlist', { headers: { 'Authorization':`Bearer ${authToken}` } })).json();
+    const prods = await _fetchWishlist();
     const c = document.getElementById('wishlist-items');
     if (!c) return;
     if (!prods.length) { c.innerHTML = '<div class="col-span-full text-center text-[var(--colonial-text-muted)] py-8">Your wishlist is empty.</div>'; return; }
@@ -3091,7 +3108,7 @@ function closeWishlistModal() { document.getElementById('wishlist-modal').style.
 
 // ==================== REVIEWS ====================
 async function loadReviews(productId) {
-    const reviews = await (await fetch(`/api/products/${productId}/reviews`)).json();
+    const reviews = await _cachedFetch(`/api/products/${productId}/reviews`, 15000);
     const c = document.getElementById('reviews-container');
     if (!c) return;
     if (!reviews.length) { c.innerHTML = '<p class="text-sm text-[var(--colonial-text-muted)]">No reviews yet. Be the first!</p>'; }
@@ -3118,7 +3135,7 @@ async function submitReview(productId, rating, comment) {
         headers:{ 'Content-Type':'application/json','Authorization':`Bearer ${authToken}` },
         body: JSON.stringify({ rating, comment })
     });
-    if (r.ok) { showToast('Review submitted — thank you!'); loadReviews(productId); }
+    if (r.ok) { _bustCache(`/api/products/${productId}/reviews`); showToast('Review submitted — thank you!'); loadReviews(productId); }
     else alert((await r.json()).error);
 }
 
@@ -3254,13 +3271,13 @@ document.getElementById('auth-submit')?.addEventListener('click', async () => {
     const body = { email, password };
     if (!isLoginMode) body.name = document.getElementById('auth-name').value.trim();
     try {
-        const r = await fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+        const r = await _fetchWithTimeout(endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }, 15000);
         const d = await r.json();
         if (!r.ok) throw new Error(d.error||'Authentication failed');
         authToken = d.token; localStorage.setItem('amoura_token', authToken);
         currentUser = d.user; updateAuthUI(); closeAuthModal(); initCustomerSSE(); loadWishlistCount();
         showToast(`Welcome, ${d.user.name||d.user.email}!`);
-    } catch(e) { showToast(e.message); }
+    } catch(e) { showToast(e.name === 'AbortError' ? 'Request timed out — please try again.' : e.message); }
 });
 
 // ==================== ORDERS — REDESIGNED ========================
@@ -3387,7 +3404,7 @@ function updateCartUI() {
     }
 
     if (typeof updatePaymentInstruction === 'function') updatePaymentInstruction();
-    lucide.createIcons();
+    _refreshIcons();
 }
 
 function changeQty(idx, delta) {
@@ -3462,7 +3479,7 @@ function renderCarousel() {
                         class="btn-primary px-5 py-2 rounded-sm text-[.65rem]">Quick Add</button>
             </div>
         </div>`).join('');
-    lucide.createIcons();
+    _refreshIcons();
     updateCarouselPosition();
 }
 function startAutoSlide() {
@@ -3728,7 +3745,7 @@ document.getElementById('apply-coupon-btn')?.addEventListener('click', async() =
     if (!code) return;
     const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
     try {
-        const r = await fetch('/api/validate-coupon', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ code, cartTotal: subtotal }) });
+        const r = await _fetchWithTimeout('/api/validate-coupon', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ code, cartTotal: subtotal }) }, 10000);
         const d = await r.json();
         if (!r.ok) throw new Error(d.error);
         appliedCoupon = code;
@@ -3739,7 +3756,7 @@ document.getElementById('apply-coupon-btn')?.addEventListener('click', async() =
         updatePaymentInstruction();
     } catch(e) {
         const fb = document.getElementById('coupon-feedback');
-        if (fb) fb.innerHTML = `<span class="text-red-600">${e.message}</span>`;
+        if (fb) fb.innerHTML = `<span class="text-red-600">${e.name === 'AbortError' ? 'Request timed out — please try again.' : e.message}</span>`;
     }
 });
 
@@ -3789,7 +3806,7 @@ async function placeOrder() {
     try {
         const headers = { 'Content-Type':'application/json' };
         if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
-        const r = await fetch('/api/orders', { method:'POST', headers, body: JSON.stringify(orderData) });
+        const r = await _fetchWithTimeout('/api/orders', { method:'POST', headers, body: JSON.stringify(orderData) }, 25000);
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || 'Order failed');
 
@@ -3813,7 +3830,7 @@ async function placeOrder() {
         const insideRadio = document.querySelector('input[name="delivery_option"][value="inside"]');
         if (insideRadio) insideRadio.checked = true;
         updatePaymentInstruction();
-    } catch(e) { showToast(e.message); }
+    } catch(e) { showToast(e.name === 'AbortError' ? 'Request timed out — please check your connection and try again.' : e.message); }
 }
 
 // ══════════════════════════════════════════
@@ -4012,7 +4029,11 @@ async function placeOrder() {
         else if (!_dmRaf) { _dmRaf = requestAnimationFrame(draw); }
     }, { passive: true });
 
-    window.addEventListener('resize', () => { resize(); }, { passive: true });
+    let _dmResizeTimer = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(_dmResizeTimer);
+        _dmResizeTimer = setTimeout(resize, 120);
+    }, { passive: true });
     resize();
     _dmRaf = requestAnimationFrame(draw);
 })();
