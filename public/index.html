@@ -2882,6 +2882,25 @@
 
 <!-- ════════════════════════ SCRIPTS ════════════════════════ -->
 <script>
+/* ──────────────────────────────────────────────────────────────────────────
+   TABLE OF CONTENTS (search for these markers to jump around quickly)
+   - MODAL HELPERS              simple open/close for footer info modals
+   - MOBILE MENU AUTH           login/out button inside the slide-out menu
+   - TRACK ORDER (SSE)          live order tracking modal + EventSource
+   - DOM READY                  one-time event wiring on first load
+   - STATE                      cart / filters / auth / carousel state
+   - UNIVERSAL MODAL CLOSING    ESC key + backdrop click for every modal
+   - WISHLIST / REVIEWS / SSE   account-gated features
+   - AUTH                       sign in / register / session
+   - ORDERS                     "My Orders" list rendering
+   - CART                       drawer, qty, totals
+   - CAROUSEL                   hero "New Arrivals" slider
+   - PRODUCTS                   grid fetch/render + filters
+   - PRODUCT MODAL              quick-view, gallery, reviews, add to bag
+   - PAYMENT INSTRUCTION        delivery fee / advance payment math
+   - COUPON / CHECKOUT          coupon validation + place order
+   - DOT MATRIX / HERO FX       decorative canvas + entrance animations
+   ────────────────────────────────────────────────────────────────────────── */
 // ==================== MODAL HELPERS ====================
 function openTermsModal()    { document.getElementById('terms-modal').style.display='flex'; }
 function closeTermsModal()   { document.getElementById('terms-modal').style.display='none'; }
@@ -3107,6 +3126,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('next-btn')?.addEventListener('click', nextSlide);
 
     handleMobileAuth();
+    initUniversalModalClosing();
     // Defer icon init to avoid blocking interactive content
     const _lucideInit = () => { if (window.lucide) lucide.createIcons(); };
     if (window.requestIdleCallback) requestIdleCallback(_lucideInit, { timeout: 800 });
@@ -3121,7 +3141,19 @@ document.addEventListener('DOMContentLoaded', function () {
 // ==================== STATE ====================
 let currentPage = 1, totalPages = 1;
 let currentFilters = { q: '', category: 'all', sort: 'newest' };
-let cart = JSON.parse(localStorage.getItem('amoura_cart')) || [];
+function _safeLocalGet(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+function _safeLocalSet(key, val) {
+    try { localStorage.setItem(key, val); return true; } catch (e) { return false; }
+}
+function _safeLocalRemove(key) {
+    try { localStorage.removeItem(key); } catch (e) {}
+}
+let cart = (function() {
+    try { return JSON.parse(_safeLocalGet('amoura_cart')) || []; }
+    catch (e) { return []; }
+})();
 let currentProduct = null;
 let selectedSize = 'M';
 
@@ -3157,7 +3189,7 @@ function _fetchWithTimeout(url, opts, timeoutMs) {
     return fetch(url, { ...(opts||{}), signal: controller.signal }).finally(() => clearTimeout(id));
 }
 let selectedColor = { hex: '', name: '' };
-let authToken = localStorage.getItem('amoura_token');
+let authToken = _safeLocalGet('amoura_token');
 let currentUser = null;
 let appliedCoupon = null;
 let couponDiscount = 0;
@@ -3166,6 +3198,44 @@ let _sseRetryDelay = 5000;
 let carouselProducts = [], currentSlide = 0, slideInterval;
 let wishlist = [];
 let currentRating = 0;
+
+// ==================== UNIVERSAL MODAL CLOSING (ESC + backdrop click) ====================
+// Additive convenience layer: doesn't replace any existing close button/logic,
+// just gives every .modal-backdrop overlay (and the cart/menu drawers) a
+// standard way to be dismissed for a more interactive feel.
+function initUniversalModalClosing() {
+    // Click outside the panel (on the dimmed backdrop) closes that modal
+    document.querySelectorAll('.modal-backdrop').forEach(function(backdrop) {
+        backdrop.addEventListener('click', function(e) {
+            if (e.target === backdrop) backdrop.style.display = 'none';
+        }, { passive: true });
+    });
+
+    // ESC closes whichever overlay is currently open (checked in sensible priority order)
+    document.addEventListener('keydown', function(e) {
+        if (e.key !== 'Escape') return;
+
+        // Lightbox (dynamically created) takes priority if present
+        const lightbox = document.querySelector('.fixed.inset-0.bg-black\\/95');
+        if (lightbox) { lightbox.remove(); return; }
+
+        const openBackdrop = Array.from(document.querySelectorAll('.modal-backdrop'))
+            .find(function(m) { return m.style.display === 'flex'; });
+        if (openBackdrop) { openBackdrop.style.display = 'none'; return; }
+
+        const orderConfirmed = document.getElementById('order-confirmed-overlay');
+        if (orderConfirmed && orderConfirmed.classList.contains('active')) {
+            if (typeof closeOrderConfirmed === 'function') closeOrderConfirmed();
+            return;
+        }
+
+        const cartDrawer = document.getElementById('cart-drawer');
+        if (cartDrawer && !cartDrawer.classList.contains('translate-x-full')) { toggleCart(); return; }
+
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenu && !mobileMenu.classList.contains('-translate-x-full')) { toggleMenu(); return; }
+    }, { passive: true });
+}
 
 function escapeHtml(s) {
     if (!s) return '';
@@ -3491,7 +3561,7 @@ async function loadCustomerOrders() {
 function closeOrdersModal() { document.getElementById('orders-modal').style.display='none'; }
 
 // ==================== CART ====================
-function saveCart() { localStorage.setItem('amoura_cart', JSON.stringify(cart)); updateCartUI(); }
+function saveCart() { _safeLocalSet('amoura_cart', JSON.stringify(cart)); updateCartUI(); }
 
 function updateCartUI() {
     const subtotal = cart.reduce((s,i) => s+(i.price*i.quantity), 0);
@@ -3605,9 +3675,18 @@ function updateCarouselPosition() {
     const c = document.getElementById('product-carousel');
     if (c) c.style.transform = `translateX(-${currentSlide * getSlideWidth()}px)`;
 }
+// Reliability helper: retries a transient failure once after a short delay
+async function _withRetry(fn, retries=1, delayMs=800) {
+    try { return await fn(); }
+    catch (e) {
+        if (retries <= 0) throw e;
+        await new Promise(r => setTimeout(r, delayMs));
+        return _withRetry(fn, retries - 1, delayMs * 1.5);
+    }
+}
 async function loadCarouselProducts() {
     try {
-        carouselProducts = (await _cachedFetch('/api/products?limit=6')).slice(0,6);
+        carouselProducts = (await _withRetry(() => _cachedFetch('/api/products?limit=6'))).slice(0,6);
         renderCarousel(); startAutoSlide();
         window.addEventListener('resize', updateCarouselPosition);
     } catch(e) { console.error(e); }
@@ -3654,7 +3733,7 @@ async function loadProducts(resetPage=true) {
     try {
         let products=[], total=0, totalPagesCalc=1;
         if (currentFilters.category==='all' && !currentFilters.q) {
-            const d = await _cachedFetch('/api/products');
+            const d = await _withRetry(() => _cachedFetch('/api/products'));
             products=d; total=d.length; totalPagesCalc=Math.ceil(total/8);
         } else {
             const params = new URLSearchParams({ q:currentFilters.q, category:currentFilters.category, sort:currentFilters.sort, page:currentPage, limit:8 });
@@ -3712,7 +3791,7 @@ async function loadProducts(resetPage=true) {
 }
 
 async function loadCategories() {
-    const prods = await _cachedFetch('/api/products');
+    const prods = await _withRetry(() => _cachedFetch('/api/products'));
     const cats = ['all', ...new Set(prods.map(p=>p.category))];
     const sel = document.getElementById('category-filter');
     if (sel) sel.innerHTML = cats.map(c => `<option value="${c}">${c==='all'?'All Categories':c}</option>`).join('');
