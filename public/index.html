@@ -147,6 +147,83 @@
             box-shadow: 0 2px 16px rgba(62,54,46,.07);
         }
 
+        /* ── MOBILE HEADER FIX ──
+           On small screens the brand name was absolutely centered
+           independent of the icon group, so the icons could overlap
+           the logo. Below we put the logo back into normal flex flow
+           so it can never collide with the buttons, and tighten up
+           spacing/sizes so everything fits without horizontal scroll. */
+        @media (max-width: 640px) {
+            .header-pill {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+                gap: 4px;
+            }
+            #site-header h1 {
+                position: static !important;
+                left: auto !important;
+                transform: none !important;
+                flex: 1 1 auto;
+                min-width: 0;
+                text-align: center;
+                font-size: clamp(.95rem, 4.4vw, 1.15rem) !important;
+                letter-spacing: .09em !important;
+                white-space: nowrap;
+                overflow: hidden;
+                padding: 0 2px;
+            }
+            .header-pill > div:first-child,
+            .header-pill > div:last-child {
+                flex: 0 0 auto;
+            }
+            .header-pill > div:first-child { gap: 2px !important; }
+            .header-pill > div:last-child { gap: 2px !important; }
+            #site-header button[aria-label="Menu"],
+            #site-header button[aria-label="Search"],
+            #wishlist-btn,
+            #account-btn {
+                width: 32px !important;
+                height: 32px !important;
+            }
+            #site-header button[aria-label="Menu"] i,
+            #site-header button[aria-label="Search"] i,
+            #wishlist-btn i,
+            #account-btn i {
+                width: 15px !important;
+                height: 15px !important;
+            }
+            #site-header button[onclick="toggleCart()"] {
+                padding: 7px 12px !important;
+                margin-left: 0 !important;
+                gap: 5px !important;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header-pill {
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
+            #search-icon-btn { display: none; }
+            #site-header h1 {
+                font-size: clamp(.85rem, 5vw, 1rem) !important;
+                letter-spacing: .06em !important;
+            }
+        }
+
+        #account-dropdown,
+        #account-dropdown-signedout {
+            max-width: calc(100vw - 24px);
+        }
+        @media (max-width: 480px) {
+            #account-dropdown,
+            #account-dropdown-signedout {
+                min-width: 0 !important;
+                width: min(220px, calc(100vw - 24px));
+                right: -8px;
+            }
+        }
+
         /* ── MOBILE MENU ── */
         #mobile-menu {
             background: var(--colonial-bg);
@@ -2032,8 +2109,8 @@
                 <!-- Desktop nav links -->
                 <nav class="hidden lg:flex items-center gap-1">
                     <a href="#" onclick="filterByCategory('all');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Shop</a>
-                    <a href="#" onclick="filterByCategory('Women');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Women</a>
-                    <a href="#" onclick="filterByCategory('Men');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Men</a>
+                    <a href="#" onclick="filterByCategory('women');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Women</a>
+                    <a href="#" onclick="filterByCategory('men');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Men</a>
                     <a href="#" onclick="filterByCategory('accessories');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Accessories</a>
                 </nav>
             </div>
