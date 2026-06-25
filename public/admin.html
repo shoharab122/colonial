@@ -1451,7 +1451,7 @@ function buildInvoice(o) {
   const subtotal = items.reduce((s,i)=>s+i.price*i.quantity, 0);
   const delivery = parseFloat(o.delivery_fee||0);
   const discount = parseFloat(o.discount_applied||0);
-  const total    = parseFloat(o.final_amount||o.total_amount||0);
+  const total    = subtotal - discount; // delivery charge already paid, so total = product price only
   return `<div style="max-width:720px;margin:0 auto;font-family:'Jost',sans-serif;font-size:13px;color:#3E362E;">
     <div style="text-align:center;border-bottom:1.5px solid #3E362E;padding-bottom:16px;margin-bottom:22px;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:.22em;">COLONIAL</div>
