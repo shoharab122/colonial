@@ -999,6 +999,31 @@ footer a:hover { color:var(--sidebar-a); }
 <script>
 lucide.createIcons();
 
+/* ──────────────────────────────────────────────────────────────────────────
+   TABLE OF CONTENTS
+   - STATE              top-level data arrays + auth token
+   - MOBILE SIDEBAR     hamburger toggle
+   - UTILS              esc/fmtDate/fBDT/payBadge helpers
+   - AUTH FETCH         authFetch() — central wrapper for every API call
+   - NAVIGATION         showPage() — switches between dashboard pages
+   - SSE                live order updates + auto-reconnect
+   - STATS / PRODUCTS / ORDERS / COUPONS / REVIEWS / WISHLISTS
+   - UNIVERSAL MODAL CLOSING   ESC key for every .modal-overlay
+   - LOGIN              auth gate at the very bottom
+   ────────────────────────────────────────────────────────────────────────── */
+
+// Reliability: localStorage can throw in private/locked-down browser contexts —
+// these wrappers keep that from ever crashing the dashboard.
+function _safeLocalGet(key) {
+  try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+function _safeLocalSet(key, val) {
+  try { localStorage.setItem(key, val); return true; } catch (e) { return false; }
+}
+function _safeLocalRemove(key) {
+  try { localStorage.removeItem(key); } catch (e) {}
+}
+
 // ── STATE ─────────────────────────────────────
 let products    = [];
 let allReviews  = [];
@@ -1006,7 +1031,7 @@ let allWishlists= [];
 let allCoupons  = [];
 let allOrders   = [];
 let productImages = [];
-let authToken   = localStorage.getItem('amoura_admin_token');
+let authToken   = _safeLocalGet('amoura_admin_token');
 let eventSource = null;
 let reconnectTO = null;
 let editingCouponId = null;
@@ -1039,9 +1064,24 @@ async function authFetch(url, opts={}) {
   const headers = { 'Authorization': `Bearer ${authToken}` };
   if (opts.body && !(opts.body instanceof FormData)) headers['Content-Type'] = 'application/json';
   if (opts.headers) Object.assign(headers, opts.headers);
-  const res = await fetch(url, { ...opts, headers });
+  const method = (opts.method || 'GET').toUpperCase();
+  const isSafeToRetry = method === 'GET';
+
+  let res;
+  try {
+    res = await fetch(url, { ...opts, headers });
+  } catch (networkErr) {
+    // A single transient network blip shouldn't fail the whole request —
+    // only safe to auto-retry GETs (never mutating verbs, to avoid duplicates).
+    if (isSafeToRetry) {
+      await new Promise(r => setTimeout(r, 800));
+      res = await fetch(url, { ...opts, headers });
+    } else {
+      throw networkErr;
+    }
+  }
   if (res.status === 401 || res.status === 403) {
-    localStorage.removeItem('amoura_admin_token'); location.reload();
+    _safeLocalRemove('amoura_admin_token'); location.reload();
     throw new Error('Unauthorized');
   }
   return res;
@@ -1068,11 +1108,12 @@ function setSSE(on) {
   document.getElementById('sse-dot').classList.toggle('on', on);
   document.getElementById('sse-label').textContent = on ? 'Live' : 'Offline';
 }
+let sseRetryDelay = 5000;
 function initSSE() {
   if (eventSource) eventSource.close();
   if (!authToken) return;
   eventSource = new EventSource(`/api/admin/order-events?token=${authToken}`);
-  eventSource.onopen = () => setSSE(true);
+  eventSource.onopen = () => { setSSE(true); sseRetryDelay = 5000; };
   eventSource.onmessage = () => {
     loadOrders(); loadStats();
     const b = document.getElementById('orders-badge');
@@ -1082,7 +1123,8 @@ function initSSE() {
   eventSource.onerror = () => {
     setSSE(false); eventSource.close();
     if (reconnectTO) clearTimeout(reconnectTO);
-    reconnectTO = setTimeout(initSSE, 5000);
+    reconnectTO = setTimeout(initSSE, sseRetryDelay);
+    sseRetryDelay = Math.min(sseRetryDelay * 1.6, 60000);
   };
 }
 
@@ -1144,6 +1186,14 @@ document.getElementById('category-filter').addEventListener('change', renderProd
 
 document.querySelectorAll('.close-product-modal').forEach(b => b.addEventListener('click', () => document.getElementById('product-modal').classList.remove('open')));
 document.getElementById('product-modal').addEventListener('click', e => { if (e.target === document.getElementById('product-modal')) document.getElementById('product-modal').classList.remove('open'); });
+
+// ── UNIVERSAL MODAL CLOSING (ESC key) ──────────
+// Backdrop-click-to-close already exists per modal; this adds the
+// keyboard equivalent for all of them (product/coupon/invoice) at once.
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
 
 function openProductModal(p = null) {
   document.getElementById('modal-title').textContent   = p ? 'Edit Product' : 'Add Product';
@@ -1401,7 +1451,7 @@ function buildInvoice(o) {
   const subtotal = items.reduce((s,i)=>s+i.price*i.quantity, 0);
   const delivery = parseFloat(o.delivery_fee||0);
   const discount = parseFloat(o.discount_applied||0);
-  const invoiceTotal = subtotal - discount;  // Total for invoice = products only (minus discount, no delivery)
+  const total    = parseFloat(o.final_amount||o.total_amount||0);
   return `<div style="max-width:720px;margin:0 auto;font-family:'Jost',sans-serif;font-size:13px;color:#3E362E;">
     <div style="text-align:center;border-bottom:1.5px solid #3E362E;padding-bottom:16px;margin-bottom:22px;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:.22em;">COLONIAL</div>
@@ -1452,7 +1502,7 @@ function buildInvoice(o) {
       <div>Subtotal: ${fBDT(subtotal)}</div>
     ${discount>0 ? `<div>Coupon Discount: –${fBDT(discount)}${o.coupon_code?` (${esc(o.coupon_code)})`:''}` : ''}
     ${delivery>0 ? `<div style="color:#2E8A5A;font-weight:600;">✓ Delivery Charge Paid</div>` : ''}
-      <div style="font-size:14px;font-weight:600;border-top:1px solid #E8E2D5;padding-top:8px;margin-top:6px;">Total: ${fBDT(invoiceTotal)}</div>
+      <div style="font-size:14px;font-weight:600;border-top:1px solid #E8E2D5;padding-top:8px;margin-top:6px;">Total: ${fBDT(total)}</div>
     </div>
     <div style="text-align:center;margin-top:28px;font-size:11px;color:#7A6E5D;border-top:1px solid #E8E2D5;padding-top:12px;">
       Thank you for shopping with COLONIAL &nbsp;·&nbsp; Chittagong, Bangladesh
@@ -1672,8 +1722,8 @@ function initDashboard() {
 
 if (authToken) {
   fetch('/api/auth/me', {headers:{'Authorization':`Bearer ${authToken}`}})
-    .then(r => { if(r.ok) initDashboard(); else localStorage.removeItem('amoura_admin_token'); })
-    .catch(()=> localStorage.removeItem('amoura_admin_token'));
+    .then(r => { if(r.ok) initDashboard(); else _safeLocalRemove('amoura_admin_token'); })
+    .catch(()=> _safeLocalRemove('amoura_admin_token'));
 }
 
 document.getElementById('login-btn').addEventListener('click', async () => {
@@ -1686,14 +1736,14 @@ document.getElementById('login-btn').addEventListener('click', async () => {
     if (!res.ok) throw new Error(data.error||'Login failed');
     if (data.user.role !== 'admin') throw new Error('Not an admin account.');
     authToken = data.token;
-    localStorage.setItem('amoura_admin_token', authToken);
+    _safeLocalSet('amoura_admin_token', authToken);
     initDashboard();
   } catch(e) { alert('❌ '+e.message); }
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
   if (eventSource) eventSource.close();
-  localStorage.removeItem('amoura_admin_token');
+  _safeLocalRemove('amoura_admin_token');
   location.reload();
 });
 
