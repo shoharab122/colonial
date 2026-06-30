@@ -1685,6 +1685,96 @@
                 0 24px 60px rgba(62,54,46,.18),
                 0 0 0 1px rgba(162,139,111,.3);
         }
+        /* Entrance: cards rise, fade and soften in as the carousel renders */
+        @keyframes carouselCardIn {
+            from { opacity: 0; filter: blur(6px); transform: translateY(32px) scale(.95); }
+            to   { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+        }
+        .carousel-card {
+            opacity: 0;
+            animation: carouselCardIn .8s cubic-bezier(.16,1,.3,1) forwards;
+        }
+        /* Full product image, big and never cropped. A blurred, softly
+           saturated echo of the same photo fills the frame behind it —
+           no flat empty letterbox bars, and one consistent ratio across
+           every screen size so nothing jumps oddly between breakpoints. */
+        .carousel-img-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            background: var(--colonial-hover);
+        }
+        .carousel-img-backdrop {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(22px) saturate(1.15) brightness(1.04);
+            transform: scale(1.25);
+            opacity: .65;
+            transition: transform .7s cubic-bezier(.23,1,.32,1);
+        }
+        .carousel-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(253,251,247,0) 55%, rgba(253,251,247,.35) 100%);
+            pointer-events: none;
+        }
+        .carousel-img-wrap img.carousel-img-main {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 14px 28px rgba(62,54,46,.16));
+            transition: transform .7s cubic-bezier(.23,1,.32,1);
+            will-change: transform;
+        }
+        .carousel-card:hover .carousel-img-wrap img.carousel-img-main,
+        .carousel-card:active .carousel-img-wrap img.carousel-img-main {
+            transform: scale(1.09);
+        }
+        .carousel-card:hover .carousel-img-backdrop,
+        .carousel-card:active .carousel-img-backdrop {
+            transform: scale(1.32);
+        }
+
+        /* ── Mobile optimisation: lighter blur/shadow for GPU/battery,
+           simpler entrance (no filter:blur on entry — costly on phones),
+           tighter stagger so the row doesn't feel sluggish to populate. */
+        @media (max-width: 640px) {
+            @keyframes carouselCardIn {
+                from { opacity: 0; transform: translateY(18px) scale(.97); }
+                to   { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            .carousel-card { animation-duration: .5s; }
+            .carousel-img-backdrop {
+                filter: blur(12px) saturate(1.1) brightness(1.02);
+                transform: scale(1.18);
+            }
+            .carousel-img-wrap img.carousel-img-main {
+                filter: drop-shadow(0 8px 16px rgba(62,54,46,.14));
+                transition-duration: .45s;
+            }
+            .carousel-card:hover .carousel-img-wrap img.carousel-img-main,
+            .carousel-card:active .carousel-img-wrap img.carousel-img-main {
+                transform: scale(1.05);
+            }
+            .carousel-card:hover .carousel-img-backdrop,
+            .carousel-card:active .carousel-img-backdrop {
+                transform: scale(1.22);
+            }
+            .carousel-card:hover,
+            .carousel-card:active {
+                transform: translateY(-4px) scale(1.01);
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .carousel-card { animation: none; opacity: 1; }
+        }
 
         .divider {
             border: none;
@@ -1777,57 +1867,151 @@
             height: 1px;
             background: linear-gradient(to right, transparent, rgba(162,139,111,.4), transparent);
         }
+        /* faint decorative glow, echoes the welcome overlay's warmth */
+        .site-footer::after {
+            content: '';
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 520px;
+            height: 320px;
+            background: radial-gradient(ellipse, rgba(162,139,111,.10) 0%, transparent 70%);
+            pointer-events: none;
+        }
         .footer-inner {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 3.5rem 1.5rem 2rem;
+            padding: 4rem 1.5rem 2rem;
+            position: relative;
         }
-        .footer-brand {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            padding-bottom: 2rem;
+
+        /* ── Top grid: brand + 3 link columns ── */
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr;
+            gap: 3rem 2rem;
+            padding-bottom: 2.75rem;
+            margin-bottom: 2.25rem;
             border-bottom: 1px solid rgba(255,255,255,.08);
         }
-        .footer-brand-name {
+        .footer-col-brand .footer-brand-name {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             font-weight: 400;
-            letter-spacing: .18em;
-            color: rgba(255,255,255,.9);
+            letter-spacing: .16em;
+            color: rgba(255,255,255,.92);
             display: block;
-            margin-bottom: .4rem;
+            margin-bottom: .35rem;
         }
-        .footer-brand-tagline {
+        .footer-col-brand .footer-brand-tagline {
             font-size: .6rem;
             letter-spacing: .22em;
             text-transform: uppercase;
             color: var(--colonial-accent);
+            display: block;
+            margin-bottom: 1.1rem;
         }
-        .footer-nav {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: .25rem .5rem;
-            margin-bottom: 2rem;
+        .footer-brand-desc {
+            font-size: .78rem;
+            line-height: 1.75;
+            color: rgba(255,255,255,.42);
+            max-width: 280px;
+            margin-bottom: 1.5rem;
+            font-weight: 300;
         }
-        .footer-nav a {
+        .footer-col-title {
+            font-family: 'Jost', sans-serif;
             font-size: .65rem;
-            letter-spacing: .12em;
+            letter-spacing: .18em;
             text-transform: uppercase;
-            color: rgba(255,255,255,.45);
-            padding: .4rem .6rem;
-            min-height: 0;
+            font-weight: 500;
+            color: rgba(255,255,255,.85);
+            margin-bottom: 1.1rem;
+            position: relative;
+            padding-bottom: .6rem;
+        }
+        .footer-col-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 22px;
+            height: 1.5px;
+            background: var(--colonial-accent);
+        }
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: .7rem;
+        }
+        .footer-links a {
+            font-size: .78rem;
+            font-weight: 300;
+            color: rgba(255,255,255,.5);
+            transition: color .2s, transform .2s;
             display: inline-flex;
             align-items: center;
-            transition: color .2s;
-            border-radius: 2px;
+            gap: .4rem;
+            min-height: 0;
+            width: fit-content;
         }
-        .footer-nav a:hover { color: var(--colonial-accent); }
+        .footer-links a::before {
+            content: '';
+            width: 0;
+            height: 1px;
+            background: var(--colonial-accent);
+            transition: width .25s;
+        }
+        .footer-links a:hover {
+            color: rgba(255,255,255,.92);
+            transform: translateX(2px);
+        }
+        .footer-links a:hover::before { width: 10px; }
+
+        /* ── Payment method badges ── */
+        .footer-payment-title {
+            font-family: 'Jost', sans-serif;
+            font-size: .62rem;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            font-weight: 500;
+            color: rgba(255,255,255,.55);
+            margin: 1.6rem 0 .8rem;
+        }
+        .payment-methods-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .55rem;
+        }
+        .payment-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: .5rem 1rem;
+            border-radius: 7px;
+            font-family: 'Jost', sans-serif;
+            font-weight: 600;
+            font-size: .72rem;
+            letter-spacing: .01em;
+            min-height: 0;
+            line-height: 1;
+            box-shadow: 0 3px 10px rgba(0,0,0,.22), 0 0 0 1px rgba(255,255,255,.06) inset;
+            transition: transform .2s, box-shadow .2s;
+            cursor: default;
+            user-select: none;
+        }
+        .payment-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.1) inset;
+        }
+        .payment-chip.bkash { background: linear-gradient(135deg,#E2136E,#C4105F); color: #fff; }
+        .payment-chip.nagad { background: linear-gradient(135deg,#F6921E,#EE3124); color: #fff; }
+        .payment-chip.upay  { background: linear-gradient(135deg,#00A99D,#017A72); color: #fff; }
+
+        /* ── Social icons ── */
         .footer-social {
             display: flex;
-            justify-content: center;
-            gap: .75rem;
-            margin-bottom: 2rem;
+            gap: .65rem;
         }
         .footer-social a {
             width: 38px;
@@ -1838,23 +2022,105 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255,255,255,.45);
+            color: rgba(255,255,255,.5);
             font-size: .8rem;
-            transition: color .2s, border-color .2s, background .2s;
+            transition: color .2s, border-color .2s, background .2s, transform .2s;
         }
         .footer-social a:hover {
             color: var(--colonial-accent);
             border-color: var(--colonial-accent);
-            background: rgba(162,139,111,.08);
+            background: rgba(162,139,111,.1);
+            transform: translateY(-2px);
         }
+
+        /* ── Bottom bar ── */
         .footer-bottom {
-            text-align: center;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,.07);
-            font-size: .6rem;
-            letter-spacing: .1em;
-            color: rgba(255,255,255,.22);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: .75rem;
+            font-size: .62rem;
+            letter-spacing: .08em;
+            color: rgba(255,255,255,.28);
         }
+        .footer-bottom-made {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            color: rgba(255,255,255,.28);
+        }
+        .footer-bottom-made .dot {
+            width: 3px; height: 3px; border-radius: 50%;
+            background: var(--colonial-accent);
+            display: inline-block;
+        }
+
+        /* ── Mobile optimisation ───────────────────────────────── */
+        @media (max-width: 900px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 2.5rem 1.5rem;
+            }
+            .footer-col-brand { grid-column: 1 / -1; }
+            .footer-brand-desc { max-width: 100%; }
+        }
+        @media (max-width: 640px) {
+            .footer-inner { padding: 2.25rem 1.1rem 1.5rem; }
+            /* Keep the same left-aligned 2-column layout as desktop —
+               just compacted to fit the narrower viewport. */
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1.75rem 1rem;
+                text-align: left;
+                padding-bottom: 1.6rem;
+                margin-bottom: 1.4rem;
+            }
+            .footer-col-brand { grid-column: 1 / -1; }
+            .footer-col-brand .footer-brand-name { font-size: 1.5rem; }
+            .footer-col-brand .footer-brand-desc {
+                margin-left: 0;
+                margin-right: 0;
+                max-width: 100%;
+                font-size: .76rem;
+                line-height: 1.6;
+            }
+            .footer-col-title {
+                margin-bottom: .7rem;
+                padding-bottom: .45rem;
+                font-size: .6rem;
+            }
+            .footer-col-title::after { left: 0; transform: none; }
+            .footer-links { align-items: flex-start; gap: .55rem; }
+            .footer-links a { width: auto; font-size: .76rem; padding: .1rem 0; }
+            .footer-social { justify-content: flex-start; }
+            .footer-social a { width: 38px; height: 38px; }
+            .footer-payment-title { margin: 1.2rem 0 .6rem; }
+            .payment-methods-row { justify-content: flex-start; }
+            .payment-chip { padding: .5rem .9rem; font-size: .7rem; }
+            .footer-bottom {
+                flex-direction: column-reverse;
+                text-align: center;
+                gap: .5rem;
+                padding-top: 1.1rem;
+            }
+            .footer-bottom-made { justify-content: center; }
+        }
+        /* Extra-small phones (≤ 390px) — still 2 columns, just tighter */
+        @media (max-width: 390px) {
+            .footer-inner { padding: 2rem .9rem 1.25rem; }
+            .footer-grid { gap: 1.4rem .85rem; padding-bottom: 1.4rem; margin-bottom: 1.2rem; }
+            .footer-col-brand .footer-brand-name { font-size: 1.3rem; letter-spacing: .1em; }
+            .footer-col-brand .footer-brand-tagline { font-size: .54rem; }
+            .footer-brand-desc { font-size: .7rem; }
+            .footer-col-title { font-size: .56rem; }
+            .footer-links a { font-size: .72rem; }
+            .footer-social a { width: 34px; height: 34px; font-size: .7rem; }
+            .payment-chip { padding: .42rem .75rem; font-size: .64rem; border-radius: 6px; }
+            .payment-methods-row { gap: .4rem; }
+            .footer-bottom { font-size: .56rem; }
+        }
+
 
         /* ── MOBILE ── */
         @media (max-width: 640px) {
@@ -1869,8 +2135,6 @@
             .hero-deco-line { display: none; }
             #hero-section { cursor: auto; }
             #hero-cursor, #hero-cursor-ring { display: none; }
-            .footer-inner { padding: 2.5rem 1.25rem 1.5rem; }
-            .footer-nav a { padding: .5rem .5rem; }
         }
 
         /* ── PRODUCT QUICK VIEW ── */
@@ -2377,7 +2641,7 @@
             </div>
             <div class="relative max-w-7xl mx-auto px-10 md:px-12">
                 <div class="carousel-container overflow-x-auto">
-                    <div id="product-carousel" class="flex transition-transform duration-500" style="will-change:transform;"></div>
+                    <div id="product-carousel" class="flex" style="will-change:transform;transition:transform .75s cubic-bezier(.16,1,.3,1);"></div>
                 </div>
                 <button id="prev-btn"
                         class="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 min-h-0 bg-white/80 backdrop-blur-sm border border-[var(--colonial-border)] rounded-full shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200">
@@ -2784,36 +3048,68 @@
 
 
 <!-- ════════════════════════ FOOTER ════════════════════════ -->
-<footer class="bg-[var(--colonial-text)] text-white/60 mt-20 py-12 px-5 md:px-8 lg:px-14">
-        <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[.7rem] tracking-[.1em] uppercase text-center mb-8">
-            <a href="#" id="size-guide-link" class="hover:text-[var(--colonial-accent)] transition-colors">Size Guide</a>
-            <a href="#" id="fabric-care-link" class="hover:text-[var(--colonial-accent)] transition-colors">Fabric Care</a>
-            <a href="#" id="delivery-return-link" class="hover:text-[var(--colonial-accent)] transition-colors">Delivery & Return</a>
-            <a href="#" id="billing-link" class="hover:text-[var(--colonial-accent)] transition-colors">Billing</a>
-            <a href="#" id="footer-terms-link" class="hover:text-[var(--colonial-accent)] transition-colors">Terms</a>
-            <a href="#" id="contact-link" class="hover:text-[var(--colonial-accent)] transition-colors">Contact</a>
-            <a href="#" id="about-link" class="hover:text-[var(--colonial-accent)] transition-colors">About</a>
-            <a href="#" id="lifestyle-link" class="hover:text-[var(--colonial-accent)] transition-colors">Lifestyle Card</a>
-            <a href="#" id="offers-link" class="hover:text-[var(--colonial-accent)] transition-colors">Offers</a>
-            <a href="#" id="footer-privacy-link" class="hover:text-[var(--colonial-accent)] transition-colors">Privacy</a>
+<footer class="site-footer mt-20">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <!-- Brand column -->
+            <div class="footer-col footer-col-brand">
+                <span class="footer-brand-name">COLONIAL</span>
+                <span class="footer-brand-tagline">Timeless Elegance</span>
+                <p class="footer-brand-desc">Contemporary fashion crafted with care — blending minimalist design with lasting quality, based in Chittagong, Bangladesh.</p>
+                <div class="footer-social">
+                    <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.tiktok.com/@colonial.ltd?_r=1&_t=ZG-96KR9ohiG0H" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                </div>
+            </div>
 
+            <!-- Support column -->
+            <div class="footer-col">
+                <p class="footer-col-title">Support</p>
+                <div class="footer-links">
+                    <a href="#" id="size-guide-link">Size Guide</a>
+                    <a href="#" id="fabric-care-link">Fabric Care</a>
+                    <a href="#" id="delivery-return-link">Delivery &amp; Return</a>
+                    <a href="#" id="billing-link">Billing</a>
+                </div>
+            </div>
+
+            <!-- Company column -->
+            <div class="footer-col">
+                <p class="footer-col-title">Company</p>
+                <div class="footer-links">
+                    <a href="#" id="about-link">About</a>
+                    <a href="#" id="contact-link">Contact</a>
+                    <a href="#" id="footer-terms-link">Terms</a>
+                    <a href="#" id="footer-privacy-link">Privacy</a>
+                </div>
+            </div>
+
+            <!-- Offers + payments column -->
+            <div class="footer-col">
+                <p class="footer-col-title">Offers</p>
+                <div class="footer-links">
+                    <a href="#" id="lifestyle-link">Lifestyle Card</a>
+                    <a href="#" id="offers-link">Offers</a>
+                </div>
+                <p class="footer-payment-title">We Accept</p>
+                <div class="payment-methods-row">
+                    <span class="payment-chip bkash">bKash</span>
+                    <span class="payment-chip nagad">Nagad</span>
+                    <span class="payment-chip upay">Upay</span>
+                </div>
+            </div>
         </div>
-        <div class="flex justify-center gap-6 mb-8">
-            <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer"
-               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
-                <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer"
-               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
-                <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://www.tiktok.com/@colonial.ltd?_r=1&_t=ZG-96KR9ohiG0H" target="_blank" rel="noopener noreferrer"
-               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
-                <i class="fab fa-tiktok"></i>
-            </a>
-        </div>
-        <div class="text-center text-[.65rem] text-white/30 border-t border-white/10 pt-6">
-            &copy; 2026 COLONIAL. All rights reserved.
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 COLONIAL. All rights reserved.</p>
+            <p class="footer-bottom-made">Crafted in Chittagong<span class="dot"></span>Bangladesh</p>
         </div>
     </div>
 </footer>
@@ -3795,9 +4091,13 @@ function renderCarousel() {
     const c = document.getElementById('product-carousel');
     if (!c) return;
     if (!carouselProducts.length) { c.innerHTML = '<div class="w-full text-center py-12 text-[var(--colonial-text-muted)]">No products</div>'; return; }
-    c.innerHTML = carouselProducts.map(p => `
-        <div class="flex-shrink-0 w-56 md:w-72 mx-3 md:mx-4 carousel-card cursor-pointer" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
-            <img src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-56 md:h-72 object-cover" loading="lazy" decoding="async">
+    const staggerMs = window.innerWidth <= 640 ? 55 : 90;
+    c.innerHTML = carouselProducts.map((p, idx) => `
+        <div class="flex-shrink-0 w-64 sm:w-80 md:w-96 mx-3 md:mx-5 carousel-card cursor-pointer" style="animation-delay:${idx * staggerMs}ms" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            <div class="carousel-img-wrap">
+                <img class="carousel-img-backdrop" src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" loading="lazy" decoding="async" aria-hidden="true" alt="">
+                <img class="carousel-img-main" src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" loading="lazy" decoding="async" alt="${escapeHtml(p.name)}">
+            </div>
             <div class="p-4 text-center">
                 <h3 class="font-serif text-lg font-light leading-snug mb-1">${escapeHtml(p.name)}</h3>
                 <p class="text-sm text-[var(--colonial-text-muted)] mb-3">BDT ${p.final_price||p.price}</p>
