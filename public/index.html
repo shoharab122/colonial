@@ -1685,40 +1685,6 @@
                 0 24px 60px rgba(62,54,46,.18),
                 0 0 0 1px rgba(162,139,111,.3);
         }
-        /* Entrance: cards rise and fade in as the carousel renders / slides */
-        @keyframes carouselCardIn {
-            from { opacity: 0; transform: translateY(28px) scale(.96); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .carousel-card {
-            opacity: 0;
-            animation: carouselCardIn .65s cubic-bezier(.16,1,.3,1) forwards;
-        }
-        /* Full product image, big and never cropped — letterboxed on a soft
-           fill, with a smooth zoom transition on hover/touch for polish. */
-        .carousel-img-wrap {
-            width: 100%;
-            aspect-ratio: 4 / 5;
-            background: var(--colonial-hover);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .carousel-img-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: transform .7s cubic-bezier(.23,1,.32,1);
-            will-change: transform;
-        }
-        .carousel-card:hover .carousel-img-wrap img,
-        .carousel-card:active .carousel-img-wrap img {
-            transform: scale(1.09);
-        }
-        @media (max-width: 640px) {
-            .carousel-img-wrap { aspect-ratio: 3 / 4; }
-        }
 
         .divider {
             border: none;
@@ -1811,151 +1777,57 @@
             height: 1px;
             background: linear-gradient(to right, transparent, rgba(162,139,111,.4), transparent);
         }
-        /* faint decorative glow, echoes the welcome overlay's warmth */
-        .site-footer::after {
-            content: '';
-            position: absolute;
-            top: -120px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 520px;
-            height: 320px;
-            background: radial-gradient(ellipse, rgba(162,139,111,.10) 0%, transparent 70%);
-            pointer-events: none;
-        }
         .footer-inner {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 4rem 1.5rem 2rem;
-            position: relative;
+            padding: 3.5rem 1.5rem 2rem;
         }
-
-        /* ── Top grid: brand + 3 link columns ── */
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1.4fr 1fr 1fr 1fr;
-            gap: 3rem 2rem;
-            padding-bottom: 2.75rem;
-            margin-bottom: 2.25rem;
+        .footer-brand {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
             border-bottom: 1px solid rgba(255,255,255,.08);
         }
-        .footer-col-brand .footer-brand-name {
+        .footer-brand-name {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.7rem;
+            font-size: 1.6rem;
             font-weight: 400;
-            letter-spacing: .16em;
-            color: rgba(255,255,255,.92);
+            letter-spacing: .18em;
+            color: rgba(255,255,255,.9);
             display: block;
-            margin-bottom: .35rem;
+            margin-bottom: .4rem;
         }
-        .footer-col-brand .footer-brand-tagline {
+        .footer-brand-tagline {
             font-size: .6rem;
             letter-spacing: .22em;
             text-transform: uppercase;
             color: var(--colonial-accent);
-            display: block;
-            margin-bottom: 1.1rem;
         }
-        .footer-brand-desc {
-            font-size: .78rem;
-            line-height: 1.75;
-            color: rgba(255,255,255,.42);
-            max-width: 280px;
-            margin-bottom: 1.5rem;
-            font-weight: 300;
-        }
-        .footer-col-title {
-            font-family: 'Jost', sans-serif;
-            font-size: .65rem;
-            letter-spacing: .18em;
-            text-transform: uppercase;
-            font-weight: 500;
-            color: rgba(255,255,255,.85);
-            margin-bottom: 1.1rem;
-            position: relative;
-            padding-bottom: .6rem;
-        }
-        .footer-col-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 22px;
-            height: 1.5px;
-            background: var(--colonial-accent);
-        }
-        .footer-links {
-            display: flex;
-            flex-direction: column;
-            gap: .7rem;
-        }
-        .footer-links a {
-            font-size: .78rem;
-            font-weight: 300;
-            color: rgba(255,255,255,.5);
-            transition: color .2s, transform .2s;
-            display: inline-flex;
-            align-items: center;
-            gap: .4rem;
-            min-height: 0;
-            width: fit-content;
-        }
-        .footer-links a::before {
-            content: '';
-            width: 0;
-            height: 1px;
-            background: var(--colonial-accent);
-            transition: width .25s;
-        }
-        .footer-links a:hover {
-            color: rgba(255,255,255,.92);
-            transform: translateX(2px);
-        }
-        .footer-links a:hover::before { width: 10px; }
-
-        /* ── Payment method badges ── */
-        .footer-payment-title {
-            font-family: 'Jost', sans-serif;
-            font-size: .62rem;
-            letter-spacing: .16em;
-            text-transform: uppercase;
-            font-weight: 500;
-            color: rgba(255,255,255,.55);
-            margin: 1.6rem 0 .8rem;
-        }
-        .payment-methods-row {
+        .footer-nav {
             display: flex;
             flex-wrap: wrap;
-            gap: .55rem;
+            justify-content: center;
+            gap: .25rem .5rem;
+            margin-bottom: 2rem;
         }
-        .payment-chip {
+        .footer-nav a {
+            font-size: .65rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.45);
+            padding: .4rem .6rem;
+            min-height: 0;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            padding: .5rem 1rem;
-            border-radius: 7px;
-            font-family: 'Jost', sans-serif;
-            font-weight: 600;
-            font-size: .72rem;
-            letter-spacing: .01em;
-            min-height: 0;
-            line-height: 1;
-            box-shadow: 0 3px 10px rgba(0,0,0,.22), 0 0 0 1px rgba(255,255,255,.06) inset;
-            transition: transform .2s, box-shadow .2s;
-            cursor: default;
-            user-select: none;
+            transition: color .2s;
+            border-radius: 2px;
         }
-        .payment-chip:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.1) inset;
-        }
-        .payment-chip.bkash { background: linear-gradient(135deg,#E2136E,#C4105F); color: #fff; }
-        .payment-chip.nagad { background: linear-gradient(135deg,#F6921E,#EE3124); color: #fff; }
-        .payment-chip.upay  { background: linear-gradient(135deg,#00A99D,#017A72); color: #fff; }
-
-        /* ── Social icons ── */
+        .footer-nav a:hover { color: var(--colonial-accent); }
         .footer-social {
             display: flex;
-            gap: .65rem;
+            justify-content: center;
+            gap: .75rem;
+            margin-bottom: 2rem;
         }
         .footer-social a {
             width: 38px;
@@ -1966,98 +1838,23 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255,255,255,.5);
+            color: rgba(255,255,255,.45);
             font-size: .8rem;
-            transition: color .2s, border-color .2s, background .2s, transform .2s;
+            transition: color .2s, border-color .2s, background .2s;
         }
         .footer-social a:hover {
             color: var(--colonial-accent);
             border-color: var(--colonial-accent);
-            background: rgba(162,139,111,.1);
-            transform: translateY(-2px);
+            background: rgba(162,139,111,.08);
         }
-
-        /* ── Bottom bar ── */
         .footer-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: .75rem;
-            font-size: .62rem;
-            letter-spacing: .08em;
-            color: rgba(255,255,255,.28);
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,.07);
+            font-size: .6rem;
+            letter-spacing: .1em;
+            color: rgba(255,255,255,.22);
         }
-        .footer-bottom-made {
-            display: flex;
-            align-items: center;
-            gap: .4rem;
-            color: rgba(255,255,255,.28);
-        }
-        .footer-bottom-made .dot {
-            width: 3px; height: 3px; border-radius: 50%;
-            background: var(--colonial-accent);
-            display: inline-block;
-        }
-
-        /* ── Mobile optimisation ───────────────────────────────── */
-        @media (max-width: 900px) {
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 2.5rem 1.5rem;
-            }
-            .footer-col-brand { grid-column: 1 / -1; }
-            .footer-brand-desc { max-width: 100%; }
-        }
-        @media (max-width: 640px) {
-            .footer-inner { padding: 2.75rem 1.25rem 1.5rem; }
-            .footer-grid {
-                grid-template-columns: 1fr;
-                gap: 1.9rem;
-                text-align: center;
-                padding-bottom: 1.75rem;
-                margin-bottom: 1.5rem;
-            }
-            .footer-col-brand .footer-brand-name { font-size: 1.5rem; }
-            .footer-col-brand .footer-brand-desc {
-                margin-left: auto;
-                margin-right: auto;
-                font-size: .76rem;
-                line-height: 1.65;
-            }
-            .footer-col-title {
-                margin-bottom: .85rem;
-                padding-bottom: .5rem;
-            }
-            .footer-col-title::after { left: 50%; transform: translateX(-50%); }
-            .footer-links { align-items: center; gap: .6rem; }
-            .footer-links a { width: auto; font-size: .8rem; padding: .15rem 0; }
-            .footer-social { justify-content: center; }
-            .footer-social a { width: 40px; height: 40px; }
-            .footer-payment-title { margin: 1.3rem 0 .65rem; }
-            .payment-methods-row { justify-content: center; }
-            .payment-chip { padding: .55rem 1.05rem; font-size: .74rem; }
-            .footer-bottom {
-                flex-direction: column-reverse;
-                text-align: center;
-                gap: .5rem;
-                padding-top: 1.25rem;
-            }
-            .footer-bottom-made { justify-content: center; }
-        }
-        /* Extra-small phones (≤ 390px) */
-        @media (max-width: 390px) {
-            .footer-inner { padding: 2.25rem 1rem 1.25rem; }
-            .footer-grid { gap: 1.6rem; padding-bottom: 1.5rem; margin-bottom: 1.25rem; }
-            .footer-col-brand .footer-brand-name { font-size: 1.35rem; letter-spacing: .12em; }
-            .footer-col-brand .footer-brand-tagline { font-size: .56rem; }
-            .footer-brand-desc { font-size: .72rem; }
-            .footer-links a { font-size: .76rem; }
-            .footer-social a { width: 36px; height: 36px; font-size: .74rem; }
-            .payment-chip { padding: .48rem .85rem; font-size: .68rem; border-radius: 6px; }
-            .footer-bottom { font-size: .58rem; }
-        }
-
 
         /* ── MOBILE ── */
         @media (max-width: 640px) {
@@ -2072,6 +1869,8 @@
             .hero-deco-line { display: none; }
             #hero-section { cursor: auto; }
             #hero-cursor, #hero-cursor-ring { display: none; }
+            .footer-inner { padding: 2.5rem 1.25rem 1.5rem; }
+            .footer-nav a { padding: .5rem .5rem; }
         }
 
         /* ── PRODUCT QUICK VIEW ── */
@@ -2985,68 +2784,36 @@
 
 
 <!-- ════════════════════════ FOOTER ════════════════════════ -->
-<footer class="site-footer mt-20">
-    <div class="footer-inner">
-        <div class="footer-grid">
-            <!-- Brand column -->
-            <div class="footer-col footer-col-brand">
-                <span class="footer-brand-name">COLONIAL</span>
-                <span class="footer-brand-tagline">Timeless Elegance</span>
-                <p class="footer-brand-desc">Contemporary fashion crafted with care — blending minimalist design with lasting quality, based in Chittagong, Bangladesh.</p>
-                <div class="footer-social">
-                    <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://www.tiktok.com/@colonial.ltd?_r=1&_t=ZG-96KR9ohiG0H" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
-                </div>
-            </div>
+<footer class="bg-[var(--colonial-text)] text-white/60 mt-20 py-12 px-5 md:px-8 lg:px-14">
+        <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[.7rem] tracking-[.1em] uppercase text-center mb-8">
+            <a href="#" id="size-guide-link" class="hover:text-[var(--colonial-accent)] transition-colors">Size Guide</a>
+            <a href="#" id="fabric-care-link" class="hover:text-[var(--colonial-accent)] transition-colors">Fabric Care</a>
+            <a href="#" id="delivery-return-link" class="hover:text-[var(--colonial-accent)] transition-colors">Delivery & Return</a>
+            <a href="#" id="billing-link" class="hover:text-[var(--colonial-accent)] transition-colors">Billing</a>
+            <a href="#" id="footer-terms-link" class="hover:text-[var(--colonial-accent)] transition-colors">Terms</a>
+            <a href="#" id="contact-link" class="hover:text-[var(--colonial-accent)] transition-colors">Contact</a>
+            <a href="#" id="about-link" class="hover:text-[var(--colonial-accent)] transition-colors">About</a>
+            <a href="#" id="lifestyle-link" class="hover:text-[var(--colonial-accent)] transition-colors">Lifestyle Card</a>
+            <a href="#" id="offers-link" class="hover:text-[var(--colonial-accent)] transition-colors">Offers</a>
+            <a href="#" id="footer-privacy-link" class="hover:text-[var(--colonial-accent)] transition-colors">Privacy</a>
 
-            <!-- Support column -->
-            <div class="footer-col">
-                <p class="footer-col-title">Support</p>
-                <div class="footer-links">
-                    <a href="#" id="size-guide-link">Size Guide</a>
-                    <a href="#" id="fabric-care-link">Fabric Care</a>
-                    <a href="#" id="delivery-return-link">Delivery &amp; Return</a>
-                    <a href="#" id="billing-link">Billing</a>
-                </div>
-            </div>
-
-            <!-- Company column -->
-            <div class="footer-col">
-                <p class="footer-col-title">Company</p>
-                <div class="footer-links">
-                    <a href="#" id="about-link">About</a>
-                    <a href="#" id="contact-link">Contact</a>
-                    <a href="#" id="footer-terms-link">Terms</a>
-                    <a href="#" id="footer-privacy-link">Privacy</a>
-                </div>
-            </div>
-
-            <!-- Offers + payments column -->
-            <div class="footer-col">
-                <p class="footer-col-title">Offers</p>
-                <div class="footer-links">
-                    <a href="#" id="lifestyle-link">Lifestyle Card</a>
-                    <a href="#" id="offers-link">Offers</a>
-                </div>
-                <p class="footer-payment-title">We Accept</p>
-                <div class="payment-methods-row">
-                    <span class="payment-chip bkash">bKash</span>
-                    <span class="payment-chip nagad">Nagad</span>
-                    <span class="payment-chip upay">Upay</span>
-                </div>
-            </div>
         </div>
-
-        <div class="footer-bottom">
-            <p>&copy; 2026 COLONIAL. All rights reserved.</p>
-            <p class="footer-bottom-made">Crafted in Chittagong<span class="dot"></span>Bangladesh</p>
+        <div class="flex justify-center gap-6 mb-8">
+            <a href="https://www.facebook.com/share/18PUUso8Pp/" target="_blank" rel="noopener noreferrer"
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://www.instagram.com/colonial_ltd" target="_blank" rel="noopener noreferrer"
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.tiktok.com/@colonial.ltd?_r=1&_t=ZG-96KR9ohiG0H" target="_blank" rel="noopener noreferrer"
+               class="w-9 h-9 min-h-0 rounded-full border border-white/20 flex items-center justify-center hover:border-[var(--colonial-accent)] hover:text-[var(--colonial-accent)] transition-colors text-sm">
+                <i class="fab fa-tiktok"></i>
+            </a>
+        </div>
+        <div class="text-center text-[.65rem] text-white/30 border-t border-white/10 pt-6">
+            &copy; 2026 COLONIAL. All rights reserved.
         </div>
     </div>
 </footer>
@@ -4028,11 +3795,9 @@ function renderCarousel() {
     const c = document.getElementById('product-carousel');
     if (!c) return;
     if (!carouselProducts.length) { c.innerHTML = '<div class="w-full text-center py-12 text-[var(--colonial-text-muted)]">No products</div>'; return; }
-    c.innerHTML = carouselProducts.map((p, idx) => `
-        <div class="flex-shrink-0 w-64 sm:w-80 md:w-96 mx-3 md:mx-5 carousel-card cursor-pointer" style="animation-delay:${idx * 90}ms" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
-            <div class="carousel-img-wrap">
-                <img src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" loading="lazy" decoding="async">
-            </div>
+    c.innerHTML = carouselProducts.map(p => `
+        <div class="flex-shrink-0 w-56 md:w-72 mx-3 md:mx-4 carousel-card cursor-pointer" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            <img src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" class="w-full h-56 md:h-72 object-cover" loading="lazy" decoding="async">
             <div class="p-4 text-center">
                 <h3 class="font-serif text-lg font-light leading-snug mb-1">${escapeHtml(p.name)}</h3>
                 <p class="text-sm text-[var(--colonial-text-muted)] mb-3">BDT ${p.final_price||p.price}</p>
