@@ -2587,6 +2587,7 @@
             <li><a href="#" class="menu-link" onclick="filterByCategory('Men'); toggleMenu(); return false;">Men</a></li>
             <li><a href="#" class="menu-link" onclick="filterByCategory('Children'); toggleMenu(); return false;">Children</a></li>
             <li><a href="#" class="menu-link sale" onclick="filterByCategory('all'); toggleMenu(); return false;">Sale</a></li>
+            <li><a href="#" id="mobile-orders-link" class="menu-link">My Orders</a></li>
             <li><a href="#" id="mobile-wishlist-link" class="menu-link">Wishlist</a></li>
         </ul>
     </nav>
@@ -3827,6 +3828,7 @@ document.addEventListener('click', () => {
 });
 
 document.getElementById('my-orders-link')?.addEventListener('click', e => { e.preventDefault(); if (!currentUser) openAuthModal(); else loadCustomerOrders(); });
+document.getElementById('mobile-orders-link')?.addEventListener('click', e => { e.preventDefault(); toggleMenu(); if (!currentUser) openAuthModal(); else loadCustomerOrders(); });
 document.getElementById('logout-link')?.addEventListener('click', e => {
     e.preventDefault();
     if (customerEventSource) customerEventSource.close();
