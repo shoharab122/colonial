@@ -1694,10 +1694,10 @@
             opacity: 0;
             animation: carouselCardIn .8s cubic-bezier(.16,1,.3,1) forwards;
         }
-        /* Full product image, big and never cropped. A blurred, softly
-           saturated echo of the same photo fills the frame behind it —
-           no flat empty letterbox bars, and one consistent ratio across
-           every screen size so nothing jumps oddly between breakpoints. */
+        /* Full-bleed product photo — the image fills the entire frame
+           edge-to-edge (no floating thumbnail on a blurred backdrop,
+           so there's no dead/empty space around the product), with a
+           soft gradient for legibility and a smooth zoom on hover. */
         .carousel-img-wrap {
             position: relative;
             width: 100%;
@@ -1705,41 +1705,28 @@
             overflow: hidden;
             background: var(--colonial-hover);
         }
-        .carousel-img-backdrop {
+        .carousel-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(62,54,46,0) 62%, rgba(62,54,46,.22) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .carousel-img-wrap img.carousel-img-main {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: blur(22px) saturate(1.15) brightness(1.04);
-            transform: scale(1.25);
-            opacity: .65;
-            transition: transform .7s cubic-bezier(.23,1,.32,1);
-        }
-        .carousel-img-wrap::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, rgba(253,251,247,0) 55%, rgba(253,251,247,.35) 100%);
-            pointer-events: none;
-        }
-        .carousel-img-wrap img.carousel-img-main {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 14px 28px rgba(62,54,46,.16));
+            object-position: center;
+            transform: scale(1.03);
             transition: transform .7s cubic-bezier(.23,1,.32,1);
             will-change: transform;
         }
         .carousel-card:hover .carousel-img-wrap img.carousel-img-main,
         .carousel-card:active .carousel-img-wrap img.carousel-img-main {
-            transform: scale(1.09);
-        }
-        .carousel-card:hover .carousel-img-backdrop,
-        .carousel-card:active .carousel-img-backdrop {
-            transform: scale(1.32);
+            transform: scale(1.13);
         }
 
         /* ── Mobile optimisation: lighter blur/shadow for GPU/battery,
@@ -1751,21 +1738,12 @@
                 to   { opacity: 1; transform: translateY(0) scale(1); }
             }
             .carousel-card { animation-duration: .5s; }
-            .carousel-img-backdrop {
-                filter: blur(12px) saturate(1.1) brightness(1.02);
-                transform: scale(1.18);
-            }
             .carousel-img-wrap img.carousel-img-main {
-                filter: drop-shadow(0 8px 16px rgba(62,54,46,.14));
                 transition-duration: .45s;
             }
             .carousel-card:hover .carousel-img-wrap img.carousel-img-main,
             .carousel-card:active .carousel-img-wrap img.carousel-img-main {
-                transform: scale(1.05);
-            }
-            .carousel-card:hover .carousel-img-backdrop,
-            .carousel-card:active .carousel-img-backdrop {
-                transform: scale(1.22);
+                transform: scale(1.06);
             }
             .carousel-card:hover,
             .carousel-card:active {
@@ -1780,6 +1758,29 @@
             border: none;
             border-top: 1px solid var(--colonial-border);
             margin: 1.25rem 0;
+            position: relative;
+        }
+        .divider-ornate {
+            border: none;
+            margin: 1.5rem 0;
+            text-align: center;
+            position: relative;
+        }
+        .divider-ornate::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            border-top: 1px solid var(--colonial-border);
+        }
+        .divider-ornate::after {
+            content: '◆';
+            position: relative;
+            background: var(--colonial-bg);
+            padding: 0 .75rem;
+            color: var(--colonial-accent);
+            font-size: .55rem;
         }
 
         /* ── ANIMATIONS ── */
@@ -2142,17 +2143,56 @@
         .product-modal-img-wrap {
             position: relative;
             overflow: hidden;
-            border-radius: 4px;
+            border-radius: 10px;
             background: var(--colonial-hover);
+            box-shadow: 0 12px 32px rgba(62,54,46,.14), 0 0 0 1px rgba(232,226,213,.7);
         }
         .product-modal-img-wrap img {
             transition: transform .6s cubic-bezier(.23,1,.32,1);
         }
-        .product-modal-img-wrap:hover img { transform: scale(1.04); }
+        .product-modal-img-wrap:hover img { transform: scale(1.05); }
+        .product-modal-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,.16) 100%);
+            pointer-events: none;
+        }
+        .img-zoom-hint {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.9);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,.18);
+            color: var(--colonial-text);
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(.85);
+            transition: opacity .25s, transform .25s;
+        }
+        .product-modal-img-wrap:hover .img-zoom-hint { opacity: 1; transform: scale(1); }
+
+        @media (min-width: 768px) {
+            .product-modal-body {
+                display: grid;
+                grid-template-columns: 1.05fr 1fr;
+                gap: 2rem;
+                align-items: start;
+            }
+            .product-modal-body .product-modal-img-wrap img { height: 420px; }
+            .product-modal-reviews { grid-column: 1 / -1; }
+        }
 
         .thumb-strip {
             display: flex;
-            gap: .5rem;
+            gap: .55rem;
             overflow-x: auto;
             padding: .4rem 0;
             scrollbar-width: none;
@@ -2160,16 +2200,17 @@
         .thumb-strip::-webkit-scrollbar { display: none; }
         .thumb-item {
             flex-shrink: 0;
-            width: 58px;
-            height: 72px;
-            border-radius: 3px;
+            width: 60px;
+            height: 76px;
+            border-radius: 6px;
             overflow: hidden;
             border: 2px solid transparent;
             cursor: pointer;
-            transition: border-color .2s, transform .2s;
+            box-shadow: 0 2px 8px rgba(62,54,46,.1);
+            transition: border-color .2s, transform .2s, box-shadow .2s;
         }
-        .thumb-item:hover { transform: translateY(-2px); border-color: rgba(162,139,111,.5); }
-        .thumb-item.active { border-color: var(--colonial-accent); }
+        .thumb-item:hover { transform: translateY(-3px); border-color: rgba(162,139,111,.5); box-shadow: 0 6px 14px rgba(62,54,46,.16); }
+        .thumb-item.active { border-color: var(--colonial-accent); box-shadow: 0 4px 12px rgba(162,139,111,.3); }
         .thumb-item img { width: 100%; height: 100%; object-fit: cover; }
 
         .section-label {
@@ -2179,6 +2220,16 @@
             color: var(--colonial-text-muted);
             font-weight: 500;
             margin-bottom: .6rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .section-label::before {
+            content: '';
+            width: 14px;
+            height: 1.5px;
+            background: var(--colonial-accent);
+            display: inline-block;
         }
 
         .quick-add-overlay {
@@ -2496,8 +2547,8 @@
                 <!-- Desktop nav links -->
                 <nav class="hidden lg:flex items-center gap-1">
                     <a href="#" onclick="filterByCategory('all');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Shop</a>
-                    <a href="#" onclick="filterByCategory('Women');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Women</a>
-                    <a href="#" onclick="filterByCategory('Men');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Men</a>
+                    <a href="#" onclick="filterByCategory('women');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Women</a>
+                    <a href="#" onclick="filterByCategory('men');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Men</a>
                     <a href="#" onclick="filterByCategory('accessories');return false;" class="text-[.68rem] tracking-[.12em] uppercase font-[400] px-3 py-1.5 rounded-full hover:bg-[var(--colonial-hover)] transition-colors text-[var(--colonial-text-muted)] hover:text-[var(--colonial-text)]">Accessories</a>
                 </nav>
             </div>
@@ -2844,7 +2895,7 @@
 <!-- ════════════════════════ PRODUCT QUICK VIEW MODAL ════════════════════════ -->
 <div id="product-modal"
      class="fixed inset-0 modal-backdrop hidden items-center justify-center z-50 p-4">
-    <div class="modal-panel w-full max-w-2xl animate-fadeUp">
+    <div class="modal-panel w-full max-w-3xl animate-fadeUp">
 
         <div class="modal-hd">
             <h3 id="modal-name"></h3>
@@ -2858,70 +2909,81 @@
         </div>
 
         <div class="px-6 pb-8">
-            <!-- Image with 3D zoom -->
-            <div class="mt-4 product-modal-img-wrap">
-                <img id="modal-main-img"
-                     class="w-full h-72 md:h-96 object-cover cursor-zoom-in"
-                     onclick="openLightbox()" loading="lazy">
-            </div>
-            <!-- Thumbnail strip -->
-            <div id="modal-thumbnails" class="thumb-strip mt-3"></div>
-
-            <!-- Price + rating -->
-            <div class="flex items-center justify-between mt-4">
-                <p id="modal-price" class="font-serif text-2xl font-light"></p>
-                <div class="flex items-center gap-2">
-                    <div id="modal-rating" class="star-rating" style="font-size:14px; color:var(--colonial-accent);"></div>
-                    <span id="modal-review-count" class="text-xs text-[var(--colonial-text-muted)]"></span>
+            <div class="product-modal-body">
+                <div>
+                    <!-- Image with 3D zoom -->
+                    <div class="mt-4 product-modal-img-wrap">
+                        <img id="modal-main-img"
+                             class="w-full h-72 md:h-96 object-cover cursor-zoom-in"
+                             onclick="openLightbox()" loading="lazy">
+                        <div class="img-zoom-hint">
+                            <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                    <!-- Thumbnail strip -->
+                    <div id="modal-thumbnails" class="thumb-strip mt-3"></div>
                 </div>
-            </div>
 
-            <p id="modal-desc" class="text-sm text-[var(--colonial-text-muted)] mt-3 leading-relaxed"></p>
+                <div>
+                    <!-- Price + rating -->
+                    <div class="flex items-center justify-between mt-4 md:mt-0">
+                        <p id="modal-price" class="font-serif text-2xl font-light"></p>
+                        <div class="flex items-center gap-2">
+                            <div id="modal-rating" class="star-rating" style="font-size:14px; color:var(--colonial-accent);"></div>
+                            <span id="modal-review-count" class="text-xs text-[var(--colonial-text-muted)]"></span>
+                        </div>
+                    </div>
 
-            <!-- Size -->
-            <div class="mt-5">
-                <p class="section-label">Select Size</p>
-                <div class="flex gap-2 flex-wrap" id="size-options">                   
-                    <button class="size-btn" data-size="S">S</button>
-                    <button class="size-btn active" data-size="M">M</button>
-                    <button class="size-btn" data-size="L">L</button>
-                    <button class="size-btn" data-size="XL">XL</button>
+                    <p id="modal-desc" class="text-sm text-[var(--colonial-text-muted)] mt-3 leading-relaxed"></p>
+
+                    <!-- Size -->
+                    <div class="mt-5">
+                        <p class="section-label">Select Size</p>
+                        <div class="flex gap-2 flex-wrap" id="size-options">                   
+                            <button class="size-btn" data-size="S">S</button>
+                            <button class="size-btn active" data-size="M">M</button>
+                            <button class="size-btn" data-size="L">L</button>
+                            <button class="size-btn" data-size="XL">XL</button>
+                        </div>
+                    </div>
+
+                    <!-- Colour — redesigned beautiful section -->
+                    <div id="color-selector" class="mt-5">
+                        <p class="section-label">Select Colour</p>
+                        <div id="color-swatches" class="color-swatch-track"></div>
+                        <!-- label pill showing selected colour -->
+                        <div id="selected-color-pill" class="hidden">
+                            <div class="color-label-pill">
+                                <div id="selected-color-dot" class="color-label-dot"></div>
+                                <span id="selected-color-name" class="text-[var(--colonial-text-muted)]"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="addCurrentToCart()"
+                            class="btn-primary w-full mt-7 py-3.5 rounded-sm">Add to Bag</button>
                 </div>
-            </div>
 
-            <!-- Colour — redesigned beautiful section -->
-            <div id="color-selector" class="mt-5">
-                <p class="section-label">Select Colour</p>
-                <div id="color-swatches" class="color-swatch-track"></div>
-                <!-- label pill showing selected colour -->
-                <div id="selected-color-pill" class="hidden">
-                    <div class="color-label-pill">
-                        <div id="selected-color-dot" class="color-label-dot"></div>
-                        <span id="selected-color-name" class="text-[var(--colonial-text-muted)]"></span>
+                <div class="product-modal-reviews">
+                    <hr class="divider-ornate">
+
+                    <!-- Reviews -->
+                    <h4 class="font-serif text-xl font-light mb-3">Reviews</h4>
+                    <div id="reviews-container" class="max-h-52 overflow-y-auto space-y-3"></div>
+
+                    <div id="add-review-section" class="mt-5 pt-4 border-t border-[var(--colonial-border)]">
+                        <p class="section-label">Write a Review</p>
+                        <div class="star-rating mb-3" id="review-stars">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
+                        </div>
+                        <textarea id="review-comment" rows="2" class="inp" placeholder="Share your experience…"></textarea>
+                        <button id="submit-review-btn" class="btn-primary mt-3 px-6 py-2 rounded-sm text-xs">Submit Review</button>
                     </div>
                 </div>
-            </div>
-
-            <button onclick="addCurrentToCart()"
-                    class="btn-primary w-full mt-7 py-3.5 rounded-sm">Add to Bag</button>
-
-            <hr class="divider">
-
-            <!-- Reviews -->
-            <h4 class="font-serif text-xl font-light mb-3">Reviews</h4>
-            <div id="reviews-container" class="max-h-52 overflow-y-auto space-y-3"></div>
-
-            <div id="add-review-section" class="mt-5 pt-4 border-t border-[var(--colonial-border)]">
-                <p class="section-label">Write a Review</p>
-                <div class="star-rating mb-3" id="review-stars">
-                    <span class="star" data-rating="1">★</span>
-                    <span class="star" data-rating="2">★</span>
-                    <span class="star" data-rating="3">★</span>
-                    <span class="star" data-rating="4">★</span>
-                    <span class="star" data-rating="5">★</span>
-                </div>
-                <textarea id="review-comment" rows="2" class="inp" placeholder="Share your experience…"></textarea>
-                <button id="submit-review-btn" class="btn-primary mt-3 px-6 py-2 rounded-sm text-xs">Submit Review</button>
             </div>
         </div>
     </div>
@@ -4098,7 +4160,6 @@ function renderCarousel() {
     c.innerHTML = carouselProducts.map((p, idx) => `
         <div class="flex-shrink-0 w-64 sm:w-80 md:w-96 mx-3 md:mx-5 carousel-card cursor-pointer" style="animation-delay:${idx * staggerMs}ms" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
             <div class="carousel-img-wrap">
-                <img class="carousel-img-backdrop" src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" loading="lazy" decoding="async" aria-hidden="true" alt="">
                 <img class="carousel-img-main" src="${p.image_url||'https://placehold.co/400x500/e8e2d9/7a7570?text=COLONIAL'}" loading="lazy" decoding="async" alt="${escapeHtml(p.name)}">
             </div>
             <div class="p-4 text-center">
