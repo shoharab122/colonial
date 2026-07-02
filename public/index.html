@@ -1444,10 +1444,10 @@
             padding: 1.1rem 1.2rem;
         }
         .payment-number {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.3rem;
+            font-family: 'Jost', sans-serif;
+            font-size: 1.15rem;
             font-weight: 500;
-            letter-spacing: .04em;
+            letter-spacing: .03em;
             color: var(--colonial-text);
         }
         .amount-pill {
@@ -1462,6 +1462,112 @@
             letter-spacing: .06em;
             margin-top: .5rem;
         }
+
+        /* ── Enhanced payment method UI ───────────────────────────── */
+        .pm-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .8rem 1rem;
+            border: 1.5px solid var(--colonial-border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color .2s, background .2s, box-shadow .2s, transform .15s;
+            background: var(--colonial-card);
+            overflow: hidden;
+        }
+        .pm-card:hover { border-color: rgba(162,139,111,.5); box-shadow: 0 2px 10px rgba(162,139,111,.12); transform: translateY(-1px); }
+        .pm-card:has(input:checked) {
+            border-color: var(--colonial-accent);
+            background: rgba(162,139,111,.06);
+            box-shadow: 0 0 0 3px rgba(162,139,111,.1);
+        }
+        .pm-card input[type=radio] { accent-color: var(--colonial-accent); margin: 0; flex-shrink: 0; }
+        .pm-icon {
+            width: 38px; height: 38px; flex-shrink: 0;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Jost', sans-serif;
+        }
+        .pm-icon-cod {
+            background: rgba(162,139,111,.12);
+            color: var(--colonial-accent);
+        }
+        .pm-icon-digital {
+            background: linear-gradient(135deg, #E2136E 0%, #E2136E 50%, #F6921E 50%, #F6921E 100%);
+        }
+        .pm-label { font-size: .84rem; font-weight: 500; line-height: 1.1; color: var(--colonial-text); margin-bottom: 2px; }
+        .pm-sub { font-size: .68rem; color: var(--colonial-text-muted); letter-spacing: .01em; }
+        .pm-brand-row { display: flex; gap: .35rem; margin-top: .35rem; }
+        .pm-brand-chip {
+            font-family: 'Jost', sans-serif;
+            font-size: .58rem;
+            font-weight: 600;
+            letter-spacing: .03em;
+            padding: .12rem .42rem;
+            border-radius: 3px;
+            color: #fff;
+        }
+        .pm-brand-chip.bkash { background: linear-gradient(135deg,#E2136E,#C4105F); }
+        .pm-brand-chip.nagad { background: linear-gradient(135deg,#F6921E,#EE3124); }
+
+        .payment-detail-card {
+            background: var(--colonial-card);
+            border: 1.5px solid var(--colonial-border);
+            border-radius: 8px;
+            padding: 1.15rem 1.25rem;
+            position: relative;
+        }
+        .payment-detail-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .8rem;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+        .payment-detail-brands { display: flex; gap: .4rem; }
+        .payment-brand-badge {
+            display: flex; align-items: center; gap: .28rem;
+            font-family: 'Jost', sans-serif;
+            font-size: .62rem;
+            font-weight: 600;
+            letter-spacing: .02em;
+            padding: .28rem .6rem;
+            border-radius: 20px;
+            color: #fff;
+        }
+        .payment-brand-badge.bkash { background: linear-gradient(135deg,#E2136E,#C4105F); }
+        .payment-brand-badge.nagad { background: linear-gradient(135deg,#F6921E,#EE3124); }
+
+        .payment-number-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .6rem;
+            background: rgba(162,139,111,.06);
+            border: 1px dashed #D9C4A8;
+            border-radius: 6px;
+            padding: .6rem .85rem;
+            margin-top: .2rem;
+        }
+        .copy-number-btn {
+            font-family: 'Jost', sans-serif;
+            font-size: .62rem;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: var(--colonial-accent);
+            background: transparent;
+            border: 1px solid var(--colonial-accent);
+            border-radius: 4px;
+            padding: .3rem .6rem;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+            flex-shrink: 0;
+        }
+        .copy-number-btn:hover { background: var(--colonial-accent); color: #fff; }
+        .copy-number-btn.copied { background: var(--colonial-accent); color: #fff; }
 
         .payment-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 500; letter-spacing: .06em; }
         .payment-paid { background: #d1fae5; color: #065f46; }
@@ -2850,27 +2956,44 @@
 
             <p class="checkout-section-title">Payment Method</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label class="radio-card">
+                <label class="pm-card">
                     <input type="radio" name="payment_method" value="cash_on_delivery" checked>
+                    <div class="pm-icon pm-icon-cod">
+                        <i data-lucide="banknote" class="w-[18px] h-[18px]"></i>
+                    </div>
                     <div>
-                        <p class="text-sm font-medium leading-none mb-0.5">Cash on Delivery</p>
-                        <p class="text-xs text-[var(--colonial-text-muted)]">Pay upon arrival</p>
+                        <p class="pm-label">Cash on Delivery</p>
+                        <p class="pm-sub">Pay upon arrival</p>
                     </div>
                 </label>
-                <label class="radio-card">
+                <label class="pm-card">
                     <input type="radio" name="payment_method" value="Bkash">
+                    <div class="pm-icon pm-icon-digital">
+                        <i data-lucide="smartphone" class="w-[18px] h-[18px] text-white"></i>
+                    </div>
                     <div>
-                        <p class="text-sm font-medium leading-none mb-0.5">Advance Payment</p>
-                        <p class="text-xs text-[var(--colonial-text-muted)]">BKash / Nagad</p>
+                        <p class="pm-label">Advance Payment</p>
+                        <div class="pm-brand-row">
+                            <span class="pm-brand-chip bkash">bKash</span>
+                            <span class="pm-brand-chip nagad">Nagad</span>
+                        </div>
                     </div>
                 </label>
             </div>
 
-            <div id="manual-payment-details" class="payment-box mt-4">
-                <p id="payment-instruction-heading" class="text-[.68rem] tracking-[.1em] uppercase text-[var(--colonial-text-muted)] mb-1">Advance Payment</p>
-                <p class="text-base font-mono font-medium text-[var(--colonial-text)] tracking-normal">+8801871330654</p>
-                <p class="text-xs text-[var(--colonial-text-muted)]">BKash / Nagad</p>
-                <p id="payment-instruction-sub" class="text-xs text-[var(--colonial-text-muted)] mt-2">Pay the delivery charge only and enter the transaction ID below.</p>
+            <div id="manual-payment-details" class="payment-detail-card mt-4">
+                <div class="payment-detail-head">
+                    <p id="payment-instruction-heading" class="text-[.68rem] tracking-[.1em] uppercase text-[var(--colonial-text-muted)] m-0">Advance Payment</p>
+                    <div class="payment-detail-brands">
+                        <span class="payment-brand-badge bkash">bKash</span>
+                        <span class="payment-brand-badge nagad">Nagad</span>
+                    </div>
+                </div>
+                <div class="payment-number-row">
+                    <span class="payment-number">+8801871330654</span>
+                    <button type="button" class="copy-number-btn" onclick="copyPaymentNumber(this)">Copy</button>
+                </div>
+                <p id="payment-instruction-sub" class="text-xs text-[var(--colonial-text-muted)] mt-2.5">Pay the delivery charge only and enter the transaction ID below.</p>
                 <div class="amount-pill">Amount to pay: <strong id="payable-amount">BDT 0</strong></div>
                 <input type="text" id="transaction-id" placeholder="Transaction ID  (e.g. 8E7A2K9L)" class="inp mt-3">
                 <p class="text-xs text-red-500 hidden mt-1" id="txn-error">Transaction ID is required.</p>
@@ -4398,6 +4521,26 @@ document.getElementById('submit-review-btn')?.addEventListener('click', async()=
 document.getElementById('modal-wishlist-btn')?.addEventListener('click',()=>{ if(currentProduct) toggleWishlist(currentProduct.id); });
 
 // ==================== PAYMENT INSTRUCTION ====================
+function copyPaymentNumber(btn) {
+    const number = '+8801871330654';
+    const done = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1500);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(number).then(done).catch(done);
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = number; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        done();
+    }
+}
+
 function updatePaymentInstruction() {
     const pm = document.querySelector('input[name="payment_method"]:checked')?.value;
     const dr = document.querySelector('input[name="delivery_option"]:checked');
